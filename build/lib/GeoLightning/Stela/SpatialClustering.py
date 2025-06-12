@@ -10,19 +10,18 @@ from GeoLightning.Utils.Constants import SIGMA_T, \
     SIGMA_D, \
     EPSILON_D, \
     CLUSTER_MIN_PTS
-from GeoLightning.Utils.Utils import concat_manual
 from GeoLightning.Stela.DBSCAN3D import clusterizacao_DBSCAN3D
 from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
 from GeoLightning.Stela.Dimensions import remapeia_solucoes
+from GeoLightning.Stela.Common import calcula_distancias_ao_centroide_ak, \
+    calcular_centroides_ak
+from GeoLightning.Stela.Entropy import calcular_entropia_local
 
 
-@jit(nopython=True, cache=True, fastmath=True)
+# @jit(nopython=True, cache=True, fastmath=True)
 def clusterizacao_espacial_stela(solucoes: np.ndarray,
                                  clusters: np.ndarray,
-                                 tempos: np.ndarray,
-                                 tempos_medios: np.ndarray,
                                  eps: np.float64 = EPSILON_D,
-                                 sigma_t: np.float64 = SIGMA_T,
                                  sigma_d: np.float64 = SIGMA_D,
                                  min_pts: np.int32 = CLUSTER_MIN_PTS,
                                  sistema_cartesiano: bool = False) -> tuple:
@@ -32,13 +31,9 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
         solucoes (np.ndarray): array (N, 3) de posições candidatas
         clusters (np.ndarray): vetor com os rótulos de cluster 
                                atribuídos a cada Solução
-        tempos (np.ndarray): vetor com os tempos de origem estimados
-        tempos_medios (np.ndarray): os tempos médios de cada cluster, 
-                                    para cálculo da função de ajuste
         detectores_por_cluster (np.ndarray): detectores envolvidos em um cluster
         eps (np.float64): tolerância máxima (janela espacial) 
                           para definição de vizinhança
-        sigma_t (np.float64): desvio padrão temporal
         sigma_d (np.float64): desvio padrão espacial
         min_pts (np.int32): número mínimo de pontos para formar um cluster
         sistema_cartesiano (bool): usa distância euclidiana (True) 
@@ -50,13 +45,12 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
     """
     temporal_clusters = np.max(clusters) + 1
     loglikelihood = 0.0
-    max_centroides = solucoes.shape[0]
-    solucoes_unicas = np.empty((max_centroides, 3), dtype=np.float64)
-    su_index = 0  # índice para inserção incremental
-    final_clusters_base_index = 0 # indexador base dos clusters finais
-    final_clusters = -np.ones(len(clusters), dtype=np.float64)
+    final_clusters_base_index = 0  # indexador base dos clusters finais
+    final_clusters = -np.ones(len(clusters), dtype=np.int32)
 
     for cluster_id in range(temporal_clusters):
+
+        # extraindo as soluçũes indicadas pelo cluster
 
         cluster_solucoes_indexes = np.argwhere(
             clusters == cluster_id).flatten()
@@ -65,77 +59,62 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
 
         cluster_solucoes = np.zeros((cluster_solucoes_indexes.shape[0],
                                      solucoes.shape[1]), dtype=solucoes.dtype)
-        
-        clusters_solucoes_tempos = np.zeros(cluster_solucoes_indexes.shape[0], 
-                                            dtype=tempos.dtype)
-        
+
         for i in range(len(cluster_solucoes_indexes)):
             cluster_solucoes[i] = solucoes[cluster_solucoes_indexes[i]]
-            clusters_solucoes_tempos[i] = tempos[cluster_solucoes_indexes[i]]
 
         # clusterização espacial
-        (labels,
-         centroides,
-         distancias_medias,
-         _) = clusterizacao_DBSCAN3D(
+        labels = clusterizacao_DBSCAN3D(
             cluster_solucoes, eps, min_pts, sistema_cartesiano
         )
 
-        if len(labels) > 0:
-
-            # guardando os centróides
-            for i in range(centroides.shape[0]):
-                solucoes_unicas[su_index] = centroides[i]
-                su_index += 1
-
-            # retirando as posições onde temos labels >= 0
-            clusters_espaciais_validos = np.argwhere(
-                        labels >= 0).flatten()
-
-            # extraindo os tempos para cálculo da verossimilhança
-
-            cluster_tempos = np.zeros(clusters_espaciais_validos.shape[0],
-                                      dtype=clusters_solucoes_tempos.dtype)
-
-            for i in range(len(clusters_espaciais_validos)):
-                cluster_tempos[i] = clusters_solucoes_tempos[clusters_espaciais_validos[i]]
-
-            # função de verossimilhança
-
-            cluster_tempos_medios = cluster_tempos - tempos_medios[cluster_id]
-
-            loglikelihood += (
-                funcao_log_verossimilhanca(cluster_tempos_medios, sigma_t)
-                + funcao_log_verossimilhanca(distancias_medias, sigma_d)
-            )
-
+        if len(labels[labels >= 0]) > 0:
+            
             # agora, vamos refazer a lista de clusters em final_clusters
             for i in range(len(labels)):
                 if labels[i] >= 0:
                     final_clusters[cluster_solucoes_indexes[i]
                                    ] = final_clusters_base_index + labels[i]
             # base update
-            final_clusters_base_index += su_index
+            final_clusters_base_index += np.max(labels) + 1
 
-    # recorta a matriz final com apenas os centroides adicionados
-    solucoes_unicas = solucoes_unicas[:su_index]
+    # agora sim, posso calcular tempos e distâncias médias, que tal?
+    print(final_clusters)
 
+    centroides, detectores = calcular_centroides_ak(solucoes,
+                                                    final_clusters)
+    
+    print(centroides)
     solucoes = remapeia_solucoes(
-        solucoes, final_clusters, solucoes_unicas
+        solucoes, final_clusters, centroides
     )
 
-    return solucoes_unicas, final_clusters, solucoes, loglikelihood
+    distancias = calcula_distancias_ao_centroide_ak(solucoes,
+                                                    final_clusters,
+                                                    centroides)
+    print(distancias)
+    loglikelihood = calcular_entropia_local(tempos_de_origem[final_clusters == -1]) \
+        + funcao_log_verossimilhanca(distancias, sigma_d)
+
+
+    return detectores, final_clusters, solucoes, loglikelihood
+
 
 if __name__ == "__main__":
-    
+
     from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
     from GeoLightning.Utils.Utils import computa_tempos_de_origem
-    num_events = [2, 5, 10, 15, 20, 25, 30, 100, 500, 800, 1000, 2000, 3000]
+    from time import perf_counter
+
+    num_events = [2, 5, 10, 15, 20, 25,
+                  30, 100, 500, 800, 1000,
+                  2000, 3000, 4000, 5000, 6000,
+                  7000, 8000, 9000, 10000, 20000]
 
     for i in range(len(num_events)):
 
         print("Events: {:d}".format(num_events[i]))
-        
+
         file_detections = "../../data/static_constellation_detections_{:06d}.npy".format(
             num_events[i])
 
@@ -156,7 +135,7 @@ if __name__ == "__main__":
 
         file_distances = "../../data/static_constelation_distances_{:06d}.npy".format(
             num_events[i])
-        
+
         file_spatial_clusters = "../../data/static_constelation_spatial_clusters_{:06d}.npy".format(
             num_events[i])
 
@@ -167,20 +146,23 @@ if __name__ == "__main__":
         spatial_clustering = np.load(file_spatial_clusters)
 
         # calculando os tempos de origem
+        start_st = perf_counter()
 
         tempos_de_origem = computa_tempos_de_origem(n_event_positions,
                                                     spatial_clustering,
                                                     detection_times,
                                                     detection_positions)
-        
-        labels, tempos_medios, detectores = clusterizacao_temporal_stela(tempos_de_origem)
+
+        labels = clusterizacao_temporal_stela(
+            tempos_de_origem)
 
         (solucoes_unicas,
-         final_clusters, 
-         solucoes, 
+         final_clusters,
+         solucoes,
          loglikelihood) = clusterizacao_espacial_stela(n_event_positions,
-                                                       labels,
-                                                       n_event_times,
-                                                       tempos_medios)
+                                                       labels.astype(dtype=np.int32))
+        end_st = perf_counter()
 
-        print(len(np.unique(final_clusters)))
+        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
+
+        print(len(np.unique(final_clusters)), loglikelihood)

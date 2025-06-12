@@ -19,6 +19,7 @@ GeoLightning/Solvers/Metaheuristic/FHO.py
 GeoLightning/Solvers/Metaheuristic/LSA.py
 GeoLightning/Solvers/Metaheuristic/__init__.py
 GeoLightning/Stela/Bounds.py
+GeoLightning/Stela/Common.py
 GeoLightning/Stela/DBSCAN3D.py
 GeoLightning/Stela/Dimensions.py
 GeoLightning/Stela/Entropy.py

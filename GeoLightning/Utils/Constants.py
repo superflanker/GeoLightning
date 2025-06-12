@@ -19,9 +19,9 @@ SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
 
 # limites máximos de erro
 # temporal
-EPSILON_T: np.float64 = 800 * SIGMA_T
+EPSILON_T: np.float64 = 1000 * SIGMA_T
 # espacial
-EPSILON_D: np.float64 = 800 * SIGMA_D
+EPSILON_D: np.float64 = 1000 * SIGMA_D
 
 # numero mínimo de elementos por cluster
 CLUSTER_MIN_PTS: np.int32 = 3

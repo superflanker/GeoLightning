@@ -18,6 +18,37 @@ from GeoLightning.Stela.Dimensions import remapeia_solucoes
 
 
 @jit(nopython=True, cache=True, fastmath=True)
+def calcular_media_clusters(tempos: np.ndarray,
+                            labels: np.ndarray) -> tuple:
+    """
+    Obtém o tempo médio de cada cluster e o número de sensores
+    Args: 
+        tempos (np.ndarray): vetor de tempos de origem estimados (1D)
+        labels (np.ndarray): vetor com os rótulos de cluster atribuídos 
+        a cada ponto
+    Returns:
+        tuple => medias (np.ndarray): os centróides temporais (médias)
+                                      de cada cluster
+                 detectores (np.ndarray): o número de detectores que
+                                      participam da solução
+    """
+    n_clusters = np.max(labels) + 1
+    medias = np.zeros(n_clusters, dtype=np.float64)
+    detectores = np.zeros(n_clusters, dtype=np.int32)
+
+    for i in range(len(tempos)):
+        lbl = labels[i]
+        if lbl >= 0:
+            medias[lbl] += tempos[i]
+            detectores[lbl] += 1
+
+    for k in range(n_clusters):
+        if detectores[k] > 0:
+            medias[k] /= detectores[k]
+    return medias, detectores
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def calcular_centroides(solucoes: np.ndarray,
                         mapeamento_tempos_para_solucoes: np.ndarray,
                         labels: np.ndarray) -> np.ndarray:
@@ -54,6 +85,7 @@ def calcular_centroides(solucoes: np.ndarray,
                     medias[k, j] = 0.0
 
     return medias, detectores
+
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -280,7 +312,12 @@ def st_dbscan(solucoes: np.ndarray,
 if __name__ == "__main__":
 
     from GeoLightning.Utils.Utils import computa_tempos_de_origem
-    num_events = [2, 5, 10, 15, 20, 25, 30, 100, 500, 1000]
+    from time import perf_counter
+
+    num_events = [2, 5, 10, 15, 20, 25,
+                  30, 100, 500, 800, 1000,
+                  2000, 3000, 4000, 5000, 6000,
+                  7000, 8000, 9000, 10000, 20000]
 
     for i in range(len(num_events)):
 
@@ -316,6 +353,8 @@ if __name__ == "__main__":
         detection_positions = np.load(file_detections)
         mapeamento_tempos_para_solucoes = np.load(file_spatial_clusters)
 
+        start_st = perf_counter()
+
         tempos_de_origem = computa_tempos_de_origem(solucoes,
                                                     mapeamento_tempos_para_solucoes,
                                                     detection_times,
@@ -334,5 +373,9 @@ if __name__ == "__main__":
                                       SIGMA_D,
                                       CLUSTER_MIN_PTS,
                                       False)
+
+        end_st = perf_counter()
+
+        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
 
         print(len(np.unique(labels)), verossimilhanca)

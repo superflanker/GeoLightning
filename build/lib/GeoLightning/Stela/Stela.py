@@ -116,7 +116,12 @@ def stela(solucoes: np.ndarray,
 
 if __name__ == "__main__":
 
-    num_events = [2, 5, 10]
+    num_events = [2, 5, 10, 15, 20, 25, 
+                30, 100, 500, 800, 1000, 
+                2000, 3000, 4000, 5000, 6000, 
+                7000, 8000, 9000, 10000, 20000]
+    
+    from time import perf_counter
 
     for i in range(len(num_events)):
         print("Events: {:d}".format(num_events[i]))
@@ -149,12 +154,17 @@ if __name__ == "__main__":
         # np.load(file_n_event_times)
         # np.load(file_distances)
         clusters = -np.ones(len(pontos_de_deteccao))
-
+        
+        start_st = perf_counter()
         (solucoes_unicas, 
             clusters_espaciais, 
             solucoes, 
             verossimilhanca) = stela(solucoes, tempos_de_chegada,
                                 pontos_de_deteccao, clusters, sistema_cartesiano=False)
+
+        end_st = perf_counter()
+
+        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
 
         print(verossimilhanca)
         print(clusters_espaciais)

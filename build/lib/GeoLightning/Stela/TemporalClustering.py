@@ -8,36 +8,6 @@ import numpy as np
 from GeoLightning.Utils.Constants import EPSILON_T, CLUSTER_MIN_PTS
 from GeoLightning.Utils.Utils import concat_manual
 
-@jit(nopython=True, cache=True, fastmath=True)
-def calcular_media_clusters(tempos: np.ndarray,
-                            labels: np.ndarray) -> tuple:
-    """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args: 
-        tempos (np.ndarray): vetor de tempos de origem estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos 
-        a cada ponto
-    Returns:
-        tuple => medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
-                 detectores (np.ndarray): o número de detectores que
-                                      participam da solução
-    """
-    n_clusters = np.max(labels) + 1
-    medias = np.zeros(n_clusters, dtype=np.float64)
-    detectores = np.zeros(n_clusters, dtype=np.int32)
-
-    for i in range(len(tempos)):
-        lbl = labels[i]
-        if lbl >= 0:
-            medias[lbl] += tempos[i]
-            detectores[lbl] += 1
-
-    for k in range(n_clusters):
-        if detectores[k] > 0:
-            medias[k] /= detectores[k]
-    return medias, detectores
-
 
 @jit(nopython=True, cache=True, fastmath=True)
 def region_query(tempos: np.ndarray,
@@ -119,7 +89,7 @@ def expand_cluster(tempos: np.ndarray,
 @jit(nopython=True, cache=True, fastmath=True)
 def clusterizacao_temporal_stela(tempos: np.ndarray,
                                  eps: np.float64 = EPSILON_T,
-                                 min_pts: np.int32 = CLUSTER_MIN_PTS) -> tuple:
+                                 min_pts: np.int32 = CLUSTER_MIN_PTS) -> np.ndarray:
     """
         Algoritmo de clusterização temporal (fase 1 do STELA) usando DBSCAN 1D.
         Parâmetros:
@@ -127,10 +97,8 @@ def clusterizacao_temporal_stela(tempos: np.ndarray,
             eps (np.float64): tolerância máxima em segundos (default = 1.26 microssegundos)
             min_pts (np.int32): número mínimo de pontos para formar um cluster
         Retorna:
-            tuple => clusters (np.ndarray): vetor com os rótulos de cluster 
+            lusters (np.ndarray): vetor com os rótulos de cluster 
                                atribuídos a cada ponto
-                     tempos_medios (np.ndarray): tempos médios de cada cluster
-                     detectores (np.ndarray): detectores em cada cluster
     """
     n = len(tempos)
     labels = -1 * np.ones(n, dtype=np.int32)
@@ -149,15 +117,19 @@ def clusterizacao_temporal_stela(tempos: np.ndarray,
                            cluster_id, eps, min_pts)
             cluster_id += 1
 
-    tempos_medios, detectores = calcular_media_clusters(tempos, labels)
-    return labels, tempos_medios, detectores
+    return labels
 
 
 # Exemplo de uso
 if __name__ == "__main__":
 
     from GeoLightning.Utils.Utils import computa_tempos_de_origem
-    num_events = [2, 5, 10, 15, 20, 25, 30, 100, 500, 1000]
+    from time import perf_counter
+
+    num_events = [2, 5, 10, 15, 20, 25, 
+                30, 100, 500, 800, 1000, 
+                2000, 3000, 4000, 5000, 6000, 
+                7000, 8000, 9000, 10000, 20000]
 
     for i in range(len(num_events)):
 
@@ -194,11 +166,17 @@ if __name__ == "__main__":
         spatial_clustering = np.load(file_spatial_clusters)
 
         # calculando os tempos de origem
+        start_st = perf_counter()
 
         tempos_de_origem = computa_tempos_de_origem(n_event_positions, 
                                            spatial_clustering, 
                                            detection_times, 
                                            detection_positions)
-        labels, tempos_medios, detectores = clusterizacao_temporal_stela(tempos_de_origem)
+        labels = clusterizacao_temporal_stela(tempos_de_origem)
+        
+        end_st = perf_counter()
+
+        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
+
         print(len(np.unique(labels)))
 

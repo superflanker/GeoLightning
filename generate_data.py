@@ -12,7 +12,10 @@ min_alt = 0
 max_alt = 10
 min_time = 10000
 max_time = 11000
-num_events = [2, 5, 10, 15, 20, 25, 30, 100, 500, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+num_events = [2, 5, 10, 15, 20, 25,
+              30, 100, 500, 800, 1000,
+              2000, 3000, 4000, 5000, 6000,
+              7000, 8000, 9000, 10000, 20000]
 
 print(min_lat, max_lat, min_lon, max_lon, min_alt, max_alt)
 
@@ -65,12 +68,12 @@ for i in range(len(num_events)):
         spatial_clusters) = generate_detections(event_positions,
                                                 event_times,
                                                 sensors)
-    
-    event_times = computa_tempos_de_origem(n_event_positions, 
-                                           spatial_clusters, 
-                                           detection_times, 
+
+    event_times = computa_tempos_de_origem(n_event_positions,
+                                           spatial_clusters,
+                                           detection_times,
                                            detections)
-    
+
     print(np.allclose(event_times, n_event_times, rtol=3 * SIGMA_T))
 
     np.save(file_detections, detections, allow_pickle=True)

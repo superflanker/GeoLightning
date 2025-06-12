@@ -9,41 +9,6 @@ from GeoLightning.Utils.Constants import EPSILON_D, CLUSTER_MIN_PTS
 from GeoLightning.Utils.Utils import computa_distancia, \
     computa_distancias, \
     concat_manual
-from GeoLightning.Stela.TemporalClustering import calcular_media_clusters
-
-
-@jit(nopython=True, cache=True, fastmath=True)
-def calcular_centroides(solucoes: np.ndarray,
-                        labels: np.ndarray) -> np.ndarray:
-    """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args: 
-        tempos (np.ndarray): vetor de tempos de origem estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos 
-        a cada ponto
-    Returns:
-        medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
-    """
-    n_clusters = np.int32(np.max(labels) + 1)
-    medias = np.zeros((n_clusters, solucoes.shape[1]))
-    detectores = np.zeros(n_clusters, dtype=np.int32)
-
-    for i in range(solucoes.shape[0]):
-        lbl = labels[i]
-        if lbl >= 0:
-            for j in range(solucoes.shape[1]):
-                medias[lbl, j] += solucoes[i, j]
-            detectores[lbl] += 1
-
-    for k in range(n_clusters):
-        if detectores[k] > 0:
-            for j in range(solucoes.shape[1]):
-                medias[k, j] /= detectores[k]
-                if np.abs(medias[k, j]) < 1e-12:
-                    medias[k, j] = 0.0
-
-    return medias
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -133,7 +98,7 @@ def expand_cluster_3D(solucoes: np.ndarray,
 def clusterizacao_DBSCAN3D(solucoes: np.ndarray,
                            eps: np.float64 = EPSILON_D,
                            min_pts: np.int32 = CLUSTER_MIN_PTS,
-                           sistema_cartesiano: bool = False) -> tuple:
+                           sistema_cartesiano: bool = False) -> np.ndarray:
     """
         Algoritmo de clusterização temporal (fase 1 do STELA) usando DBSCAN 1D.
         Parâmetros:
@@ -141,10 +106,8 @@ def clusterizacao_DBSCAN3D(solucoes: np.ndarray,
             eps (np.float64): tolerância máxima em segundos (default = 1.26 microssegundos)
             min_pts (np.int32): número mínimo de pontos para formar um cluster
         Retorna:
-            tuple => clusters (np.ndarray): vetor com os rótulos de cluster 
+            labels (np.ndarray): vetor com os rótulos de cluster 
                                atribuídos a cada ponto
-                     solucoes_medios (np.ndarray): solucoes médios de cada cluster
-                     detectores (np.ndarray): detectores em cada cluster
     """
     n = len(solucoes)
     labels = -1 * np.ones(n, dtype=np.int32)
@@ -173,37 +136,16 @@ def clusterizacao_DBSCAN3D(solucoes: np.ndarray,
                               sistema_cartesiano)
             cluster_id += 1
 
-    centroides = calcular_centroides(solucoes, labels)
-    distancias = None
-    for i in range(len(centroides)):
-        cluster_solucoes = solucoes[labels == i]
-        n = len(cluster_solucoes)
-        if distancias is None:
-            distancias = computa_distancias(centroides[i],
-                                            cluster_solucoes,
-                                            sistema_cartesiano)
-        else:
-            temp_distancias = computa_distancias(centroides[i],
-                                                 cluster_solucoes,
-                                                 sistema_cartesiano)
-            distancias = concat_manual(distancias, temp_distancias)
-
-    (distancias_medias,
-     detectores) = calcular_media_clusters(distancias,
-                                           labels)
-    return labels, \
-        centroides, \
-        distancias_medias, \
-        detectores
+    return labels
 
 
 if __name__ == "__main__":
-    cluster1 = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]], dtype=np.float64)
-    cluster2 = np.array([[5, 5, 5], [5, 5, 5], [5, 5, 5]], dtype=np.float64)
-    cluster3 = np.array([[6, 8, 8], [6, 8, 8], [6, 8, 8]], dtype=np.float64)
+    cluster1 = np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]], dtype=np.float64)
+    cluster2 = np.array([[3, 3, 3], [4, 4, 4], [5, 5, 5]], dtype=np.float64)
+    cluster3 = np.array([[6, 6, 6], [7, 7, 7], [8, 8, 8]], dtype=np.float64)
     solucoes = np.vstack((cluster1, cluster2, cluster3))
-    labels, centroides, distancias, detectores = clusterizacao_DBSCAN3D(solucoes,
-                                                                        eps=0.5,
-                                                                        min_pts=3,
-                                                                        sistema_cartesiano=True)
-    print(labels, centroides, distancias, detectores)
+    labels = clusterizacao_DBSCAN3D(solucoes,
+                                    eps=0.5,
+                                    min_pts=3,
+                                    sistema_cartesiano=True)
+    print(labels)
