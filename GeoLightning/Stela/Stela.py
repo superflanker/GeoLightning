@@ -12,10 +12,10 @@ from GeoLightning.Utils.Constants import SIGMA_D, \
     EPSILON_T, \
     CLUSTER_MIN_PTS
 from GeoLightning.Utils.Utils import computa_tempos_de_origem
-from .TemporalClustering import clusterizacao_temporal_stela
-from .SpatialClustering import clusterizacao_espacial_stela
-from .LogLikelihood import funcao_log_verossimilhanca
-from .Entropy import calcular_entropia_local
+from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
+from GeoLightning.Stela.SpatialClustering import clusterizacao_espacial_stela
+from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
+from GeoLightning.Stela.Entropy import calcular_entropia_local
 
 
 def stela(solucoes: np.ndarray,
@@ -80,28 +80,81 @@ def stela(solucoes: np.ndarray,
     (clusters_temporais,
      tempos_medios,
      _) = clusterizacao_temporal_stela(tempos_de_origem,
-                                                epsilon_t,
-                                                min_pts)
-    
+                                       epsilon_t,
+                                       min_pts)
+
     # verossimilhança dos tempos não clusterizados - entropia
-    temps_nao_clusterizados = tempos_de_origem[clusters_temporais == 1]
+    temps_nao_clusterizados = tempos_de_origem[clusters_temporais == 1].flatten(
+    )
     verossimilhanca = 0.0
     if len(temps_nao_clusterizados) > 0:
-        verossimilhanca -= p_lambda * calcular_entropia_local(temps_nao_clusterizados)
+        verossimilhanca -= p_lambda * calcular_entropia_local(
+            temps_nao_clusterizados)
 
     # segundo passo - clusterização espacial e cálculo da função de fitness
     # adicionado: calculamos o remapeamento espacial aqui também
-    (clusters_espaciais,
-     log_likelihood) = clusterizacao_espacial_stela(solucoes,
-                                                    clusters_temporais,
-                                                    tempos_de_origem,
-                                                    tempos_medios,
-                                                    epsilon_d,
-                                                    sigma_t,
-                                                    sigma_d,
-                                                    min_pts,
-                                                    sistema_cartesiano)
-    verossimilhanca += log_likelihood
-    
+    (solucoes_unicas,
+     clusters_espaciais,
+     solucoes,
+     loglikelihood) = clusterizacao_espacial_stela(solucoes,
+                                                   clusters_temporais,
+                                                   tempos_de_origem,
+                                                   tempos_medios,
+                                                   epsilon_d,
+                                                   sigma_t,
+                                                   sigma_d,
+                                                   min_pts,
+                                                   sistema_cartesiano)
+    verossimilhanca += loglikelihood
+
     # tudo pronto, retornando
-    return verossimilhanca
+    return (solucoes_unicas, 
+            clusters_espaciais, 
+            solucoes, 
+            verossimilhanca)
+
+
+if __name__ == "__main__":
+
+    num_events = [2, 5, 10, 15, 20, 25, 30, 100, 500, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+
+    for i in range(len(num_events)):
+        print("Events: {:d}".format(num_events[i]))
+        file_detections = "../../data/static_constellation_detections_{:06d}.npy".format(
+            num_events[i])
+
+        file_detections_times = "../../data/static_constelation_detection_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_event_positions = "../../data/static_constelation_event_positions_{:06d}.npy".format(
+            num_events[i])
+
+        file_event_times = "../../data/static_constelation_event_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_n_event_positions = "../../data/static_constelation_n_event_positions_{:06d}.npy".format(
+            num_events[i])
+
+        file_n_event_times = "../../data/static_constelation_n_event_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_distances = "../../data/static_constelation_distances_{:06d}.npy".format(
+            num_events[i])
+
+        event_positions = np.load(file_event_positions)
+        event_times = np.load(file_event_times)
+        pontos_de_deteccao = np.load(file_detections)
+        tempos_de_chegada = np.load(file_detections_times)
+        solucoes = np.load(file_n_event_positions)
+        # np.load(file_n_event_times)
+        # np.load(file_distances)
+        clusters = -np.ones(len(pontos_de_deteccao))
+
+        (solucoes_unicas, 
+            clusters_espaciais, 
+            solucoes, 
+            verossimilhanca) = stela(solucoes, tempos_de_chegada,
+                                pontos_de_deteccao, clusters, sistema_cartesiano=False)
+
+        print(verossimilhanca)
+        print(clusters_espaciais)
