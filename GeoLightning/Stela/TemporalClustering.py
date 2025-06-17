@@ -6,7 +6,6 @@
 from numba import jit
 import numpy as np
 from GeoLightning.Utils.Constants import EPSILON_T, CLUSTER_MIN_PTS
-from GeoLightning.Utils.Utils import concat_manual
 
 
 @jit(nopython=True, cache=True, fastmath=True)

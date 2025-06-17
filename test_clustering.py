@@ -61,9 +61,11 @@ eps_t = 0.005    # segundos
 min_pts = 3
 
 # Benchmark ST-DBSCAN
-start_st = perf_counter()
-labels_st = st_dbscan(pontos, tempos, eps_s, eps_t, min_pts)
 
+labels_st = st_dbscan(pontos, tempos, eps_s, eps_t, min_pts)
+start_st = perf_counter()
+
+labels_st = st_dbscan(pontos, tempos, eps_s, eps_t, min_pts)
 end_st = perf_counter()
 tempo_st = end_st - start_st
 

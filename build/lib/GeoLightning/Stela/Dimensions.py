@@ -5,7 +5,6 @@
 """
 import numpy as np
 from numba import jit
-from GeoLightning.Utils.Utils import concat_manual
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -37,6 +36,22 @@ def remapeia_solucoes(solucoes: np.ndarray,
     return novas_solucoes
 
 
+@jit(nopython=True, cache=True, fastmath=True)
+def remapeia_clusters(clusters: np.ndarray) -> None:
+    """
+    Remapeia os clusters para baterem com a ordem das soluções
+    Args:
+        clusters (np.ndarray): o array dos clusters original
+    Returns:
+        None (modifica in-place)
+    """
+    n_clusters = np.max(clusters) + 1
+    for i in range(clusters.shape[0]):
+        if clusters[i] == -1:
+            clusters[i] = n_clusters
+            n_clusters += 1
+
+
 if __name__ == "__main__":
     solucoes = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0],
                          [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0],
@@ -51,4 +66,7 @@ if __name__ == "__main__":
     novas_solucoes = remapeia_solucoes(solucoes,
                                        labels,
                                        centroides)
+    remapeia_clusters(labels)
+
     print(novas_solucoes)
+    print(labels)

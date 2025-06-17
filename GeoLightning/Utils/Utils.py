@@ -182,7 +182,7 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     N = len(clusters_espaciais)
     distancias = np.zeros(N, dtype=np.float64)
     clusters_espaciais = clusters_espaciais.astype(np.int64)
-
+    
     for i in range(N):
         if sistema_cartesiano:
             distancias[i] = distancia_cartesiana_entre_pontos(
@@ -194,37 +194,3 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     tempos_de_origem = tempos_de_chegada - distancias / AVG_LIGHT_SPEED
 
     return tempos_de_origem
-
-#####################################################################
-# Utilitários do Numba
-#####################################################################
-
-@jit(nopython=True, cache=True, fastmath=True)
-def remove_index(a: np.ndarray, idx:np.int32) -> np.ndarray:
-    """
-        Remove o elemento apontado por idx
-        Args:
-            a (np.ndarray): array de dados a ser diminuído
-            idx (np.int32): índice do array
-        Returns:
-            result (np.ndarray): novo array com elemento excluído
-    """
-    result = np.empty(len(a) - 1, dtype=a.dtype)
-    result[:idx] = a[:idx]
-    result[idx:] = a[idx+1:]
-    return result
-
-@jit(nopython=True, cache=True, fastmath=True)
-def concat_manual(a, b):
-    """
-    Versão segura e eficiente de np.concatenate4
-    Args:
-        a (np.ndarray): array a (N, A)
-        b (np.ndarray): array b (M, A)
-    Returns:
-        out (np.ndarray): array out (N + M, A)
-    """
-    out = np.empty(len(a) + len(b), dtype=a.dtype)
-    out[:len(a)] = a
-    out[len(a):] = b
-    return out

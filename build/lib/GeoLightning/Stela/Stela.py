@@ -7,28 +7,30 @@
 import numpy as np
 from numba import jit
 from GeoLightning.Utils.Constants import SIGMA_D, \
-    SIGMA_T, \
     EPSILON_D, \
     EPSILON_T, \
-    CLUSTER_MIN_PTS
+    LIMIT_D, \
+    CLUSTER_MIN_PTS, \
+    MAX_DISTANCE
 from GeoLightning.Utils.Utils import computa_tempos_de_origem
 from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
 from GeoLightning.Stela.SpatialClustering import clusterizacao_espacial_stela
-from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
-from GeoLightning.Stela.Entropy import calcular_entropia_local
+from GeoLightning.Stela.Dimensions import remapeia_clusters
+from GeoLightning.Stela.Bounds import gera_limites
 
 
+@jit(nopython=True, cache=True, fastmath=True)
 def stela(solucoes: np.ndarray,
           tempos_de_chegada: np.ndarray,
           pontos_de_deteccao: np.ndarray,
           clusters_espaciais: np.ndarray,
           sistema_cartesiano: bool = False,
-          p_lambda: np.float64 = 1.0,
-          sigma_t: np.float64 = SIGMA_T,
           sigma_d: np.float64 = SIGMA_D,
           epsilon_t: np.float64 = EPSILON_T,
           epsilon_d: np.float64 = EPSILON_D,
-          min_pts: np.int32 = CLUSTER_MIN_PTS) -> np.float64:
+          limit_d: np.float64 = LIMIT_D,
+          max_d: np.float64 = MAX_DISTANCE,
+          min_pts: np.int32 = CLUSTER_MIN_PTS) -> tuple:
     """
         Algoritmo STELA - Spatio-Temporal Event Likelihood Assignment
 
@@ -54,8 +56,6 @@ def stela(solucoes: np.ndarray,
                 que detectaram os sinais.
             clusters_espaciais (np.ndarray): Array de forma (N,), associando 
                 cada solução a um identificador de cluster espacial.
-            p_lambda (np.float64): fator de penalização arbitrário
-            sigma_t (np.float64): desvio padrão temporal
             sigma_d (np.float64): desvio padrão espacial
             epsilon_t (np.float64): tolerância máxima em segundos
             eps (np.float64): tolerância máxima (janela espacial) 
@@ -77,50 +77,54 @@ def stela(solucoes: np.ndarray,
                                                 pontos_de_deteccao,
                                                 sistema_cartesiano)
 
-    (clusters_temporais,
-     tempos_medios,
-     _) = clusterizacao_temporal_stela(tempos_de_origem,
-                                       epsilon_t,
-                                       min_pts)
+    clusters_temporais = clusterizacao_temporal_stela(tempos_de_origem,
+                                                      epsilon_t,
+                                                      min_pts)
 
-    # verossimilhança dos tempos não clusterizados - entropia
-    temps_nao_clusterizados = tempos_de_origem[clusters_temporais == 1].flatten(
-    )
     verossimilhanca = 0.0
-    if len(temps_nao_clusterizados) > 0:
-        verossimilhanca -= p_lambda * calcular_entropia_local(
-            temps_nao_clusterizados)
-
     # segundo passo - clusterização espacial e cálculo da função de fitness
     # adicionado: calculamos o remapeamento espacial aqui também
-    (solucoes_unicas,
+    (centroides,
+     detectores,
      clusters_espaciais,
-     solucoes,
+     novas_solucoes,
      loglikelihood) = clusterizacao_espacial_stela(solucoes,
                                                    clusters_temporais,
                                                    tempos_de_origem,
-                                                   tempos_medios,
                                                    epsilon_d,
-                                                   sigma_t,
                                                    sigma_d,
                                                    min_pts,
                                                    sistema_cartesiano)
+
     verossimilhanca += loglikelihood
 
+    # calculando os limites para o algoritmo meta-heurístico
+
+    lb, ub = gera_limites(solucoes, clusters_espaciais,
+                          limit_d, max_d, sistema_cartesiano)
+
+    # remapeando os clusters
+
+    remapeia_clusters(clusters_espaciais)
+
     # tudo pronto, retornando
-    return (solucoes_unicas, 
-            clusters_espaciais, 
-            solucoes, 
+    return (lb,
+            ub,
+            centroides,
+            detectores,
+            clusters_espaciais,
+            novas_solucoes,
+            loglikelihood,
             verossimilhanca)
 
 
 if __name__ == "__main__":
 
-    num_events = [2, 5, 10, 15, 20, 25, 
-                30, 100, 500, 800, 1000, 
-                2000, 3000, 4000, 5000, 6000, 
-                7000, 8000, 9000, 10000, 20000]
-    
+    num_events = [2, 5, 10, 15, 20, 25,
+                  30, 100, 500, 800, 1000,
+                  2000, 3000, 4000, 5000, 6000,
+                  7000, 8000, 9000, 10000, 20000]
+
     from time import perf_counter
 
     for i in range(len(num_events)):
@@ -146,21 +150,55 @@ if __name__ == "__main__":
         file_distances = "../../data/static_constelation_distances_{:06d}.npy".format(
             num_events[i])
 
+        file_spatial_clusters = "../../data/static_constelation_spatial_clusters_{:06d}.npy".format(
+            num_events[i])
+
         event_positions = np.load(file_event_positions)
         event_times = np.load(file_event_times)
         pontos_de_deteccao = np.load(file_detections)
         tempos_de_chegada = np.load(file_detections_times)
         solucoes = np.load(file_n_event_positions)
-        # np.load(file_n_event_times)
-        # np.load(file_distances)
-        clusters = -np.ones(len(pontos_de_deteccao))
-        
+        # spatial_clusters = np.load(file_spatial_clusters)
+        spatial_clusters = np.cumsum(np.ones(len(solucoes), dtype=np.int32)) - 1 
         start_st = perf_counter()
-        (solucoes_unicas, 
-            clusters_espaciais, 
-            solucoes, 
-            verossimilhanca) = stela(solucoes, tempos_de_chegada,
-                                pontos_de_deteccao, clusters, sistema_cartesiano=False)
+
+        (lb,
+         ub,
+         centroides,
+         detectores,
+         clusters_espaciais,
+         novas_solucoes,
+         loglikelihood,
+         verossimilhanca) = stela(solucoes,
+                                  tempos_de_chegada,
+                                  pontos_de_deteccao,
+                                  spatial_clusters,
+                                  sistema_cartesiano=False)
+        end_st = perf_counter()
+
+        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
+
+        print(verossimilhanca)
+        print(clusters_espaciais)
+        print(lb)
+        print(ub)
+        
+        # a repetição deve ser com um conjunto bem menor de soluções
+
+        start_st = perf_counter()
+
+        (lb,
+         ub,
+         centroides,
+         detectores,
+         clusters_espaciais,
+         novas_solucoes,
+         loglikelihood,
+         verossimilhanca) = stela(solucoes,
+                                  tempos_de_chegada,
+                                  pontos_de_deteccao,
+                                  spatial_clusters,
+                                  sistema_cartesiano=False)
 
         end_st = perf_counter()
 
@@ -168,3 +206,5 @@ if __name__ == "__main__":
 
         print(verossimilhanca)
         print(clusters_espaciais)
+        print(lb)
+        print(ub)

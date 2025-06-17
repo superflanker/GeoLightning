@@ -18,9 +18,10 @@ from GeoLightning.Stela.Common import calcula_distancias_ao_centroide_ak, \
 from GeoLightning.Stela.Entropy import calcular_entropia_local
 
 
-# @jit(nopython=True, cache=True, fastmath=True)
+@jit(nopython=True, cache=True, fastmath=True)
 def clusterizacao_espacial_stela(solucoes: np.ndarray,
                                  clusters: np.ndarray,
+                                 tempos_de_origem: np.ndarray,
                                  eps: np.float64 = EPSILON_D,
                                  sigma_d: np.float64 = SIGMA_D,
                                  min_pts: np.int32 = CLUSTER_MIN_PTS,
@@ -58,18 +59,20 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
         # extraindo as soluçũes indicadas pelo cluster
 
         cluster_solucoes = np.zeros((cluster_solucoes_indexes.shape[0],
-                                     solucoes.shape[1]), dtype=solucoes.dtype)
+                                     solucoes.shape[1]),
+                                    dtype=solucoes.dtype)
 
         for i in range(len(cluster_solucoes_indexes)):
             cluster_solucoes[i] = solucoes[cluster_solucoes_indexes[i]]
 
         # clusterização espacial
-        labels = clusterizacao_DBSCAN3D(
-            cluster_solucoes, eps, min_pts, sistema_cartesiano
-        )
+        labels = clusterizacao_DBSCAN3D(cluster_solucoes,
+                                        eps,
+                                        min_pts,
+                                        sistema_cartesiano)
 
         if len(labels[labels >= 0]) > 0:
-            
+
             # agora, vamos refazer a lista de clusters em final_clusters
             for i in range(len(labels)):
                 if labels[i] >= 0:
@@ -79,25 +82,27 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
             final_clusters_base_index += np.max(labels) + 1
 
     # agora sim, posso calcular tempos e distâncias médias, que tal?
-    print(final_clusters)
 
     centroides, detectores = calcular_centroides_ak(solucoes,
                                                     final_clusters)
-    
-    print(centroides)
-    solucoes = remapeia_solucoes(
+
+    novas_solucoes = remapeia_solucoes(
         solucoes, final_clusters, centroides
     )
 
-    distancias = calcula_distancias_ao_centroide_ak(solucoes,
+    distancias = calcula_distancias_ao_centroide_ak(novas_solucoes,
                                                     final_clusters,
-                                                    centroides)
-    print(distancias)
+                                                    centroides,
+                                                    sistema_cartesiano)
+
     loglikelihood = calcular_entropia_local(tempos_de_origem[final_clusters == -1]) \
         + funcao_log_verossimilhanca(distancias, sigma_d)
 
-
-    return detectores, final_clusters, solucoes, loglikelihood
+    return (centroides,
+            detectores,
+            final_clusters,
+            novas_solucoes,
+            loglikelihood)
 
 
 if __name__ == "__main__":
@@ -156,13 +161,17 @@ if __name__ == "__main__":
         labels = clusterizacao_temporal_stela(
             tempos_de_origem)
 
-        (solucoes_unicas,
+        (centroides,
+         detectores,
          final_clusters,
-         solucoes,
+         novas_solucoes,
          loglikelihood) = clusterizacao_espacial_stela(n_event_positions,
-                                                       labels.astype(dtype=np.int32))
+                                                       labels.astype(dtype=np.int32),
+                                                       tempos_de_origem)
+
         end_st = perf_counter()
 
         print(f"Elapsed time: {end_st - start_st:.6f} seconds")
 
         print(len(np.unique(final_clusters)), loglikelihood)
+        print(len(n_event_positions), len(novas_solucoes))

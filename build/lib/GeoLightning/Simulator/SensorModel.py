@@ -18,9 +18,9 @@ def get_detection_probability(distance: np.float64) -> np.float64:
             p (np.float64): a probabilidade de detecção
     """
     if distance < 120_000.0:
-        return 0.99
+        return 0.9
     else:
-        p = (0.99 - 0.005 *
+        p = (0.9 - 0.005 *
                    (distance - 120_000.0)
                    / 1_000.0)
         if p > 0.0:

@@ -12,7 +12,7 @@ AVG_EARTH_RADIUS: np.float64 = 1000 * 6371.0088
 AVG_LIGHT_SPEED: np.float64 = 299_792_458.0
 
 # desvio padrão temporal - caracteristica do sensor (em segundos)
-SIGMA_T: np.float64 = 1.26e-6
+SIGMA_T: np.float64 = 1.0e-6
 
 # desvio padrão espacial - relacionada ao std temporal
 SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
@@ -22,6 +22,8 @@ SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
 EPSILON_T: np.float64 = 1000 * SIGMA_T
 # espacial
 EPSILON_D: np.float64 = 1000 * SIGMA_D
+
+LIMIT_D: np.float64 = 10 * SIGMA_D
 
 # numero mínimo de elementos por cluster
 CLUSTER_MIN_PTS: np.int32 = 3

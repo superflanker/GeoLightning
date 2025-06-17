@@ -6,9 +6,7 @@
 from numba import jit
 import numpy as np
 from GeoLightning.Utils.Constants import EPSILON_D, CLUSTER_MIN_PTS
-from GeoLightning.Utils.Utils import computa_distancia, \
-    computa_distancias, \
-    concat_manual
+from GeoLightning.Utils.Utils import computa_distancia
 
 
 @jit(nopython=True, cache=True, fastmath=True)
