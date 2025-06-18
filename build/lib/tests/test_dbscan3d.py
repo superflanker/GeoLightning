@@ -1,4 +1,8 @@
-
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Testes DBSCAN3D
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.DBSCAN3D import clusterizacao_DBSCAN3D
 

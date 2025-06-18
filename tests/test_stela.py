@@ -1,4 +1,8 @@
-
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Teste do Algoritmo Principal
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.Stela import stela
 

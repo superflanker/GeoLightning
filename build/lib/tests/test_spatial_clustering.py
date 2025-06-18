@@ -1,4 +1,8 @@
-
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Testes de Clusteruzação Espacial
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.SpatialClustering import clusterizacao_espacial_stela
 

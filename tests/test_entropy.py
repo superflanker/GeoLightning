@@ -1,4 +1,8 @@
-
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Testes Entropia
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.Entropy import calcular_entropia_local
 

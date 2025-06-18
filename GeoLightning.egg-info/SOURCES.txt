@@ -10,6 +10,7 @@ GeoLightning.egg-info/top_level.txt
 GeoLightning/Optimization/__init__.py
 GeoLightning/Optimization/fitness.py
 GeoLightning/Optimization/genetic_solver.py
+GeoLightning/Simulator/Metrics.py
 GeoLightning/Simulator/SensorModel.py
 GeoLightning/Simulator/Simulator.py
 GeoLightning/Simulator/__init__.py
@@ -38,6 +39,7 @@ tests/test_dbscan3d.py
 tests/test_dimensions.py
 tests/test_entropy.py
 tests/test_loglikelihood.py
+tests/test_metrics.py
 tests/test_spatial_clustering.py
 tests/test_stela.py
 tests/test_temporal_clustering.py

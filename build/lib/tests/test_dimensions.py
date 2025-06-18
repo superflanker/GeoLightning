@@ -1,4 +1,9 @@
 
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Testes Remapeamento de Clusters
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.Dimensions import remapeia_solucoes
 

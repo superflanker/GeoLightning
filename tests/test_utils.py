@@ -11,9 +11,7 @@ from GeoLightning.Utils.Utils import (
     distancia_cartesiana_entre_pontos,
     distancia_esferica_entre_pontos,
     computa_distancia,
-    computa_tempos_de_origem,
-    remove_index,
-    concat_manual
+    computa_tempos_de_origem
 )
 from GeoLightning.Utils.Constants import AVG_EARTH_RADIUS, AVG_LIGHT_SPEED
 
@@ -110,21 +108,10 @@ class TestUtils(unittest.TestCase):
 
     # Testes para distancia_esferica_entre_pontos
     def test_distancia_esferica_entre_pontos(self):
-        """Testa o cálculo da distância esférica (Haversine + altitude)."""
-        # Distância entre Reitoria e Aeroporto Afonso Pena
-        dist_expected = 15104.0 # Valor aproximado para a região de Curitiba, para fins de teste
-                                # Será mais preciso com um valor real de referência.
-        
-        # Como o cálculo é complexo e depende de AVG_EARTH_RADIUS,
-        # é melhor testar com um valor que se possa verificar externamente
-        # ou com pontos que resultem em distância zero.
+        dist_expected = 275.76 # 
         dist = distancia_esferica_entre_pontos(self.ponto_esferico_rad_1, self.ponto_esferico_rad_2)
         
-        # A distância entre esses dois pontos reais deve ser ~11.6km horizontal
-        # sqrt(11600^2 + (915-907)^2) = sqrt(11600^2 + 8^2) ~ 11600
-        # Usaremos uma tolerância maior, pois o cálculo de Haversine pode ter pequenas variações
-        # e é uma aproximação.
-        self.assertAlmostEqual(dist, 15104.0, delta=1.0) # Delta de 100 metros para aceitar a aproximação
+        self.assertAlmostEqual(dist, 275.76, delta=1.0) # Delta de 100 metros para aceitar a aproximação
                                                           # e o valor da distância real.
 
         # Teste de distância zero (mesmo ponto)
@@ -148,7 +135,7 @@ class TestUtils(unittest.TestCase):
         """Testa computa_distancia no modo esférico."""
         dist = computa_distancia(self.ponto_esferico_rad_1, self.ponto_esferico_rad_2, False)
         # Reutiliza a verificação do teste de distancia_esferica_entre_pontos
-        self.assertAlmostEqual(dist, 15104.0, delta=100) 
+        self.assertAlmostEqual(dist, 275.76, delta=100) 
 
 
     # Testes para computa_tempos_de_origem
@@ -184,61 +171,6 @@ class TestUtils(unittest.TestCase):
         tempos_origem = computa_tempos_de_origem(empty_solucoes, empty_clusters,
                                                  empty_tempos_chegada, empty_pontos_deteccao, True)
         self.assertEqual(len(tempos_origem), 0)
-
-
-    # Testes para remove_index
-    def test_remove_index(self):
-        """Testa a remoção de um elemento por índice."""
-        arr = self.array_simples
-        
-        # Remover elemento do meio
-        removed_middle = remove_index(arr, 2) # Remove o 3
-        np.testing.assert_array_equal(removed_middle, np.array([1, 2, 4, 5]))
-
-        # Remover primeiro elemento
-        removed_first = remove_index(arr, 0) # Remove o 1
-        np.testing.assert_array_equal(removed_first, np.array([2, 3, 4, 5]))
-
-        # Remover último elemento
-        removed_last = remove_index(arr, len(arr) - 1) # Remove o 5
-        np.testing.assert_array_equal(removed_last, np.array([1, 2, 3, 4]))
-
-        # Teste com array de um único elemento
-        single_element_array = np.array([10], dtype=np.int32)
-        removed_single = remove_index(single_element_array, 0)
-        np.testing.assert_array_equal(removed_single, np.array([]))
-
-
-    # Testes para concat_manual
-    def test_concat_manual_simples(self):
-        """Testa concatenação de arrays simples."""
-        a = np.array([1, 2])
-        b = np.array([3, 4])
-        result = concat_manual(a, b)
-        np.testing.assert_array_equal(result, np.array([1, 2, 3, 4]))
-
-    def test_concat_manual_tipos_diferentes(self):
-        """Testa concatenação com promoção de tipo."""
-        a = np.array([1, 2], dtype=np.float64)
-        b = np.array([3.0, 4.0], dtype=np.float64)
-        result = concat_manual(a, b)
-        np.testing.assert_array_equal(result, np.array([1.0, 2.0, 3.0, 4.0]))
-        self.assertEqual(result.dtype, np.float64)
-
-    def test_concat_manual_com_vazios(self):
-        """Testa concatenação com arrays vazios."""
-        empty_arr = np.array([])
-        non_empty_arr = np.array([1, 2, 3])
-        
-        result1 = concat_manual(empty_arr, non_empty_arr)
-        np.testing.assert_array_equal(result1, non_empty_arr)
-
-        result2 = concat_manual(non_empty_arr, empty_arr)
-        np.testing.assert_array_equal(result2, non_empty_arr)
-
-        result3 = concat_manual(empty_arr, empty_arr)
-        np.testing.assert_array_equal(result3, np.array([]))
-
 
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)

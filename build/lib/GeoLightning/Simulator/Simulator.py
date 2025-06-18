@@ -135,7 +135,7 @@ def generate_events(num_events:  np.int32,
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-    times = np.linspace(min_time, max_time, num_events)
+    times = np.random.uniform(min_time, max_time, num_events)
     event_positions = np.empty((num_events, 3))
     for i in range(num_events):
         event_positions[i, 0] = lats[i]

@@ -1,4 +1,8 @@
-
+"""
+    EELT 7019 - Inteligência Artificial Aplicada
+    Teste de Clusterização Temporal
+    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import numpy as np
 from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
 
