@@ -299,7 +299,9 @@ def st_dbscan(solucoes: np.ndarray,
     verossimilhanca = calcular_entropia_local(tempos_de_origem[labels >= 0]) \
         + funcao_log_verossimilhanca(distancias, sigma_d)
 
-    novas_solucoes = remapeia_solucoes(solucoes, labels, centroides)
+    novas_solucoes = remapeia_solucoes(solucoes, 
+                                       labels, 
+                                       centroides)
 
     return (labels,
             distancias,
@@ -317,8 +319,8 @@ if __name__ == "__main__":
     num_events = [2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000,
                   2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000, 20000]
-
+                  7000, 8000, 9000, 10000]
+    
     for i in range(len(num_events)):
 
         print("Events: {:d}".format(num_events[i]))

@@ -12,7 +12,8 @@ from GeoLightning.Utils.Constants import SIGMA_T, \
     CLUSTER_MIN_PTS
 from GeoLightning.Stela.DBSCAN3D import clusterizacao_DBSCAN3D
 from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
-from GeoLightning.Stela.Dimensions import remapeia_solucoes
+from GeoLightning.Stela.Dimensions import remapeia_solucoes, \
+    remapeia_solucoes_unicas
 from GeoLightning.Stela.Common import calcula_distancias_ao_centroide_ak, \
     calcular_centroides_ak
 from GeoLightning.Stela.Entropy import calcular_entropia_local
@@ -86,9 +87,12 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
     centroides, detectores = calcular_centroides_ak(solucoes,
                                                     final_clusters)
 
+
     novas_solucoes = remapeia_solucoes(
         solucoes, final_clusters, centroides
     )
+
+    solucoes_unicas = remapeia_solucoes_unicas(final_clusters)
 
     distancias = calcula_distancias_ao_centroide_ak(novas_solucoes,
                                                     final_clusters,
@@ -100,6 +104,7 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
 
     return (centroides,
             detectores,
+            solucoes_unicas,
             final_clusters,
             novas_solucoes,
             loglikelihood)
@@ -114,7 +119,7 @@ if __name__ == "__main__":
     num_events = [2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000,
                   2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000, 20000]
+                  7000, 8000, 9000, 10000]
 
     for i in range(len(num_events)):
 

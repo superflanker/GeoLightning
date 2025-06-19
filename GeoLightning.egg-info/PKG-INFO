@@ -75,4 +75,5 @@ from GeoLightning.Simulator.simulator import generate_sensors
 
 ```bash
 pytest --cov=GeoLightning tests/
+pytest --cov=src tests/ --cov-report=term --cov-report=html
 ```

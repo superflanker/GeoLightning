@@ -1,6 +1,6 @@
 """
     EELT 7019 - Inteligência Artificial Aplicada
-    Remapeamento das soluções candidatas
+    Cálculo da Entropia de Shannon
     Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 

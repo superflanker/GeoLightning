@@ -43,7 +43,14 @@ def gera_limites(pontos_clusterizados: np.ndarray,
 
         d_raio = raio_metros
         if clusters[i] == -1:
-            d_raio = raio_maximo
+            # se o ponto for (-1,-1,-1) a solução já é descartada
+            if lat != -1 and lon != -1 and alt != -1:
+                d_raio = raio_maximo
+            else:
+                lat = 0
+                lon = 0
+                alt = 0
+                d_raio = 0
 
         if sistema_cartesiano:
             dlat = d_raio
@@ -89,5 +96,5 @@ if __name__ == "__main__":
     solucoes_unicas = np.array([1, 1, 1, 0, 0, 0, 0, 0])
 
     # Teste de verificação
-    lb, ub = gera_limites_esfericos(pontos_exemplo, solucoes_unicas)
+    lb, ub = gera_limites(pontos_exemplo, solucoes_unicas)
     print(lb, ub)

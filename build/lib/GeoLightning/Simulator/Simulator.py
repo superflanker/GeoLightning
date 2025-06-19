@@ -100,49 +100,62 @@ def get_lightning_limits(sensores_latlon: np.ndarray,
 
     return min_lat, max_lat, min_lon, max_lon
 
-
-@jit(nopython=True, cache=True, fastmath=True)
-def generate_events(num_events:  np.int32,
-                    min_lat: np.float64,
-                    max_lat: np.float64,
-                    min_lon: np.float64,
-                    max_lon: np.float64,
-                    min_alt: np.float64,
-                    max_alt: np.float64,
-                    min_time: np.float64,
-                    max_time: np.float64,
-                    ) -> tuple:
+def generate_events(num_events: int,
+                    min_lat: float,
+                    max_lat: float,
+                    min_lon: float,
+                    max_lon: float,
+                    min_alt: float,
+                    max_alt: float,
+                    min_time: float,
+                    max_time: float,
+                    sigma_t: float = SIGMA_T,
+                    max_attempts: int = 10000) -> tuple:
     """
-    Gera eventos com localização geográfica e tempo.
+    Gera eventos com localização geográfica e tempo, garantindo
+    espaçamento mínimo de 6 * sigma_t entre os tempos.
 
     Args:
-        num_events (np.int32): Número de eventos a serem gerados.
-        min_lat (np.float64): latitude mínima
-        max_lat (np.float64): latitude máxima
-        min_lon (np.float64): longitude mínima
-        max_lon (np.float64): longitude máxima
-        min_alt (np.float64): altitude mínima
-        max_alt (np.float64): altitude máxima
-        min_time (np.float64): tempo mínimo
-        max_time (np.float64): tempo_máximo
+        num_events (int): Número de eventos a serem gerados.
+        min_lat (float): latitude mínima
+        max_lat (float): latitude máxima
+        min_lon (float): longitude mínima
+        max_lon (float): longitude máxima
+        min_alt (float): altitude mínima
+        max_alt (float): altitude máxima
+        min_time (float): tempo mínimo
+        max_time (float): tempo máximo
+        sigma_t (float): desvio padrão das incertezas temporais
+        max_attempts (int): número máximo de tentativas para geração
 
     Returns:
         tuple =>
-            event_points (np.ndarray): os pontos de descarga
-            event_times (np.ndarray): os tempos de descarga
+            event_positions (np.ndarray): posições dos eventos (lat, lon, alt)
+            event_times (np.ndarray): tempos dos eventos
     """
+
+    min_dt = 6.0 * sigma_t
+    event_times = []
+
+    attempts = 0
+    while len(event_times) < num_events and attempts < max_attempts:
+        candidate = np.random.uniform(min_time, max_time)
+        if all(abs(candidate - t) >= min_dt for t in event_times):
+            event_times.append(candidate)
+        attempts += 1
+
+    if len(event_times) < num_events:
+        raise RuntimeError("Não foi possível gerar eventos com espaçamento temporal mínimo dentro do número de tentativas.")
+
+    event_times = np.array(sorted(event_times))
 
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-    times = np.random.uniform(min_time, max_time, num_events)
-    event_positions = np.empty((num_events, 3))
-    for i in range(num_events):
-        event_positions[i, 0] = lats[i]
-        event_positions[i, 1] = lons[i]
-        event_positions[i, 2] = alts[i]
 
-    return event_positions, times
+    event_positions = np.stack((lats, lons, alts), axis=1)
+
+    return event_positions, event_times
 
 
 def generate_detections(event_positions: np.ndarray,

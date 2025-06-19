@@ -1,6 +1,6 @@
 """
     EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo STELA - Clusterização Temporal (1. Fase)
+    Algoritmo DBSCAN adaptado para numba e 1 dimensão
     Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 from numba import jit
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     num_events = [2, 5, 10, 15, 20, 25, 
                 30, 100, 500, 800, 1000, 
                 2000, 3000, 4000, 5000, 6000, 
-                7000, 8000, 9000, 10000, 20000]
+                7000, 8000, 9000, 10000]
 
     for i in range(len(num_events)):
 
