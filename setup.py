@@ -5,7 +5,7 @@ setup(
     name="GeoLightning",
     version="0.1.0",
     author="Augusto Mathias Adams",
-    author_email="seu.email@example.com",
+    author_email="augusto.adams@ufpr.br",
     description="Sistema de geolocalização de descargas atmosféricas utilizando algoritmos genéticos",
     long_description=open("README.md").read(
     ) if os.path.exists("README.md") else "",
