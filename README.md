@@ -101,6 +101,6 @@ If you use **GeoLightning** in your research, please cite:
   author    = {Augusto Mathias Adams},
   title     = {GeoLightning: Detection and Localization of Lightning Discharges Using STELA},
   year      = {2025},
-  howpublished = {\url{https://github.com/augustomathias/GeoLightning}}
+  howpublished = {\url{https://github.com/superflaker/GeoLightning}}
 }
 ```
