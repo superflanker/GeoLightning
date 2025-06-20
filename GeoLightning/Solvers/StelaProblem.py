@@ -116,6 +116,7 @@ class StelaProblem(Problem):
         self.limit_d = limit_d
         self.max_d = max_d
         self.min_pts = min_pts
+        self.n_vars = 3 # para encode/decode solutions
 
         # variáveis internas de controle
         self.fitness_values = list()
@@ -148,6 +149,7 @@ class StelaProblem(Problem):
         - Clears all temporary storage used in the previous evaluation cycle.
         """
         if len(self.fitness_values) > 0:
+            print(self.fitness_values)
             fitness_values = np.array(self.fitness_values)
             # encontrando a melhor solução dentre as sugeridas
             if self.minmax == "min":
@@ -155,7 +157,7 @@ class StelaProblem(Problem):
                     fitness_values == np.min(fitness_values)).flatten()[0]
             else:
                 best_fitness_index = np.argwhere(
-                    fitness_values == np.max(-fitness_values)).flatten()[0]
+                    fitness_values == np.max(fitness_values)).flatten()[0]
             # ajustando os limites 
             bounds = FloatVar(ub=self.stela_ub[best_fitness_index],
                               lb=self.stela_lb[best_fitness_index])
@@ -226,7 +228,9 @@ class StelaProblem(Problem):
             the problem is a maximization task.
         """
         # Converte o vetor linear para o formato (M, 3)
-        solucoes = self.decode_solution(solution)
+        # solucoes = self.decode_solution(solution)
+
+        solucoes = np.array(solution.reshape(-1, 3))
 
         # Executa o algoritmo STELA
         (lb,

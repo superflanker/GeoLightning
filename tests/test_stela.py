@@ -6,59 +6,59 @@
 import numpy as np
 from GeoLightning.Stela.Stela import stela
 
-import os
-basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+from GeoLightning.Simulator.Simulator import (get_sensors,
+                                              get_random_sensors,
+                                              get_lightning_limits,
+                                              generate_detections,
+                                              generate_events)
 
 def test_stela():
+    from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
+    from GeoLightning.Utils.Utils import computa_tempos_de_origem
 
     num_events = [2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000]
 
     for i in range(len(num_events)):
+        # recuperando o grupo de sensores
+        sensors = get_sensors()
+        min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
-        file_detections = basedir + "/../data/static_constellation_detections_{:06d}.npy".format(
-            num_events[i])
+        # gerando os eventos
+        min_alt = 0
+        max_alt = 10000
+        min_time = 10000
+        max_time = 10100
 
-        file_detections_times = basedir + "/../data/static_constelation_detection_times_{:06d}.npy".format(
-            num_events[i])
+        event_positions, event_times = generate_events(num_events[i],
+                                                       min_lat,
+                                                       max_lat,
+                                                       min_lon,
+                                                       max_lon,
+                                                       min_alt,
+                                                       max_alt,
+                                                       min_time,
+                                                       max_time)
 
-        file_event_positions = basedir + "/../data/static_constelation_event_positions_{:06d}.npy".format(
-            num_events[i])
-
-        file_event_times = basedir + "/../data/static_constelation_event_times_{:06d}.npy".format(
-            num_events[i])
-
-        file_n_event_positions = basedir + "/../data/static_constelation_n_event_positions_{:06d}.npy".format(
-            num_events[i])
-
-        file_n_event_times = basedir + "/../data/static_constelation_n_event_times_{:06d}.npy".format(
-            num_events[i])
-
-        file_distances = basedir + "/../data/static_constelation_distances_{:06d}.npy".format(
-            num_events[i])
-
-        file_spatial_clusters = basedir + "/../data/static_constelation_spatial_clusters_{:06d}.npy".format(
-            num_events[i])
-
-        event_positions = np.load(file_event_positions)
-        event_times = np.load(file_event_times)
-        pontos_de_deteccao = np.load(file_detections)
-        tempos_de_chegada = np.load(file_detections_times)
-        solucoes = np.load(file_n_event_positions)
-        # spatial_clusters = np.load(file_spatial_clusters)
-        spatial_clusters = np.cumsum(
-            np.ones(len(solucoes), dtype=np.int32)) - 1
-        
+        # gerando as detecções
+        (detections,
+         detection_times,
+         n_event_positions,
+         n_event_times,
+         distances,
+         spatial_clusters) = generate_detections(event_positions,
+                                                 event_times,
+                                                 sensors)
         (lb,
          ub,
          centroides,
          detectores,
          clusters_espaciais,
          novas_solucoes,
-         verossimilhanca) = stela(solucoes,
-                                  tempos_de_chegada,
-                                  pontos_de_deteccao,
+         verossimilhanca) = stela(n_event_positions,
+                                  detection_times,
+                                  detections,
                                   spatial_clusters,
                                   sistema_cartesiano=False)
         
-        assert len(np.unique(clusters_espaciais)) == num_events[i]
+        assert len(np.unique(clusters_espaciais)) == len(event_positions)

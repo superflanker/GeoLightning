@@ -50,6 +50,11 @@ tests/test_spatial_clustering.py
 tests/test_st_dbscan.py
 tests/test_stela.py
 tests/test_stela_aoa.py
+tests/test_stela_eso.py
+tests/test_stela_fho.py
+tests/test_stela_ga.py
+tests/test_stela_gwo.py
+tests/test_stela_lsa.py
 tests/test_stela_pso.py
 tests/test_temporal_clustering.py
 tests/test_utils.py

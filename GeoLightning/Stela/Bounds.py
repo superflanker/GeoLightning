@@ -100,9 +100,7 @@ def gera_limites(pontos_clusterizados: np.ndarray,
         else:
             dlat = d_raio / R_LAT
             dlon = d_raio / (R_LAT * np.cos(np.radians(lat)))
-            dalt = 5 * d_raio
-            if dalt > 30000:
-                dalt = 30000
+            dalt = 10
 
         lb[i, 0] = lat - dlat
         lb[i, 1] = lon - dlon
@@ -119,6 +117,7 @@ def gera_limites(pontos_clusterizados: np.ndarray,
 
     return lb.flatten(), ub.flatten()
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def gera_limites_iniciais(detections: np.ndarray,
                           min_lat: np.float64,
@@ -129,7 +128,7 @@ def gera_limites_iniciais(detections: np.ndarray,
                           max_alt: np.float64) -> tuple:
     """
     Optimized version using Numba for generating initial search bounds
-    
+
     Parameters
     ----------
     detections: np.ndarray
@@ -158,6 +157,8 @@ def gera_limites_iniciais(detections: np.ndarray,
             Upper bounds of the search region for each cluster.
 
     """
+    max_alt = 10.0
+    min_alt = 0.0
     ub_elem = np.array([max_lat, max_lon, max_alt], dtype=np.float64)
     lb_elem = np.array([min_lat, min_lon, min_alt], dtype=np.float64)
     ub = np.empty(detections.shape, dtype=np.float64)
@@ -165,7 +166,7 @@ def gera_limites_iniciais(detections: np.ndarray,
     for i in range(detections.shape[0]):
         ub[i] = ub_elem.copy()
         lb[i] = lb_elem.copy()
-    
+
     return lb.flatten(), ub.flatten()
 
 

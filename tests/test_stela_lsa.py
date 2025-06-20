@@ -11,12 +11,12 @@ from GeoLightning.Simulator.Simulator import (get_sensors,
                                               generate_events)
 
 from GeoLightning.Utils.Constants import *
-from GeoLightning.Solvers.StelaAOA import StelaAOA
+from GeoLightning.Solvers.StelaLSA import StelaLSA
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
 from mealpy import FloatVar
 
-def test_stela_aoa():
+def test_stela_lsa():
 
     # recuperando o grupo de sensores
     sensors = get_sensors()
@@ -27,7 +27,7 @@ def test_stela_aoa():
     max_alt = 1
     min_time = 10000
     max_time = 12100
-    num_events = 2
+    num_events = 20
 
     event_positions, event_times = generate_events(num_events,
                                                    min_lat,
@@ -62,7 +62,6 @@ def test_stela_aoa():
     bounds = FloatVar(ub=ub, lb=lb)
 
     # tudo pronto, instanciando a StelaProblem
-
     problem = StelaProblem(bounds, 
                            minmax="min", 
                            pontos_de_chegada=detections, 
@@ -75,11 +74,11 @@ def test_stela_aoa():
                            max_d=MAX_DISTANCE,
                            sistema_cartesiano=False)
     
-    model = StelaAOA(epoch=100, pop_size=10)
+    model = StelaLSA(epoch=100, pop_size=10)
     agent = model.solve(problem)
     best_solution = agent.solution
     best_fitness = agent.target
     print(best_fitness, best_solution)
     print(problem.clusters_espaciais)
     print(problem.lb)
-test_stela_aoa()
+test_stela_lsa()

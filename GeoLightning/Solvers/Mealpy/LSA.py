@@ -64,9 +64,11 @@ class LSA(Optimizer):
         Best solution found during the optimization process.
     """
 
-    def __init__(self, epoch=1000, pop_size=50, **kwargs):
-        super().__init__(epoch, pop_size, **kwargs)
-
+    def __init__(self, epoch=1000, pop_size=50, **kwargs):        
+        super().__init__(**kwargs)
+        self.epoch = self.validator.check_int("epoch", epoch, [1, 100000])
+        self.pop_size = self.validator.check_int("pop_size", pop_size, [5, 10000])
+        
     def evolve(self, pop=None):
         for agent in pop:
             current_pos = agent.solution

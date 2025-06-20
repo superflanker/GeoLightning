@@ -10,7 +10,6 @@ from GeoLightning.Simulator.Simulator import (get_sensors,
                                               generate_detections,
                                               generate_events)
 
-from GeoLightning.Stela.STDBSCAN import st_dbscan
 from GeoLightning.Utils.Constants import *
 from GeoLightning.Solvers.StelaPSO import StelaPSO
 from GeoLightning.Solvers.StelaProblem import StelaProblem
@@ -25,10 +24,10 @@ def test_stela_pso():
 
     # gerando os eventos
     min_alt = 0
-    max_alt = 10000
+    max_alt = 1
     min_time = 10000
-    max_time = 10100
-    num_events = 100
+    max_time = 12100
+    num_events = 2
 
     event_positions, event_times = generate_events(num_events,
                                                    min_lat,
@@ -52,7 +51,7 @@ def test_stela_pso():
     
     # limites
 
-    ub, lb = gera_limites_iniciais(detections,
+    lb, ub = gera_limites_iniciais(detections,
                                    min_lat, 
                                    max_lat, 
                                    min_lon, 
@@ -63,7 +62,23 @@ def test_stela_pso():
     bounds = FloatVar(ub=ub, lb=lb)
 
     # tudo pronto, instanciando a StelaProblem
-
-    problem = StelaProblem(bounds, "max", detections, detection_times)
-    model = StelaPSO(epoch=100, pop_size=50)
-    best_solution, best_fitness = model.solve(problem)
+    problem = StelaProblem(bounds, 
+                           minmax="min", 
+                           pontos_de_chegada=detections, 
+                           tempos_de_chegada=detection_times,
+                           min_pts=CLUSTER_MIN_PTS,
+                           sigma_d=SIGMA_D,
+                           epsilon_d=EPSILON_D,
+                           epsilon_t=EPSILON_T,
+                           limit_d=LIMIT_D,
+                           max_d=MAX_DISTANCE,
+                           sistema_cartesiano=False)
+    
+    model = StelaPSO(epoch=100, pop_size=10)
+    agent = model.solve(problem)
+    best_solution = agent.solution
+    best_fitness = agent.target
+    print(best_fitness, best_solution)
+    print(problem.clusters_espaciais)
+    print(problem.lb)
+test_stela_pso()
