@@ -1,7 +1,37 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada  
-    Wrapper AOA do STELA  
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>  
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+STELA-AOA Wrapper - Adaptive Optimization for Lightning Event Localization
+
+Summary
+-------
+This module defines a wrapper class that extends the Arithmetic Optimization Algorithm (AOA)
+from the MEALPY framework to directly operate on instances of the `StelaProblem` class.
+
+The optimization process dynamically refines the search space boundaries based on 
+the best solution found so far, integrating a feedback loop via the 
+`restart_search_space()` method of the problem.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- StelaAOA class: customized AOA with adaptive search space refinement.
+- Integration with STELA-based geolocation problems.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- mealpy
+- GeoLightning.Solvers.StelaProblem
 """
 
 import numpy as np
@@ -10,29 +40,51 @@ from GeoLightning.Solvers.StelaProblem import StelaProblem
 
 
 class StelaAOA(OriginalAOA):
-    """
-    Classe especializada que estende o otimizador AOA da MEALPY
-    para operar diretamente sobre instâncias da classe `StelaProblem`.
 
-    Antes de cada iteração evolutiva, o espaço de busca é adaptativamente 
-    refinado com base na melhor solução encontrada até o momento, por meio
-    do método `restart_search_space()` do problema STELA.
+    """
+    A customized version of the Arithmetic Optimization Algorithm (AOA) 
+    designed to solve geolocation problems formulated as `StelaProblem`.
+
+    This class overrides the standard AOA behavior by adaptively refining 
+    the search space before each evolutionary step using the problem's 
+    internal logic.
+
+    Parameters
+    ----------
+    problem : StelaProblem
+        An instance of the geolocation problem with adaptive bounds.
+    epoch : int, optional
+        Number of evolutionary iterations (default is 1000).
+    pop_size : int, optional
+        Number of candidate solutions (default is 50).
+    **kwargs : dict, optional
+        Additional arguments passed to the parent class.
     """
 
     def evolve(self, pop=None):
         """
-        Executa uma iteração do algoritmo AOA com refinamento adaptativo
-        do espaço de busca.
+        Performs one iteration of the AOA algorithm with adaptive 
+        search space refinement.
 
-        Este método substitui a versão padrão do MEALPY, integrando o 
-        mecanismo de atualização de limites definido na classe `StelaProblem`.
+        This method overrides the default `evolve` function in MEALPY.
+        It integrates the dynamic space contraction mechanism by 
+        calling `restart_search_space()` before each update cycle.
 
-        Args:
-            pop (list, optional): População atual de agentes (partículas). 
-                                  Caso não fornecida, utiliza a população interna.
+        Parameters
+        ----------
+        pop : list of Agent, optional
+            Current population of candidate solutions. If not provided,
+            the internal population is used.
 
-        Raises:
-            TypeError: Caso o problema associado não seja uma instância de `StelaProblem`.
+        Raises
+        ------
+        TypeError
+            If the provided problem is not an instance of `StelaProblem`.
+
+        Returns
+        -------
+        tuple
+            Updated population and the global best agent.
         """
         if not isinstance(self.problem, StelaProblem):
             raise TypeError("O problema fornecido deve ser uma instância de StelaProblem.")

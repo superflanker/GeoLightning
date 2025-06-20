@@ -1,7 +1,28 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Funções Comuns a todos os componentes do algoritmo
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Common Functions of STELA Algorithms
+
+Author
+-------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Summary
+-------
+This module provides common utilities for STELA-based
+clustering, centroid estimation, and spatial likelihood evaluation.
+
+Notes
+-----
+This module is part of the coursework for EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR). 
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Utils
 """
 import numpy as np
 from numba import jit
@@ -12,16 +33,25 @@ from GeoLightning.Utils.Utils import computa_distancia
 def calcular_media_clusters_ak(tempos: np.ndarray,
                                labels: np.ndarray) -> tuple:
     """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args: 
-        tempos (np.ndarray): vetor de tempos de origem estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos 
-        a cada ponto
-    Returns:
-        tuple => medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
-                 detectores (np.ndarray): o número de detectores que
-                                      participam da solução
+    Computes the average origin time and the number of detectors for each cluster.
+
+    This function calculates the temporal centroid (mean estimated origin time)
+    and the count of sensor detections associated with each spatial cluster.
+
+    Parameters
+    ----------
+    tempos : np.ndarray
+        1D array containing the estimated origin times for all detections.
+    labels : np.ndarray
+        1D array containing the cluster labels assigned to each detection.
+
+    Returns
+    -------
+    tuple of np.ndarray
+        medias : np.ndarray
+            Array of temporal centroids (mean origin times) for each cluster.
+        detectores : np.ndarray
+            Array with the number of detectors associated with each cluster.
     """
     n_clusters = np.max(labels) + 1
     medias = np.zeros(n_clusters, dtype=np.float64)
@@ -43,18 +73,23 @@ def calcular_media_clusters_ak(tempos: np.ndarray,
 def calcular_centroides_ak(solucoes: np.ndarray,
                            labels: np.ndarray) -> np.ndarray:
     """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args:
-        solucoes (np.ndarray): vetor de soluções
-        mapeamento_tempos_para_solucoes (np.ndarray): 
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos
-                a cada ponto
-    Returns:
-        medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
+    Computes the mean time of occurrence for each cluster and the number of sensors associated.
+
+    This function aggregates the origin times of events based on cluster labels and 
+    returns the temporal centroid (mean) for each cluster.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+
+    Returns
+    -------
+    medias : np.ndarray
+        Array of temporal centroids (mean origin times) for each cluster.
     """
-    """mapeamento_tempos_para_solucoes = mapeamento_tempos_para_solucoes.astype(
-        dtype=np.int64)"""
     n_clusters = np.int32(np.max(labels) + 1)
     medias = np.zeros((n_clusters, solucoes.shape[1]))
     detectores = np.zeros(n_clusters, dtype=np.int32)
@@ -82,14 +117,28 @@ def calcula_distancias_ao_centroide_ak(solucoes: np.ndarray,
                                        centroides: np.ndarray,
                                        sistema_cartesiano: bool = False) -> np.ndarray:
     """
-        Calcula o delta D para cálculos de verossimilhança
-        Args:
-            solucoes (np.ndarray): vetor de soluções
-            labels (np.ndarray): vetor com os rótulos de cluster atribuídos
-                    a cada ponto
-            centroides (np.ndarray): os centrpoides de cada cluster
-        Returns:
-            delta_d (np.ndarray): vetor com as diferenças de distância
+    Computes the delta D used in likelihood calculations.
+
+    This function calculates the difference in distance (ΔD) between each point in 
+    a cluster and its corresponding centroid.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+    centroides : np.ndarray
+        Array of centroids for each cluster.    s
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) 
+        or geographic (False)
+
+    Returns
+    -------
+    distancias : np.ndarray
+        Array containing the distance differences (ΔD) for each solution point 
+        relative to its cluster centroid.
     """
     distancias = np.zeros(len(np.argwhere(labels >= 0)))
     d_idx = 0

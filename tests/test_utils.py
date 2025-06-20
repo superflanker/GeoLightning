@@ -171,6 +171,3 @@ class TestUtils(unittest.TestCase):
         tempos_origem = computa_tempos_de_origem(empty_solucoes, empty_clusters,
                                                  empty_tempos_chegada, empty_pontos_deteccao, True)
         self.assertEqual(len(tempos_origem), 0)
-
-if __name__ == '__main__':
-    unittest.main(argv=['first-arg-is-ignored'], exit=False)

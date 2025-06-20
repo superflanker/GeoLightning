@@ -1,14 +1,45 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Classe Problema do Algoritmo Stela
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
 
-    Este problema modela a estimação espaço-temporal de eventos a partir de
-    detecções em sensores distribuídos, como no caso de descargas atmosféricas.
-    Cada vetor de solução representa um conjunto de coordenadas (lat, lon, alt)
-    de eventos candidatos, cuja qualidade é avaliada via a função de verossimilhança
-    espacial e temporal calculada pelo algoritmo STELA.
+StelaProblem Class - Spatio-Temporal Event Estimation
+
+Summary
+-------
+This module defines the `StelaProblem` class, which encapsulates a spatio-temporal 
+localization problem using time-of-arrival (TOA) information from a distributed 
+sensor network. It is suitable for atmospheric event localization, such as lightning, 
+using a maximum-likelihood-based fitness function calculated via the STELA algorithm.
+
+Each candidate solution encodes the (lat, lon, alt) coordinates of M potential events, 
+and the quality of each solution is evaluated based on spatial and temporal clustering 
+likelihood.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- StelaProblem class: problem formulation compatible with MEALPY
+- restart_search_space(): dynamically adjusts bounds
+- evaluate(): objective function wrapper
+- get_best_solution(): retrieves the current best candidate
+- obj_func(): spatio-temporal likelihood function based on STELA
+
+Notes
+-----
+This module is part of the activities of the discipline  
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- mealpy
+- GeoLightning.Stela.Stela
+- GeoLightning.Utils.Constants
 """
+
 import numpy as np
 from mealpy import FloatVar, Problem
 from GeoLightning.Stela.Stela import stela
@@ -35,38 +66,45 @@ class StelaProblem(Problem):
                  min_pts: np.int32 = CLUSTER_MIN_PTS,
                  **kwargs):
         """
-            Inicializa uma instância do problema STELA para uso com algoritmos de otimização
-            meta-heurística da biblioteca MEALPY.
+        Initialize an instance of the STELA problem for use with MEALPY 
+        metaheuristic optimization algorithms.
 
-            Este problema modela a estimação espaço-temporal de eventos a partir de
-            detecções em sensores distribuídos, como no caso de descargas atmosféricas.
-            Cada vetor de solução representa um conjunto de coordenadas (lat, lon, alt)
-            de eventos candidatos, cuja qualidade é avaliada via a função de verossimilhança
-            espacial e temporal calculada pelo algoritmo STELA.
+        Parameters
+        ----------
+        bounds : list of np.ndarray
+            A list containing two arrays [lower_bounds, upper_bounds] of shape (3M,).
+            Each triplet (lat, lon, alt) corresponds to one candidate event.
+        minmax : str
+            Optimization type: "min" or "max".
+        pontos_de_chegada : np.ndarray
+            Array of shape (N, 3) with sensor positions [latitude, longitude, altitude].
+        tempos_de_chegada : np.ndarray
+            Arrival times of signals at each sensor (shape: N,).
+        sistema_cartesiano : bool, optional
+            If True, uses Cartesian coordinates; otherwise, geodetic coordinates.
+        sigma_d : float, optional
+            Standard deviation of distance measurement error.
+        epsilon_t : float, optional
+            Maximum temporal tolerance for clustering.
+        epsilon_d : float, optional
+            Maximum spatial tolerance for clustering.
+        limit_d : float, optional
+            Radius for local refinement during optimization.
+        max_d : float, optional
+            Maximum admissible distance between events and detections.
+        min_pts : int, optional
+            Minimum number of detections for a cluster to be considered valid.
+        **kwargs : dict
+            Additional arguments for the MEALPY `Problem` base class.
 
-            Args:
-                bounds (list): Lista contendo dois arrays NumPy [lower_bounds, upper_bounds]
-                            de forma (3M,), onde M é o número de eventos candidatos.
-                            Cada tripla (lat, lon, alt) representa um evento.
-                minmax (str): String indicando o tipo de otimização ('min' ou 'max').
-                pontos_de_chegada (np.ndarray): Matriz de forma (N, 3) com as coordenadas
-                                                geográficas dos N sensores (latitude, longitude, altitude).
-                tempos_de_chegada (np.ndarray): Vetor de forma (N,) com os tempos de chegada
-                                                dos sinais em cada sensor.
-                sistema_cartesiano (bool): Indica se o sistema de coordenadas usado é cartesiano.
-                                        Caso False, assume coordenadas geodésicas.
-                sigma_d (np.float64): Desvio padrão do erro espacial nas medidas de distância (TOA).
-                epsilon_t (np.float64): Tolerância máxima para agrupamento temporal.
-                epsilon_d (np.float64): Tolerância máxima para agrupamento espacial.
-                limit_d (np.float64): Raio de busca em torno de um evento durante o refinamento.
-                max_d (np.float64): Distância máxima admissível entre eventos e detecções.
-                min_pts (np.int32): Número mínimo de detecções para que um cluster seja válido.
-                **kwargs: Parâmetros adicionais aceitos pela superclasse `Problem`.
-
-            Atributos:
-                clusters_espaciais (np.ndarray): Vetor de rótulos de clusterização espacial.
-                centroides (np.ndarray): Coordenadas dos centróides espaciais obtidos.
-                detectores (np.ndarray): Máscara indicando os detectores associados.
+        Attributes
+        ----------
+        clusters_espaciais : np.ndarray
+            Spatial cluster labels assigned to each detection.
+        centroides : np.ndarray
+            Coordinates of event centroids (lat, lon, alt).
+        detectores : np.ndarray
+            Binary mask indicating whether each sensor was involved in a solution.
         """
         # parâmetros passados
         self.pontos_de_chegada = pontos_de_chegada
@@ -92,27 +130,22 @@ class StelaProblem(Problem):
             np.ones(pontos_de_chegada.shape[0], dtype=np.int32)
         self.centroides = -np.ones(pontos_de_chegada.shape)
         self.detectores = -np.ones(pontos_de_chegada.shape[0], dtype=np.int32)
-        self.n_dims = pontos_de_chegada.shape[1]
         super().__init__(bounds, minmax, solution_encoding="float", **kwargs)
 
     def restart_search_space(self):
         """
-            Atualiza os limites inferior (`lb`) e superior (`ub`) do espaço de busca com base 
-            na melhor solução encontrada até o momento pela função de avaliação do problema.
+        Dynamically refines the search space based on the best solution 
+        encountered during the evolutionary process.
 
-            Esta função é utilizada para refinar iterativamente a busca em torno das regiões 
-            mais promissoras do espaço de soluções. A estratégia consiste em identificar a 
-            melhor verossimilhança registrada (máxima ou mínima, conforme `minmax`), 
-            e reconfigurar os limites do problema e os dados internos do STELA 
-            de acordo com essa configuração mais favorável.
+        Updates the internal upper (`self.ub`) and lower (`self.lb`) bounds
+        using the highest scoring solution (according to `minmax`). This method 
+        is intended to iteratively focus the search around more promising regions.
 
-            Após a atualização, os vetores auxiliares de controle são esvaziados, preparando
-            a próxima fase da otimização.
-
-            Efeitos colaterais:
-                - Atualiza `self.lb` e `self.ub`.
-                - Atualiza `self.centroides`, `self.clusters_espaciais` e `self.detectores`.
-                - Reinicializa as listas auxiliares de controle.
+        Side Effects
+        ------------
+        - Updates the internal search bounds (`self.lb`, `self.ub`).
+        - Updates the attributes `clusters_espaciais`, `centroides`, `detectores`.
+        - Clears all temporary storage used in the previous evaluation cycle.
         """
         if len(self.fitness_values) > 0:
             fitness_values = np.array(self.fitness_values)
@@ -141,17 +174,30 @@ class StelaProblem(Problem):
             self.stela_detectores = list()
 
     def evaluate(self, solution):
+        """
+        Evaluates a solution using the defined objective function.
+
+        Parameters
+        ----------
+        solution : np.ndarray
+            A 1D array encoding the flattened coordinates of M candidate events.
+
+        Returns
+        -------
+        list
+            A list with one element containing the objective function value.
+        """
         return [self.obj_func(solution)]
 
     def get_best_solution(self):
         """
-        Retorna a melhor solução
-        Args:
-            None
-        Returns:
-            Tuple =>
-                nova_solucao (np.ndarray): a melhor solução calculada
-                fitness_value (np.float64): o melhr fitness
+        Retrieves the best solution and its fitness score found so far.
+
+        Returns
+        -------
+        tuple
+            - np.ndarray: the best solution vector.
+            - float: the corresponding fitness value.
         """
         if not self.fitness_values:
             return None, None
@@ -162,20 +208,22 @@ class StelaProblem(Problem):
 
     def obj_func(self, solution):
         """
-            Função objetivo para o problema STELA.
+        Objective function for the STELA problem.
 
-            Avalia a qualidade de uma solução candidata com base na
-            verossimilhança espaço-temporal dos eventos estimados. Essa verossimilhança
-            é calculada por meio do algoritmo STELA, que considera tanto os tempos de chegada
-            quanto as posições dos detectores para agrupar e refinar eventos.
+        Evaluates the spatio-temporal likelihood of a candidate solution, 
+        calculated using the STELA algorithm. This algorithm performs clustering
+        and refinement using both arrival times and spatial data from sensors.
 
-            Args:
-                solution (np.ndarray): vetor unidimensional representando uma sequência 
-                                    de coordenadas (lat, lon, alt) empilhadas.
+        Parameters
+        ----------
+        solution : np.ndarray
+            A flat array representing (lat, lon, alt) coordinates for M events.
 
-            Returns:
-                list: valor escalar da função objetivo (fitness), negativo se for 
-                problema de maximização.
+        Returns
+        -------
+        float
+            The objective value (likelihood). Returns the negative value if
+            the problem is a maximization task.
         """
         # Converte o vetor linear para o formato (M, 3)
         solucoes = self.decode_solution(solution)

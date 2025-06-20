@@ -1,8 +1,30 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo STELA - Clusterização Espacial baseada na hierarquia temporal
-    (2. fase)
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Spatio-temporal Clustering Based on Temporal Hierarchies
+---------------------------------------------------------
+
+Summary
+-------
+This module performs the spatial clustering phase of the STELA algorithm,
+based on temporally grouped candidate events. Using a hierarchical DBSCAN-like
+approach, this stage aggregates spatio-temporal clusters, computes centroids, 
+and evaluates the spatial likelihood.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Notes
+-----
+This module is part of the activities of the discipline  
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
 """
 from numba import jit
 import numpy as np
@@ -28,22 +50,45 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
                                  min_pts: np.int32 = CLUSTER_MIN_PTS,
                                  sistema_cartesiano: bool = False) -> tuple:
     """
-    Clusterização espacial do STELA - determinação de centroides e agrupamento
-    Args: 
-        solucoes (np.ndarray): array (N, 3) de posições candidatas
-        clusters (np.ndarray): vetor com os rótulos de cluster 
-                               atribuídos a cada Solução
-        detectores_por_cluster (np.ndarray): detectores envolvidos em um cluster
-        eps (np.float64): tolerância máxima (janela espacial) 
-                          para definição de vizinhança
-        sigma_d (np.float64): desvio padrão espacial
-        min_pts (np.int32): número mínimo de pontos para formar um cluster
-        sistema_cartesiano (bool): usa distância euclidiana (True) 
-                ou esférica (False)
-    Returns:
-        tuple =>    solucoes_unicas (np.ndarray): soluções unicas obtidas no mapeamento
-                    final_clusters (np.ndarray): a clusterização espaço-temporal final
-                    loglikelihood (np.ndarray): valor da função de verossimilhança
+    Spatial clustering stage of the STELA algorithm.
+
+    This function groups spatially-close events based on the labels 
+    from a prior temporal clustering step. It applies DBSCAN in 3D 
+    for each temporal cluster and computes associated centroids, 
+    updated solutions, and the log-likelihood score.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of shape (N, 3) containing candidate event positions.
+    clusters : np.ndarray
+        Vector of temporal cluster labels assigned to each candidate.
+    tempos_de_origem : np.ndarray
+        Origin times for each candidate event.
+    eps : float, optional
+        Maximum distance threshold for spatial neighborhood in clustering (default=EPSILON_D).
+    sigma_d : float, optional
+        Spatial standard deviation for likelihood computation (default=SIGMA_D).
+    min_pts : int, optional
+        Minimum number of points to form a valid cluster (default=CLUSTER_MIN_PTS).
+    sistema_cartesiano : bool, optional
+        If True, uses Cartesian distance; otherwise, geodetic distance is applied (default=False).
+
+    Returns
+    -------
+    tuple
+        centroides : np.ndarray
+            Coordinates of spatial centroids for each final cluster.
+        detectores : np.ndarray
+            Detector mask associated with each cluster.
+        solucoes_unicas : np.ndarray
+            Mapped labels of unique spatial clusters.
+        final_clusters : np.ndarray
+            Final cluster labels after spatial refinement.
+        novas_solucoes : np.ndarray
+            Updated solution array based on centroid association.
+        loglikelihood : float
+            Log-likelihood value of the current configuration.
     """
     temporal_clusters = np.max(clusters) + 1
     loglikelihood = 0.0
@@ -117,9 +162,7 @@ if __name__ == "__main__":
     from time import perf_counter
 
     num_events = [2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000,
-                  2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000]
+                  30, 100, 500, 800, 1000]
 
     for i in range(len(num_events)):
 
@@ -168,6 +211,7 @@ if __name__ == "__main__":
 
         (centroides,
          detectores,
+         solucoes_unicas,
          final_clusters,
          novas_solucoes,
          loglikelihood) = clusterizacao_espacial_stela(n_event_positions,

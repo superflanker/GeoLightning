@@ -21,33 +21,32 @@ from GeoLightning.Simulator.Metrics import (
 )
 
 def test_rmse():
-    reais = np.array([[0.0, 0.0, 0.0],
-                      [1.0, 1.0, 1.0]])
-    estimadas = np.array([[1.0, 0.0, 0.0],
-                          [1.0, 2.0, 1.0]])
+    reais = np.random.rand(10)
+    estimadas = np.random.rand(10)
     resultado = rmse(estimadas, reais)
-    esperado = np.sqrt(((1.0**2 + 0 + 0) + (0 + 1.0**2 + 0)) / 2)
+    esperado = np.sqrt(np.mean((estimadas - reais) ** 2))
     assert np.isclose(resultado, esperado)
 
 def test_mae():
-    reais = np.array([1.0, 2.0, 3.0])
-    estimados = np.array([2.0, 2.0, 1.0])
+    reais = np.random.rand(10)
+    estimados = np.random.rand(10)
     resultado = mae(estimados, reais)
     esperado = np.mean(np.abs(estimados - reais))
     assert np.isclose(resultado, esperado)
 
 def test_average_mean_squared_error():
-    reais = np.array([[0, 0, 0], [1, 1, 1]])
-    estimados = np.array([[1, 1, 1], [1, 1, 1]])
-    resultado = average_mean_squared_error(estimados, reais)
-    esperado = (3 + 0) / 2  # erro quadrático médio
+    
+    reais = np.random.rand(10)
+    estimadas = np.random.rand(10)
+    resultado = average_mean_squared_error(estimadas, reais)
+    esperado = np.mean((estimadas - reais) ** 2)
     assert np.isclose(resultado, esperado)
 
 def test_mean_location_error():
-    reais = np.array([[0, 0, 0], [0, 0, 0]])
-    estimados = np.array([[1, 0, 0], [0, 3, 0]])
+    reais = np.random.rand(10)
+    estimados = np.random.rand(10)
     resultado = mean_location_error(estimados, reais)
-    esperado = (1 + 3) / 2
+    esperado = np.mean(estimados - reais)
     assert np.isclose(resultado, esperado)
 
 def test_calcula_prmse():

@@ -1,8 +1,38 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo DBSCAn adaptado para numba em 3 dimensões
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Numba-Optimized 3D DBSCAN Algorithm for Event Clustering
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Summary
+-------
+This module implements a three-dimensional version of the DBSCAN (Density-Based 
+Spatial Clustering of Applications with Noise) algorithm optimized using Numba. 
+It is tailored for the geolocation of atmospheric events using spatial data from 
+lightning detection sensors.
+
+The algorithm supports both Cartesian and geographic coordinate systems and 
+is intended for high-performance clustering in applications requiring real-time 
+or large-scale event separation.
+
+Notes
+-----
+This code is part of the academic activities of the course 
+EELT 7019 - Applied Artificial Intelligence at the Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+
 """
+
 from numba import jit
 import numpy as np
 from GeoLightning.Utils.Constants import EPSILON_D, CLUSTER_MIN_PTS
@@ -15,20 +45,26 @@ def region_query_3D(solucoes: np.ndarray,
                     eps: np.float64,
                     sistema_cartesiano: bool = False) -> np.ndarray:
     """
-        Retorna os vizinhos espaciais de um ponto dentro de uma janela eps.
+    Returns the spatial neighbors of a point within an epsilon window.
 
-        Esta função busca todos os índices de pontos cujos valores estão dentro
-        de uma tolerância temporal `eps` a partir do ponto de índice `i`.
+    This function searches for all indices of points whose spatial values
+    lie within a maximum distance `eps` from the point with index `i`.
 
-        Args:
-            solucoes (np.ndarray): vetor de soluções
-            i (np.int32): índice do ponto central da busca
-            eps (np.float64): tolerância máxima (janela espacial) 
-                        para definição de vizinhança
-            sistema_cartesiano (bool): 
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of solution points in space.
+    i : int
+        Index of the central point around which neighbors are searched.
+    eps : float
+        Maximum distance (spatial window) used to define neighborhood.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) or geographic (False).
 
-        Returns:
-            vizinhos (np.ndarray): vetor contendo os índices dos pontos vizinhos
+    Returns
+    -------
+    np.ndarray
+        Array containing the indices of neighboring points.
     """
     vizinhos = []
     for j in range(len(solucoes)):
@@ -50,26 +86,38 @@ def expand_cluster_3D(solucoes: np.ndarray,
                       min_pts: np.int32,
                       sistema_cartesiano: bool = False) -> None:
     """
-    Expande um cluster a partir de um ponto núcleo, atribuindo rótulos aos vizinhos.
+    Expands a cluster from a core point by assigning labels to neighboring points.
 
-    Esta função executa a etapa de expansão do algoritmo DBSCAN, incluindo novos
-    pontos ao cluster atual com base na densidade de vizinhos e nos critérios de
-    proximidade espacial. A expansão é feita iterativamente e inclui novos pontos
-    apenas se satisfizerem os requisitos mínimos de densidade.
+    This function performs the cluster expansion step of the DBSCAN algorithm. 
+    It iteratively adds new points to the current cluster based on spatial proximity 
+    and density requirements. Points are only included if they meet the minimum 
+    density criterion.
 
-    Args:
-        solucoes (np.ndarray): vetor de solucoes estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos a cada ponto
-        visitado (np.ndarray): vetor booleano que indica se o ponto já foi visitado
-        i (np.int32): índice do ponto núcleo a partir do qual o cluster é expandido
-        vizinhos (np.ndarray): vetor com os índices dos pontos vizinhos iniciais
-        cluster_id (np.int32): identificador numérico do cluster atual
-        eps (np.float64): tolerância máxima (janela espacial)
-        min_pts (np.int32): número mínimo de pontos para formar um cluster válido
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        1D array of estimated solutions (points in space).
+    labels : np.ndarray
+        Array containing the cluster labels assigned to each point.
+    visitado : np.ndarray
+        Boolean array indicating whether each point has already been visited.
+    i : int
+        Index of the core point from which the cluster expansion starts.
+    vizinhos : np.ndarray
+        Array of indices of the initial neighboring points.
+    cluster_id : int
+        Numeric identifier of the current cluster.
+    eps : float
+        Maximum spatial distance (epsilon neighborhood).
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
 
-    Returns:
-        None: a função modifica os vetores `labels` e `visitado` in-place
+    Returns
+    -------
+    None
+        This function modifies `labels` and `visitado` in-place.
     """
+
     labels[i] = cluster_id
     k = 0
     while k < len(vizinhos):
@@ -98,15 +146,29 @@ def clusterizacao_DBSCAN3D(solucoes: np.ndarray,
                            min_pts: np.int32 = CLUSTER_MIN_PTS,
                            sistema_cartesiano: bool = False) -> np.ndarray:
     """
-        Algoritmo de clusterização temporal (fase 1 do STELA) usando DBSCAN 1D.
-        Parâmetros:
-            solucoes (np.ndarray): vetor de solucoes de origem estimados (1D)
-            eps (np.float64): tolerância máxima em segundos (default = 1.26 microssegundos)
-            min_pts (np.int32): número mínimo de pontos para formar um cluster
-        Retorna:
-            labels (np.ndarray): vetor com os rótulos de cluster 
-                               atribuídos a cada ponto
+    Main algorithm of the 3D DBSCAN clustering.
+
+    This function implements the DBSCAN algorithm for spatial clustering 
+    in three-dimensional space, supporting both Cartesian and geographic coordinates.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated origin solutions (3D points).
+    eps : float
+        Maximum spatial distance (epsilon) in meters for neighborhood definition.
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) 
+        or geographic (False).
+
+    Returns
+    -------
+    labels : np.ndarray
+        Array with cluster labels assigned to each point. Noise points are labeled as -1.
     """
+
     n = len(solucoes)
     labels = -1 * np.ones(n, dtype=np.int32)
     cluster_id = 0
@@ -138,12 +200,12 @@ def clusterizacao_DBSCAN3D(solucoes: np.ndarray,
 
 
 if __name__ == "__main__":
-    cluster1 = np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]], dtype=np.float64)
-    cluster2 = np.array([[3, 3, 3], [4, 4, 4], [5, 5, 5]], dtype=np.float64)
-    cluster3 = np.array([[6, 6, 6], [7, 7, 7], [8, 8, 8]], dtype=np.float64)
+    cluster1 = np.array([[1, 1, 1], [1, 1, 1], [1, 1, 1]], dtype=np.float64)
+    cluster2 = np.array([[3, 3, 3], [3, 3, 3], [3, 3, 3]], dtype=np.float64)
+    cluster3 = np.array([[6, 6, 6], [6, 6, 6], [6, 6, 6]], dtype=np.float64)
     solucoes = np.vstack((cluster1, cluster2, cluster3))
     labels = clusterizacao_DBSCAN3D(solucoes,
-                                    eps=0.5,
+                                    eps=1.0,
                                     min_pts=3,
                                     sistema_cartesiano=True)
     print(labels)

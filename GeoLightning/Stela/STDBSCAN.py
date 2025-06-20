@@ -1,7 +1,32 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Clusterização Espaço-Temporal
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Numba-Optimized Spatio-Temporal DBSCAN Algorithm for Event Clustering
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Summary
+-------
+This module implements a spatio-temporal version of the DBSCAN (Density-Based 
+Spatial Clustering of Applications with Noise) algorithm optimized using Numba. 
+It is tailored for the geolocation of atmospheric events using spatial data from 
+lightning detection sensors.
+
+Notes
+-----
+This code is part of the academic activities of the course 
+EELT 7019 - Applied Artificial Intelligence at the Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+
 """
 
 from numba import jit
@@ -21,16 +46,25 @@ from GeoLightning.Stela.Dimensions import remapeia_solucoes
 def calcular_media_clusters(tempos: np.ndarray,
                             labels: np.ndarray) -> tuple:
     """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args: 
-        tempos (np.ndarray): vetor de tempos de origem estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos 
-        a cada ponto
-    Returns:
-        tuple => medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
-                 detectores (np.ndarray): o número de detectores que
-                                      participam da solução
+    Computes the average origin time and the number of detectors for each cluster.
+
+    This function calculates the temporal centroid (mean estimated origin time)
+    and the count of sensor detections associated with each spatial cluster.
+
+    Parameters
+    ----------
+    tempos : np.ndarray
+        1D array containing the estimated origin times for all detections.
+    labels : np.ndarray
+        1D array containing the cluster labels assigned to each detection.
+
+    Returns
+    -------
+    tuple of np.ndarray
+        medias : np.ndarray
+            Array of temporal centroids (mean origin times) for each cluster.
+        detectores : np.ndarray
+            Array with the number of detectors associated with each cluster.
     """
     n_clusters = np.max(labels) + 1
     medias = np.zeros(n_clusters, dtype=np.float64)
@@ -64,8 +98,7 @@ def calcular_centroides(solucoes: np.ndarray,
         medias (np.ndarray): os centróides temporais (médias)
                                       de cada cluster
     """
-    """mapeamento_tempos_para_solucoes = mapeamento_tempos_para_solucoes.astype(
-        dtype=np.int64)"""
+
     n_clusters = np.int32(np.max(labels) + 1)
     medias = np.zeros((n_clusters, solucoes.shape[1]))
     detectores = np.zeros(n_clusters, dtype=np.int32)
@@ -95,16 +128,30 @@ def calcula_distancias_ao_centroide(solucoes: np.ndarray,
                                     centroides: np.ndarray,
                                     sistema_cartesiano: bool = False) -> np.ndarray:
     """
-        Calcula o delta D para cálculos de verossimilhança
-        Args:
-            solucoes (np.ndarray): vetor de soluções
-            labels (np.ndarray): vetor com os rótulos de cluster atribuídos
-                    a cada ponto
-            mapeamento_tempos_para_solucoes (np.ndarray): mapeamento de tempos para soluções
-                    devido ao remapeamento do espaço de buscas
-            centroides (np.ndarray): os centrpoides de cada cluster
-        Returns:
-            delta_d (np.ndarray): vetor com as diferenças de distância
+    Computes the delta D used in likelihood calculations.
+
+    This function calculates the difference in distance (ΔD) between each point in 
+    a cluster and its corresponding centroid.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    mapeamento_tempos_para_solucoes: np.ndarray
+        time to solutions mapping
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+    centroides : np.ndarray
+        Array of centroids for each cluster.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) 
+        or geographic (False)
+
+    Returns
+    -------
+    distancias : np.ndarray
+        Array containing the distance differences (ΔD) for each solution point 
+        relative to its cluster centroid.
     """
     distancias = np.zeros(len(np.argwhere(labels >= 0)))
     d_idx = 0
@@ -128,25 +175,32 @@ def region_query(solucoes: np.ndarray,
                  eps_t: np.float64,
                  sistema_cartesiano: bool) -> np.ndarray:
     """
-        Retorna os vizinhos espaço-temporais de um ponto dentro de uma janela (eps_s, eps_t).
+    Returns the spatio-temporal neighbors of a point within an epsilon window.
 
-        Esta função busca todos os índices de pontos cujos valores estão dentro
-        de uma tolerância `eps` a partir do ponto de índice `idx`.
+    This function searches for all indices of points whose spatial values
+    lie within a maximum distance `eps` from the point with index `i`.
 
-        Args:
-            solucoes (np.ndarray): vetor de soluções
-            tempos_de_origem (np.ndarray): vetor de tempos de origem
-            mapeamento_tempos_para_solucoes (np.ndarray): mapeamento de tempos para soluções
-                devido ao remapeamento do espaço de buscas
-            idx (np.int32): índice do ponto central da busca
-            eps_s (np.float64): tolerância máxima (janela espacial)
-                        para definição de vizinhança
-            eps_t (np.float64): tolerância máxima (janela temporal)
-                        para definição de vizinhança
-            sistema_cartesiano (bool): indicativo de sistema geo-referenciado a utilizar
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of solution points in space.
+    tempos_de_origem: np.ndarray
+        Array of origin times
+    mapeamento_tempos_para_solucoes: np.ndarray
+        time to solutions mapping
+    idx : int
+        Index of the central point around which neighbors are searched.
+    eps_s : float
+        Maximum distance (spatial window) used to define neighborhood.
+    eps_t : float
+        Maximum distance (temporal window) used to define neighborhood.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) or geographic (False).
 
-        Returns:
-            vizinhos (np.ndarray): vetor contendo os índices dos pontos vizinhos
+    Returns
+    -------
+    np.ndarray
+        Array containing the indices of neighboring points.
     """
     vizinhos = []
     for j in range(mapeamento_tempos_para_solucoes.shape[0]):
@@ -175,33 +229,44 @@ def expand_cluster(solucoes: np.ndarray,
                    min_pts: np.int32,
                    sistema_cartesiano: bool = False):
     """
-    Expande um cluster a partir de um ponto núcleo, atribuindo rótulos aos vizinhos.
+    Expands a cluster from a core point by assigning labels to neighboring points.
 
-    Esta função executa a etapa de expansão do algoritmo ST-DBSCAN, incluindo novos
-    pontos ao cluster atual com base na densidade de vizinhos e nos critérios de
-    proximidade espaço-temporal. A expansão é feita iterativamente e inclui novos pontos
-    apenas se satisfizerem os requisitos mínimos de densidade.
+    This function performs the cluster expansion step of the DBSCAN algorithm. 
+    It iteratively adds new points to the current cluster based on spatial proximity 
+    and density requirements. Points are only included if they meet the minimum 
+    density criterion.
 
-    Args:
-        solucoes (np.ndarray): vetor de soluções
-        tempos_de_origem (np.ndarray): vetor de tempos de origem
-        mapeamento_tempos_para_solucoes (np.ndarray): mapeamento de tempos para soluções
-                devido ao remapeamento do espaço de buscas
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos a cada ponto
-        idx (np.int64): índice do ponto núcleo a partir do qual o cluster é expandido
-        visitado (np.ndarray): vetor booleano que indica se o ponto já foi visitado
-        vizinhos (np.ndarray): vetor com os índices dos pontos vizinhos iniciais
-        ponto_idx (np.int64): índice do ponto central
-        cluster_id (np.int32): identificador numérico do cluster atual
-        eps_s (np.float64): tolerância máxima (janela espacial)
-                para definição de vizinhança
-        eps_t (np.float64): tolerância máxima (janela temporal)
-                para definição de vizinhança
-        min_pts (np.int32): número mínimo de pontos
-        sistema_cartesiano (bool): indicativo de sistema geo-referenciado a utilizar
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of solution points in space.
+    tempos_de_origem: np.ndarray
+        Array of origin times
+    mapeamento_tempos_para_solucoes: np.ndarray
+        time to solutions mapping    
+    labels : np.ndarray
+        Array containing the cluster labels assigned to each point.
+    visitado : np.ndarray
+        Boolean array indicating whether each point has already been visited.
+    vizinhos : np.ndarray
+        Array of indices of the initial neighboring points.
+    ponto_idx : int
+        Index of the core point from which the cluster expansion starts.
+    cluster_id : int
+        Numeric identifier of the current cluster.
+    eps_s : float
+        Maximum distance (spatial window) used to define neighborhood.
+    eps_t : float
+        Maximum distance (temporal window) used to define neighborhood.
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) or geographic (False).
 
-    Returns:
-        None: a função modifica os vetores `labels` e `visitado` in-place
+    Returns
+    -------
+    None
+        This function modifies `labels` and `visitado` in-place.
     """
     labels[ponto_idx] = cluster_id
     i = 0
@@ -235,20 +300,49 @@ def st_dbscan(solucoes: np.ndarray,
               min_pts: np.int32 = CLUSTER_MIN_PTS,
               sistema_cartesiano: bool = False) -> tuple:
     """
-    ST-DBSCAN principal — clusterização com base em distância espaço-temporal.
-    Args:
-        solucoes (np.ndarray): vetor de soluções
-        tempos_de_origem (np.ndarray): vetor de tempos de origem
-        mapeamento_tempos_para_solucoes (np.ndarray): mapeamento de tempos para soluções
-                devido ao remapeamento do espaço de buscas
-        eps_s (np.float64): tolerância máxima (janela espacial)
-                para definição de vizinhança
-        eps_t (np.float64): tolerância máxima (janela temporal)
-                para definição de vizinhança
-        min_pts (np.int32): número mínimo de pontos
-        sistema_cartesiano (bool): indicativo de sistema geo-referenciado a utilizar
+    Main algorithm of the ST-DBSCAN clustering.
 
+    This function implements the DBSCAN algorithm for spatio-temporal clustering 
+    in three-dimensional space, supporting both Cartesian and geographic coordinates.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of solution points in space.
+    tempos_de_origem: np.ndarray
+        Array of origin times
+    mapeamento_tempos_para_solucoes: np.ndarray
+        time to solutions mapping   
+    eps_s : float
+        Maximum distance (spatial window) used to define neighborhood.
+    eps_t : float
+        Maximum distance (temporal window) used to define neighborhood.
+    sigma_d: float
+        Spatial standard deviation to compute log-likelihood
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
+    sistema_cartesiano : bool
+        Indicates whether the coordinate system is Cartesian (True) or geographic (False).
+
+    Returns
+    -------
+    tuple
+        labels : np.ndarray
+            Array with cluster labels assigned to each point. Noise points are labeled as -1.
+        distancias : np.ndarray
+            Array containing the distance differences (ΔD) for each solution point 
+            relative to its cluster centroid.
+        centroides : np.ndarray
+            Average positions of the detected event clusters.
+        detectores : np.ndarray
+            Indices of sensors associated with the solution.
+        novas_solucoes : np.ndarray
+            Refined spatial solutions.
+        verossimilhanca : float
+            Total log-likelihood value of the solution
+    
     """
+
     N = mapeamento_tempos_para_solucoes.shape[0]
     labels = -np.ones(N, dtype=np.int32)
     visitado = np.zeros(N, dtype=np.bool_)
@@ -317,9 +411,7 @@ if __name__ == "__main__":
     from time import perf_counter
 
     num_events = [2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000,
-                  2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000]
+                  30, 100, 500, 800, 1000]
     
     for i in range(len(num_events)):
 

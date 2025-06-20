@@ -6,8 +6,54 @@
 import numpy as np
 from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
 
-def test_temporal_clustering_dois_grupos():
-    tempos = np.array([1.0, 1.001, 1.002, 5.0, 5.001, 5.002])
-    labels, medias, detectores = clusterizacao_temporal_stela(tempos, eps=0.01, min_pts=2)
-    assert len(np.unique(labels[labels >= 0])) == 2
-    assert medias.shape[0] == 2
+import os
+basedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+
+def test_temporal_clustering():
+
+    from GeoLightning.Utils.Utils import computa_tempos_de_origem
+    from time import perf_counter
+
+    num_events = [2, 5, 10, 15, 20, 25, 
+                30, 100, 500, 800, 1000]
+
+    for i in range(len(num_events)):
+
+        file_detections = basedir + "/../data/static_constellation_detections_{:06d}.npy".format(
+            num_events[i])
+
+        file_detections_times = basedir + "/../data/static_constelation_detection_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_event_positions = basedir + "/../data/static_constelation_event_positions_{:06d}.npy".format(
+            num_events[i])
+
+        file_event_times = basedir + "/../data/static_constelation_event_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_n_event_positions = basedir + "/../data/static_constelation_n_event_positions_{:06d}.npy".format(
+            num_events[i])
+
+        file_n_event_times = basedir + "/../data/static_constelation_n_event_times_{:06d}.npy".format(
+            num_events[i])
+
+        file_distances = basedir + "/../data/static_constelation_distances_{:06d}.npy".format(
+            num_events[i])
+        
+        file_spatial_clusters = basedir + "/../data/static_constelation_spatial_clusters_{:06d}.npy".format(
+            num_events[i])
+
+        n_event_times = np.load(file_n_event_times)
+        n_event_positions = np.load(file_n_event_positions)
+        detection_times = np.load(file_detections_times)
+        detection_positions = np.load(file_detections)
+        spatial_clustering = np.load(file_spatial_clusters)
+
+
+        tempos_de_origem = computa_tempos_de_origem(n_event_positions, 
+                                           spatial_clustering, 
+                                           detection_times, 
+                                           detection_positions)
+        labels = clusterizacao_temporal_stela(tempos_de_origem)
+        
+        assert len(np.unique(labels)) == num_events[i]

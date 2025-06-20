@@ -1,8 +1,42 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Métricas de Performance
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+This module defines the performance metrics used in atmospheric discharge geolocation experiments.
+
+Summary
+-------
+The functions implemented in this module are designed to evaluate the 
+accuracy and consistency of geolocation algorithms applied to atmospheric 
+discharges (e.g., lightning events). It supports metrics such as 
+positioning error, timing residuals, likelihood values, and statistical 
+criteria for evaluating candidate solutions.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- Metric evaluation functions for estimated positions and times.
+- Support for spatial and temporal residuals.
+- Adapted for use with likelihood-based geolocation pipelines.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, 
+Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numpy.linalg.inv
+- numba
+- GeoLightning.Utils.Constants (SIGMA_D, SIGMA_T)
 """
+
+
 import numpy as np
 from numpy.linalg import inv
 from numba import jit
@@ -13,31 +47,44 @@ from GeoLightning.Utils.Constants import SIGMA_D, SIGMA_T
 def rmse(estimadas: np.ndarray,
          reais: np.ndarray) -> np.float64:
     """
-        Calcula o erro quadrático médio (RMSE) entre valores estimados e reais.
+    Calculates the root mean square error (RMSE) between estimated and real values.
 
-        Args:
-            estimadas (np.ndarray): vetor de posições estimadas (M x D)
-            reais (np.ndarray): vetor de posições reais (M x D)
+    A fundamental parameter for evaluating the accuracy of event location algorithms, the RMSE provides a measure of the average discrepancy between the estimated and real position vectors, and is particularly useful in quantifying spatial accuracy.
 
-        Returns:
-            np.float64: RMSE
+    Parameters
+    ----------
+    estimated : np.ndarray
+        Vector of estimated positions
+    real : np.ndarray
+        Vector of real positions
+
+    Returns
+    -------
+    np.float64
+        Value of the root mean square error (RMSE) between the given vectors.
     """
-    return np.sqrt(np.mean(np.sum((estimadas - reais) ** 2, axis=1)))
+    return np.sqrt(np.mean((estimadas - reais) ** 2))
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def mae(estimados: np.ndarray,
         reais: np.ndarray) -> np.float64:
     """
-        Calcula o erro absoluto médio (MAE) entre os valores estimados 
-        e os valores reais.
+    Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.
 
-        Args:
-            estimados (np.ndarray): vetor de valores estimados
-            reais (np.ndarray): vetor de valores reais
+    MAE is a widely used metric in the evaluation of prediction models, providing a direct measure of the average magnitude of the errors, without considering their direction.
 
-        Returns:
-            np.float64: MAE
+    Parameters
+    ----------
+    estimated : np.ndarray
+        Vector of estimated values, representing the model predictions.
+    actual : np.ndarray
+        Vector of actual values, representing the reference or true values.
+
+    Returns
+    -------
+    np.float64
+        Value of the mean absolute error (MAE) between the given vectors.
     """
     return np.mean(np.abs(estimados - reais))
 
@@ -46,64 +93,92 @@ def mae(estimados: np.ndarray,
 def average_mean_squared_error(estimados: np.ndarray,
                                reais: np.ndarray) -> np.float64:
     """
-        Calcula o erro médio quadrático (AMSE) entre os valores estimados 
-        e os valores reais.
+    Calculates the mean squared error (AMSE) between estimated values ​​and real values.
 
-        Args:
-            estimados (np.ndarray): vetor de valores estimados
-            reais (np.ndarray): vetor de valores reais
+    AMSE (Average Mean Squared Error) is a metric that quantifies the average of the squares of the differences between estimated values ​​and real values, penalizing larger errors with greater severity.
 
-        Returns:
-            np.float64: AMSE 
+    Parameters
+    ----------
+    estimated : np.ndarray
+        Vector of estimated values, usually from predictions of a model.
+    real : np.ndarray
+        Vector of real values, considered as reference or ground truth.
+
+    Returns
+    -------
+    np.float64
+        Value of the mean squared error (AMSE) between the provided vectors.
     """
-    return np.mean(np.sum((estimados - reais) ** 2, axis=1))
+    return np.mean((estimados - reais) ** 2)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def mean_location_error(estimados: np.ndarray,
                         reais: np.ndarray) -> np.float64:
     """
-        Calcula o erro de localização médio (MLE) entre os valores estimados 
-        e os valores reais.
+    Calculates the mean localization error (MLE) between the estimated values ​​and the real values.
 
-        Args:
-            estimados (np.ndarray): vetor de posições estimadas
-            reais (np.ndarray): vetor de posições reais
+    The MLE (Mean Localization Error) is defined as the average of the Euclidean distances between pairs of estimated and real positions, and is widely used in geolocation problems to quantify spatial accuracy.
 
-        Returns:
-            np.float64: MLE
+    Parameters
+    ----------
+    estimated : np.ndarray
+        Vector of estimated positions
+    real : np.ndarray
+        Vector of real reference positions, with the same dimension as `estimated`.
+
+    Returns
+    -------
+    np.float64
+        Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.
     """
-    return np.mean(np.linalg.norm(estimados - reais, axis=1))
+
+    return np.mean(estimados - reais)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def calcula_prmse(rmse: float,
                   referencia: float) -> float:
     """
-        Calcula o RMSE percentual.
+    Calculates the percentage root mean square error (PRMSE).
 
-        Args:
-            rmse (float): valor do RMSE
-            referencia (float): valor de fundo de escala
+    PRMSE (Percentage Root Mean Square Error) is defined as the percentage ratio between the RMSE value and a reference value (usually the full scale), and is useful for relative performance analysis.
 
-        Returns:
-            float: PRMSE
+    Parameters
+    ----------
+    rmse : float
+        Absolute value of the root mean square error (RMSE).
+    reference : float
+        Full scale value or reference adopted for normalization.
+
+    Returns
+    -------
+    float
+        Value of the root mean square error expressed as a percentage (PRMSE), given by: `(rmse / reference) * 100`.
     """
+
     return 100.0 * rmse / referencia
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def acuracia_associacao(associacoes_estimadas: np.ndarray,
-                        associacoes_reais: np.ndarray) -> float:
+                        associacoes_reais: np.ndarray) -> np.float64:
     """
-        Calcula a acurácia da associação entre detecções e eventos.
+    Calculates the accuracy of the association between detections and events.
 
-        Args:
-            associacoes_estimadas (np.ndarray): vetor de índices estimados 
-            associacoes_reais (np.ndarray): vetor de índices reais das associações
+    The accuracy of the association is defined as the proportion of correct associations between the estimated and real indices, expressing the effectiveness of the algorithm in the task of identifying corresponding events.
 
-        Returns:
-            float: acurácia da associação
+    Parameters
+    ----------
+    estimated_associations : np.ndarray
+        One-dimensional vector containing the estimated indices of the associations for each detection.
+    real_associations : np.ndarray
+        One-dimensional vector containing the real indices of the corresponding associations.
+
+    Returns
+    -------
+    np.float64
+    Value of the accuracy of the association, defined as the ratio between the number of correct associations and the total number of detections.
     """
     return np.mean(associacoes_estimadas == associacoes_reais)
 
@@ -112,16 +187,24 @@ def acuracia_associacao(associacoes_estimadas: np.ndarray,
 def erro_relativo_funcao_ajuste(F_estimado: float,
                                 F_referencia: float) -> float:
     """
-        Calcula o erro relativo percentual entre a função de ajuste estimada e 
-        uma referência (por exemplo, o valor ótimo ou benchmark).
+    Calculates the percentage relative error between the estimated fitting function and a reference.
 
-        Args:
-            F_estimado (float): valor da função de ajuste
-            F_referencia (float): valor de referência
+    The percentage relative error is defined as the percentage difference between the estimated value of the fitting function and a reference value, the latter usually being a benchmark, known optimum value or ideal solution.
 
-        Returns:
-            float: erro relativo percentual
+    Parameters
+    ----------
+    F_estimado : float
+        Value of the fitting function obtained by the algorithm.
+    F_referencia : float
+        Reference value used for comparison, such as the theoretical optimum or a benchmark.
+
+    Returns
+    -------
+    float
+    Percentage relative error between the given values, calculated as
+    ``100 * abs(F_estimado - F_referencia) / abs(F_referencia)``.
     """
+
     return np.abs(F_estimado - F_referencia) / np.abs(F_referencia) * 100.0
 
 
@@ -129,14 +212,23 @@ def erro_relativo_funcao_ajuste(F_estimado: float,
 def tempo_execucao(tempo_inicial: float,
                    tempo_final: float) -> float:
     """
-        Calcula o tempo total de execução.
+    Calculates the total execution time between two time instants.
 
-        Args:
-            tempo_inicial (float): tempo de início (em segundos)
-            tempo_final (float): tempo de fim (em segundos)
+    This method computes the difference between the end time and the start time,
+    returning the total elapsed time in seconds.
 
-        Returns:
-            float: tempo total em segundos
+    Parameters
+    ----------
+    start_time : float
+        Timestamp of the start of the execution, expressed in seconds.
+    end_time : float
+        Timestamp of the end of the execution, expressed in seconds.
+
+    Returns
+    -------
+    float
+        Total execution time, in seconds, calculated as the difference
+        between `end_time` and `start_time`.
     """
     return tempo_final - tempo_inicial
 
@@ -145,16 +237,23 @@ def tempo_execucao(tempo_inicial: float,
 def calcular_crlb_espacial(sigma_d: float = SIGMA_D,
                            N: int = 7) -> np.ndarray:
     """
-        Calcula a matriz CRLB para a estimativa da posição de um evento, 
-        considerando variância espacial isotrópica.
+    Calculates the Cramér-Rao Lower Bound (CRLB) matrix for estimating the position of an event.
 
-        Args:
-            sigma_d (float): desvio padrão da medida de distância
-            N (int): número de sensores
+    A model of isotropic spatial variance is assumed and distance measurements are subject to Gaussian noise with constant standard deviation. The CRLB matrix expresses the lower bound of the variance of any unbiased estimator of the event's position in three-dimensional space.
 
-        Returns:
-            np.ndarray: matriz CRLB 3x3 (para [x, y, z])
+    Parameters
+    ----------
+    sigma_d : float
+        Standard deviation of distance measurements (in meters), assumed to be the same for all sensors.
+    N : int
+        Total number of sensors used in the geolocation system.
+
+    Returns
+    -------
+    np.ndarray
+        CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.
     """
+
     return (sigma_d ** 2 / N) * np.eye(3)
 
 
@@ -162,14 +261,22 @@ def calcular_crlb_espacial(sigma_d: float = SIGMA_D,
 def calcular_crlb_temporal(sigma_t: float = SIGMA_T,
                            N: int = 7) -> np.ndarray:
     """
-        Calcula a CRLB para a estimativa do tempo de origem de um evento.
+    Computes the Cramér-Rao Lower Bound (CRLB) for estimating the time of origin of an event.
 
-        Args:
-            sigma_t (float): desvio padrão da medida de tempo
-            N (int): número de sensores
+    The CRLB represents the theoretical lower bound on the variance of any unbiased estimator 
+    for the temporal origin, under Gaussian noise with standard deviation `sigma_t`.
 
-        Returns:
-            np.ndarray: matriz CRLB 1x1 (para t_0)
+    Parameters
+    ----------
+    sigma_t : float, optional
+        Standard deviation of the time measurements (in seconds). Default is `SIGMA_T`.
+    N : int, optional
+        Number of sensors involved in the estimation. Default is 7.
+
+    Returns
+    -------
+    np.ndarray
+        A (1, 1) array representing the CRLB for the origin time estimate.
     """
     return (sigma_t ** 2 / N) * np.eye(1)
 
@@ -177,26 +284,42 @@ def calcular_crlb_temporal(sigma_t: float = SIGMA_T,
 @jit(nopython=True, cache=True, fastmath=True)
 def calcular_crlb_rmse(crlb: np.ndarray) -> float:
     """
-        Calcula a média quadrática do traço da matriz CRLB.
+    Computes the root mean square error (RMSE) derived from the CRLB matrix.
 
-        Args:
-            crlb (np.ndarray): matriz CRLB
+    This function calculates the quadratic mean of the trace of the product of 
+    the CRLB matrix with itself, normalized by its dimension.
 
-        Returns:
-            float: valor médio quadrático (CRLB_RMSE)
+    Parameters
+    ----------
+    crlb : np.ndarray
+        CRLB matrix from which the RMSE is to be computed.
+
+    Returns
+    -------
+    float
+        RMSE value computed from the CRLB matrix.
     """
     return np.sqrt(np.trace(crlb @ crlb)) / crlb.shape[0]
+
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def calcular_mean_crlb(crlb: np.ndarray) -> float:
     """
-        Calcula a média das variâncias na matriz CRLB.
+    Computes the mean of the variances along the diagonal of the CRLB matrix.
 
-        Args:
-            crlb (np.ndarray): matriz CRLB
+    This metric represents the average uncertainty (variance) associated with 
+    the estimation of each parameter under the CRLB model.
 
-        Returns:
-            float: média das variâncias
+    Parameters
+    ----------
+    crlb : np.ndarray
+        CRLB matrix obtained from the estimation process.
+
+    Returns
+    -------
+    float
+        Mean value of the variances in the CRLB matrix.
     """
     return np.trace(crlb) / crlb.shape[0]
+

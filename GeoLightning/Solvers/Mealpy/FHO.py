@@ -1,16 +1,69 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo Fire Hawk Optimizer (FHO)
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Fire Hawk Optimizer (FHO)
+
+Summary
+-------
+This module implements the Fire Hawk Optimizer (FHO), a population-based metaheuristic
+inspired by the natural behavior of fire hawks and their hunting strategy. It divides
+the population into two classes — fire hawks and prey — and updates their positions 
+based on predator-prey dynamics and safe regions.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- FHO class: optimization algorithm implementation
+- Fire hawk and prey update mechanisms
+- Dynamic exploitation of safe zones
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- mealpy
 """
+
 
 from mealpy import Optimizer
 import numpy as np
 
 
 class FHO(Optimizer):
+    
     """
     Fire Hawk Optimizer (FHO)
+
+    A nature-inspired metaheuristic algorithm based on the hunting 
+    strategy of fire hawks. The population is divided into two 
+    categories: hawks (exploiters) and prey (explore/avoid). The 
+    algorithm updates both groups differently, balancing global 
+    exploration and local exploitation using probabilistic modeling 
+    and neighborhood-based interactions.
+
+    Parameters
+    ----------
+    problem : object
+        An optimization problem instance with objective function and bounds.
+    epoch : int, optional
+        Number of iterations (generations). Default is 1000.
+    pop_size : int, optional
+        Size of the population. Default is 50.
+    **kwargs : dict, optional
+        Additional parameters passed to the base Optimizer class.
+
+    Attributes
+    ----------
+    g_best : Agent
+        Best solution found so far.
     """
 
     def __init__(self, problem, epoch=1000, pop_size=50, **kwargs):

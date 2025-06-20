@@ -1,7 +1,32 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo DBSCAN adaptado para numba e 1 dimensão
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Numba-Optimized 1D DBSCAN Algorithm for Event Clustering
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Summary
+-------
+This module implements a one-dimensional version of the DBSCAN (Density-Based 
+Spatial Clustering of Applications with Noise) algorithm optimized using Numba. 
+It is tailored for the geolocation of atmospheric events using spatial data from 
+lightning detection sensors.
+
+Notes
+-----
+This code is part of the academic activities of the course 
+EELT 7019 - Applied Artificial Intelligence at the Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+
 """
 from numba import jit
 import numpy as np
@@ -13,19 +38,23 @@ def region_query(tempos: np.ndarray,
                  i: np.int32,
                  eps: np.float64) -> np.ndarray:
     """
-    Retorna os vizinhos temporais de um ponto dentro de uma janela eps.
+    Returns the temporal neighbors of a point within an epsilon window.
 
-    Esta função busca todos os índices de pontos cujos valores estão dentro
-    de uma tolerância temporal `eps` a partir do ponto de índice `i`.
+    This function searches for all indices of points whose temporal values
+    lie within a maximum distance `eps` from the point with index `i`.
 
-    Args:
-        tempos (np.ndarray): vetor de tempos estimados (1D)
-        i (np.int32): índice do ponto central da busca
-        eps (np.float64): tolerância máxima (janela temporal) 
-                     para definição de vizinhança
-
-    Returns:
-        vizinhos (np.ndarray): vetor contendo os índices dos pontos vizinhos
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of solution points in space.
+    i : int
+        Index of the central point around which neighbors are searched.
+    eps : float
+        Maximum distance (temporal window) used to define neighborhood.
+    Returns
+    -------
+    np.ndarray
+        Array containing the indices of neighboring points.
     """
     vizinhos = []
     for j in range(len(tempos)):
@@ -44,26 +73,38 @@ def expand_cluster(tempos: np.ndarray,
                    eps: np.float64,
                    min_pts: np.int32) -> None:
     """
-    Expande um cluster a partir de um ponto núcleo, atribuindo rótulos aos vizinhos.
+    Expands a cluster from a core point by assigning labels to neighboring points.
 
-    Esta função executa a etapa de expansão do algoritmo DBSCAN, incluindo novos
-    pontos ao cluster atual com base na densidade de vizinhos e nos critérios de
-    proximidade temporal. A expansão é feita iterativamente e inclui novos pontos
-    apenas se satisfizerem os requisitos mínimos de densidade.
+    This function performs the cluster expansion step of the DBSCAN algorithm. 
+    It iteratively adds new points to the current cluster based on spatial proximity 
+    and density requirements. Points are only included if they meet the minimum 
+    density criterion.
 
-    Args:
-        tempos (np.ndarray): vetor de tempos estimados (1D)
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos a cada ponto
-        visitado (np.ndarray): vetor booleano que indica se o ponto já foi visitado
-        i (np.int32): índice do ponto núcleo a partir do qual o cluster é expandido
-        vizinhos (np.ndarray): vetor com os índices dos pontos vizinhos iniciais
-        cluster_id (np.int32): identificador numérico do cluster atual
-        eps (np.float64): tolerância máxima (janela temporal)
-        min_pts (np.int32): número mínimo de pontos para formar um cluster válido
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        1D array of estimated solutions (points in space).
+    labels : np.ndarray
+        Array containing the cluster labels assigned to each point.
+    visitado : np.ndarray
+        Boolean array indicating whether each point has already been visited.
+    i : int
+        Index of the core point from which the cluster expansion starts.
+    vizinhos : np.ndarray
+        Array of indices of the initial neighboring points.
+    cluster_id : int
+        Numeric identifier of the current cluster.
+    eps : float
+        Maximum spatial distance (epsilon neighborhood).
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
 
-    Returns:
-        None: a função modifica os vetores `labels` e `visitado` in-place
+    Returns
+    -------
+    None
+        This function modifies `labels` and `visitado` in-place.
     """
+
     labels[i] = cluster_id
     k = 0
     while k < len(vizinhos):
@@ -90,14 +131,24 @@ def clusterizacao_temporal_stela(tempos: np.ndarray,
                                  eps: np.float64 = EPSILON_T,
                                  min_pts: np.int32 = CLUSTER_MIN_PTS) -> np.ndarray:
     """
-        Algoritmo de clusterização temporal (fase 1 do STELA) usando DBSCAN 1D.
-        Parâmetros:
-            tempos (np.ndarray): vetor de tempos de origem estimados (1D)
-            eps (np.float64): tolerância máxima em segundos (default = 1.26 microssegundos)
-            min_pts (np.int32): número mínimo de pontos para formar um cluster
-        Retorna:
-            lusters (np.ndarray): vetor com os rótulos de cluster 
-                               atribuídos a cada ponto
+    Main algorithm of the 1D DBSCAN clustering.
+
+    This function implements the DBSCAN algorithm for spatial clustering 
+    in three-dimensional space, supporting both Cartesian and geographic coordinates.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated origin solutions (3D points).
+    eps : float
+        Maximum spatial distance (epsilon) in meters for neighborhood definition.
+    min_pts : int
+        Minimum number of points required to form a valid cluster.
+
+    Returns
+    -------
+    labels : np.ndarray
+        Array with cluster labels assigned to each point. Noise points are labeled as -1.
     """
     n = len(tempos)
     labels = -1 * np.ones(n, dtype=np.int32)
@@ -126,9 +177,7 @@ if __name__ == "__main__":
     from time import perf_counter
 
     num_events = [2, 5, 10, 15, 20, 25, 
-                30, 100, 500, 800, 1000, 
-                2000, 3000, 4000, 5000, 6000, 
-                7000, 8000, 9000, 10000]
+                30, 100, 500, 800, 1000]
 
     for i in range(len(num_events)):
 

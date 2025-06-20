@@ -43,6 +43,7 @@ tests/__init__.py
 tests/test_dbscan3d.py
 tests/test_dimensions.py
 tests/test_entropy.py
+tests/test_get_sensors.py
 tests/test_loglikelihood.py
 tests/test_metrics.py
 tests/test_spatial_clustering.py

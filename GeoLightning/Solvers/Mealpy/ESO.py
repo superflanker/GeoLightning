@@ -1,8 +1,36 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Algoritmo Electrical Storm Optimization (ESO)
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+Electrical Storm Optimization (ESO) Algorithm
+
+Summary
+-------
+This module implements the Electrical Storm Optimization (ESO) algorithm, a nature-inspired 
+metaheuristic that simulates the dynamic behavior of electrical storms to solve continuous 
+optimization problems. It models the interactions between field intensity, resistance, 
+conductivity, and ionization zones to guide the search process in the solution space.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- ESO class: core optimizer implementing the electrical storm metaphor.
+- Parameters include iteration-dependent field behavior and selective ionization.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- mealpy
 """
+
 
 from mealpy import Optimizer
 import numpy as np
@@ -11,6 +39,27 @@ import numpy as np
 class ESO(Optimizer):
     """
     Electrical Storm Optimization (ESO)
+
+    A nature-inspired metaheuristic based on the physics of electrical storms,
+    incorporating variables such as resistance (R), conductivity (ke), intensity (I),
+    and power (P). The population is guided by the influence of the most ionized
+    (promising) areas, encouraging both exploration and exploitation.
+
+    Parameters
+    ----------
+    problem : object
+        Optimization problem instance with defined objective function and bounds.
+    epoch : int, optional
+        Maximum number of iterations (generations). Default is 1000.
+    pop_size : int, optional
+        Number of candidate solutions (agents) in the population. Default is 50.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to the base Optimizer class.
+
+    Attributes
+    ----------
+    g_best : Agent
+        Best solution found so far.
     """
 
     def __init__(self, problem, epoch=1000, pop_size=50, **kwargs):

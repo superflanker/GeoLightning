@@ -1,24 +1,49 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada  
-    Algoritmo STELA - Spatio-Temporal Event Likelihood Assignment  
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+===========================================
 
-    Este módulo implementa o algoritmo STELA, responsável por realizar a 
-    associação espaço-temporal entre detecções multissensoriais e eventos 
-    físicos simulados, como descargas atmosféricas ou fontes acústicas impulsivas.  
+Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm
 
-    O algoritmo combina estratégias de clusterização espacial e temporal, 
-    além de calcular uma função de verossimilhança baseada na consistência 
-    entre o tempo de chegada dos sinais e a posição estimada dos eventos.  
+Summary
+-------
+This module implements the STELA algorithm, designed for spatio-temporal association 
+of multisensory detections with simulated physical events, such as lightning strikes 
+or impulsive acoustic sources.
 
-    O STELA é projetado para refinar soluções iniciais de multilateração, 
-    ajustar os limites de busca para meta-heurísticas e identificar agrupamentos 
-    plausíveis de detecções que correspondam a eventos reais.
+The algorithm integrates spatial and temporal clustering with a likelihood function 
+based on the consistency between the time-of-arrival (TOA) of signals and the estimated 
+event positions. It refines candidate solutions from multilateration, adjusts 
+search boundaries for meta-heuristics, and identifies plausible groupings 
+of detections that correspond to real-world events.
 
-    Este pipeline é compatível com metodologias de localização baseadas 
-    em TOA (Time-of-Arrival), sendo aplicável a contextos como sensoriamento geofísico, 
-    radiofrequência, acústica submarina e astronomia transiente.
+This pipeline is compatible with TOA-based localization methods and applicable 
+to geophysical sensing, radio frequency, underwater acoustics, and transient astronomy.
 
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- STELA Algorithm (main routine)
+- Temporal clustering
+- Spatial clustering and likelihood estimation
+- Search bounds generation
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+- GeoLightning.Stela.TemporalClustering
+- GeoLightning.Stela.SpatialClustering
+- GeoLightning.Stela.Bounds
 """
 
 
@@ -49,50 +74,66 @@ def stela(solucoes: np.ndarray,
           max_d: np.float64 = MAX_DISTANCE,
           min_pts: np.int32 = CLUSTER_MIN_PTS) -> tuple:
     """
-        Algoritmo STELA - Spatio-Temporal Event Likelihood Assignment.
+    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm.
 
-        Esta função executa a fase de associação e filtragem de eventos com base 
-        na consistência espaço-temporal entre as detecções multissensoriais 
-        e as soluções candidatas geradas por multilateração.
+    This function performs the core association and filtering step based on 
+    the spatio-temporal consistency between multisensory detections and 
+    multilateration-generated candidate event positions.
 
-        O algoritmo aplica clusterização temporal para inferir tempos de origem 
-        estimados, seguida de uma nova clusterização espacial com base na 
-        compatibilidade das detecções, otimizando uma função de log-verossimilhança.
+    It applies temporal clustering to infer origin times, followed by a spatial 
+    clustering step with compatibility checks, optimizing a log-likelihood function.
 
-        Parâmetros:
-            solucoes (np.ndarray): Array de forma (N, 3), contendo as posições 
-                candidatas dos eventos em coordenadas geográficas ou cartesianas.
-            tempos_de_chegada (np.ndarray): Array de forma (M,), contendo os 
-                tempos absolutos de chegada dos sinais em cada sensor.
-            pontos_de_deteccao (np.ndarray): Array de forma (M, 3), com as posições 
-                dos sensores (em mesmas coordenadas que `solucoes`).
-            clusters_espaciais (np.ndarray): Array (N,), contendo o identificador 
-                de cluster espacial de cada solução candidata.
-            sistema_cartesiano (bool): Indica se os dados estão em coordenadas 
-                cartesianas (True) ou geográficas (False). Padrão: False.
-            sigma_d (float): Desvio padrão espacial (usado na verossimilhança).
-            epsilon_t (float): Tolerância temporal para a clusterização temporal.
-            epsilon_d (float): Tolerância espacial para a clusterização espacial.
-            limit_d (float): Raio máximo para o cálculo dos limites de busca 
-                (bounding box) das meta-heurísticas.
-            max_d (float): Distância máxima permitida entre eventos e sensores.
-            min_pts (int): Número mínimo de pontos para formar um cluster (DBSCAN).
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of shape (N, 3) with candidate event positions in geographic 
+        or Cartesian coordinates.
+    tempos_de_chegada : np.ndarray
+        Array of shape (M,) with absolute signal arrival times at the sensors.
+    pontos_de_deteccao : np.ndarray
+        Array of shape (M, 3) with sensor positions, using the same coordinate system 
+        as `solucoes`.
+    clusters_espaciais : np.ndarray
+        Array of shape (N,) with the spatial cluster identifiers of each candidate.
+    sistema_cartesiano : bool, optional
+        Indicates whether the coordinates are Cartesian (True) or geographic (False). Default is False.
+    sigma_d : float, optional
+        Spatial standard deviation (used in likelihood computation).
+    epsilon_t : float, optional
+        Temporal tolerance for temporal clustering.
+    epsilon_d : float, optional
+        Spatial tolerance for spatial clustering.
+    limit_d : float, optional
+        Search radius used to define bounding boxes for meta-heuristic optimization.
+    max_d : float, optional
+        Maximum allowable distance between events and sensors.
+    min_pts : int, optional
+        Minimum number of points to form a valid cluster (DBSCAN requirement).
 
-        Retorna:
-            tuple:
-                lb (np.ndarray): Vetor com os limites inferiores para otimização.
-                ub (np.ndarray): Vetor com os limites superiores para otimização.
-                centroides (np.ndarray): Coordenadas médias dos eventos detectados.
-                detectores (np.ndarray): Índices dos sensores associados.
-                clusters_espaciais (np.ndarray): Rótulos atualizados dos clusters.
-                novas_solucoes (np.ndarray): Soluções refinadas espacialmente.
-                verossimilhanca (float): Valor agregado da verossimilhança.
-
-        Observações:
-            - A função é otimizada com Numba para alto desempenho.
-            - O modelo é compatível com cenários de múltiplos eventos e sensores.
-            - Pode ser utilizado como fase de pré-processamento para otimizações 
-            com algoritmos genéticos, swarm intelligence e outros métodos globais.
+    Returns
+    -------
+    tuple
+        lb : np.ndarray
+            Lower bounds for the optimization process.
+        ub : np.ndarray
+            Upper bounds for the optimization process.
+        centroides : np.ndarray
+            Average positions of the detected event clusters.
+        detectores : np.ndarray
+            Indices of sensors associated with the solution.
+        clusters_espaciais : np.ndarray
+            Updated spatial cluster labels.
+        novas_solucoes : np.ndarray
+            Refined spatial solutions.
+        verossimilhanca : float
+            Total log-likelihood value of the solution.
+    
+    Notes
+    -----
+    - Optimized with Numba for high-performance execution.
+    - Compatible with multiple events and multisensor contexts.
+    - Suitable for pre-processing before global optimization with genetic algorithms,
+      swarm intelligence, and other meta-heuristics.
     """
 
     # primeiro passo - clusters temporais
@@ -146,9 +187,7 @@ def stela(solucoes: np.ndarray,
 if __name__ == "__main__":
 
     num_events = [2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000,
-                  2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000]
+                  30, 100, 500, 800, 1000]
 
     from time import perf_counter
 

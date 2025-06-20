@@ -1,38 +1,85 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada  
-    Wrapper PSO do STELA  
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>  
+EELT 7019 - Applied Artificial Intelligence
+===========================================
+
+STELA Wrapper for the Particle Swarm Optimization (PSO)
+
+Summary
+-------
+This module defines the `StelaPSO` class, a specialized extension of the 
+Particle Swarm Optimization (PSO) algorithm from the MEALPY library. It is 
+designed to operate directly on instances of the `StelaProblem` class, which 
+models the spatio-temporal localization of events detected by distributed sensors, 
+such as atmospheric lightning.
+
+Before each evolutionary iteration, the search space is adaptively refined 
+based on the current best solution using the `restart_search_space()` method 
+from the `StelaProblem` class.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- StelaPSO class: adaptive PSO wrapper for STELA
+- evolve(): PSO iteration with dynamic bounds refinement
+
+Notes
+-----
+This module is part of the activities of the discipline  
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- mealpy.swarm_based.PSO
+- GeoLightning.Solvers.StelaProblem
 """
 
 import numpy as np
 from mealpy.swarm_based.PSO import OriginalPSO
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 
-
 class StelaPSO(OriginalPSO):
     """
-    Classe especializada que estende o otimizador PSO da MEALPY
-    para operar diretamente sobre instâncias da classe `StelaProblem`.
+    Specialized class extending MEALPY's PSO optimizer to operate directly 
+    on `StelaProblem` instances for spatio-temporal event localization.
 
-    Antes de cada iteração evolutiva, o espaço de busca é adaptativamente 
-    refinado com base na melhor solução encontrada até o momento, por meio
-    do método `restart_search_space()` do problema STELA.
+    Before each evolutionary iteration, the search space is adaptively 
+    refined based on the current best solution using the 
+    `restart_search_space()` method from `StelaProblem`.
+
+    Parameters
+    ----------
+    problem : StelaProblem
+        An instance of the geolocation problem with adaptive bounds.
+    epoch : int, optional
+        Number of evolutionary iterations (default is 1000).
+    pop_size : int, optional
+        Number of candidate solutions (default is 50).
+    **kwargs : dict, optional
+        Additional arguments passed to the parent class.
     """
 
     def evolve(self, pop=None):
         """
-        Executa uma iteração do algoritmo PSO com refinamento adaptativo
-        do espaço de busca.
+        Executes one iteration of the PSO algorithm with adaptive search space 
+        refinement tailored to the `StelaProblem`.
 
-        Este método substitui a versão padrão do MEALPY, integrando o 
-        mecanismo de atualização de limites definido na classe `StelaProblem`.
+        This method overrides the default MEALPY implementation, integrating 
+        dynamic boundary updates based on the best solution found so far.
 
-        Args:
-            pop (list, optional): População atual de agentes (partículas). 
-                                  Caso não fornecida, utiliza a população interna.
+        Parameters
+        ----------
+        pop : list, optional
+            Current population of agents (particles). If not provided, 
+            the internal population is used.
 
-        Raises:
-            TypeError: Caso o problema associado não seja uma instância de `StelaProblem`.
+        Raises
+        ------
+        TypeError
+            Raised if the associated problem is not an instance of `StelaProblem`.
         """
         if not isinstance(self.problem, StelaProblem):
             raise TypeError("O problema fornecido deve ser uma instância de StelaProblem.")
