@@ -1,60 +1,3 @@
-Metadata-Version: 2.4
-Name: GeoLightning
-Version: 0.1.0
-Summary: Sistema de geolocalização de descargas atmosféricas utilizando algoritmos genéticos
-Home-page: https://github.com/superflankerCTBA/geolightning
-Author: Augusto Mathias Adams
-Author-email: augusto.adams@ufpr.br
-Classifier: Programming Language :: Python :: 3
-Classifier: Operating System :: OS Independent
-Classifier: Intended Audience :: Science/Research
-Classifier: Topic :: Scientific/Engineering :: Physics
-Requires-Python: >=3.8
-Description-Content-Type: text/markdown
-License-File: LICENSE
-Requires-Dist: certifi>=2025.4.26
-Requires-Dist: charset-normalizer>=3.4.2
-Requires-Dist: contourpy>=1.3.2
-Requires-Dist: coverage>=7.8.1
-Requires-Dist: cycler>=0.12.1
-Requires-Dist: exceptiongroup>=1.3.0
-Requires-Dist: fonttools>=4.58.0
-Requires-Dist: idna>=3.10
-Requires-Dist: iniconfig>=2.1.0
-Requires-Dist: kiwisolver>=1.4.8
-Requires-Dist: llvmlite>=0.44.0
-Requires-Dist: matplotlib>=3.10.3
-Requires-Dist: mealpy>=3.0.1
-Requires-Dist: numba>=0.61.2
-Requires-Dist: numpy>=2.2.6
-Requires-Dist: opfunu>=1.0.4
-Requires-Dist: packaging>=25.0
-Requires-Dist: pandas>=2.2.3
-Requires-Dist: pillow>=11.2.1
-Requires-Dist: pluggy>=1.6.0
-Requires-Dist: pyparsing>=3.2.3
-Requires-Dist: pytest>=8.3.5
-Requires-Dist: pytest-cov>=6.1.1
-Requires-Dist: python-dateutil>=2.9.0.post0
-Requires-Dist: pytz>=2025.2
-Requires-Dist: requests>=2.32.3
-Requires-Dist: scipy>=1.15.3
-Requires-Dist: six>=1.17.0
-Requires-Dist: tomli>=2.2.1
-Requires-Dist: typing_extensions>=4.13.2
-Requires-Dist: tzdata>=2025.2
-Requires-Dist: urllib3>=2.4.0
-Dynamic: author
-Dynamic: author-email
-Dynamic: classifier
-Dynamic: description
-Dynamic: description-content-type
-Dynamic: home-page
-Dynamic: license-file
-Dynamic: requires-dist
-Dynamic: requires-python
-Dynamic: summary
-
 # GeoLightning: Detection and Localization of Lightning Discharges Using STELA
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -161,3 +104,11 @@ If you use **GeoLightning** in your research, please cite:
   howpublished = {\url{https://github.com/superflanker/GeoLightning}}
 }
 ```
+## License
+
+This project is licensed under the **GNU General Public License v3.0** (GPLv3).
+
+You are free to use, modify, and distribute this software, provided that any derivative work is also licensed under the GPLv3.
+
+See the [LICENSE](../../LICENSE) file for the full license text, or visit [https://www.gnu.org/licenses/gpl-3.0](https://www.gnu.org/licenses/gpl-3.0).
+

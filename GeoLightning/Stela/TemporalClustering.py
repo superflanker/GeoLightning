@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+TEmporal Clustering
+===================
 
 Numba-Optimized 1D DBSCAN Algorithm for Event Clustering
 

@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Mealpy ESO Wrapper
+==================
 
 Electrical Storm Optimization (ESO) Algorithm
 
@@ -62,8 +62,8 @@ class ESO(Optimizer):
         Best solution found so far.
     """
 
-    def __init__(self, problem, epoch=1000, pop_size=50, **kwargs):
-        super().__init__(problem, epoch, pop_size, **kwargs)
+    def __init__(self, epoch=1000, pop_size=50, **kwargs):
+        super().__init__(epoch, pop_size, **kwargs)
 
     def evolve(self, pop=None):
         X = self.get_position(pop)

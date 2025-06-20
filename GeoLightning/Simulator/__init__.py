@@ -1,7 +1,4 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
-
 Event and Sensor Simulator
 --------------------------
 

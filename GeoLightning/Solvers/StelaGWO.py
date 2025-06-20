@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela GWO Wrapper
+=================
 
 STELA-GWO Wrapper - Grey Wolf Optimizer for Atmospheric Event Localization
 
@@ -51,8 +51,6 @@ class StelaGWO(OriginalGWO):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the STELA geolocation problem.
     epoch : int, optional
         Maximum number of iterations. Default is 1000.
     pop_size : int, optional

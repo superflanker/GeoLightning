@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Performance Metrics
+===================
 
 This module defines the performance metrics used in atmospheric discharge geolocation experiments.
 

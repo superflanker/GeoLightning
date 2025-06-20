@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela AOA Wrapper
+=================
 
 STELA-AOA Wrapper - Adaptive Optimization for Lightning Event Localization
 
@@ -51,8 +51,6 @@ class StelaAOA(OriginalAOA):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the geolocation problem with adaptive bounds.
     epoch : int, optional
         Number of evolutionary iterations (default is 1000).
     pop_size : int, optional

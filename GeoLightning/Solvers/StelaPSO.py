@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela PSO Wrapper
+=================
 
 STELA Wrapper for the Particle Swarm Optimization (PSO)
 
@@ -52,8 +52,6 @@ class StelaPSO(OriginalPSO):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the geolocation problem with adaptive bounds.
     epoch : int, optional
         Number of evolutionary iterations (default is 1000).
     pop_size : int, optional

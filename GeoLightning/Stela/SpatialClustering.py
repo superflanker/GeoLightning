@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Spatial Clustering
+==================
 
 Spatio-temporal Clustering Based on Temporal Hierarchies
 ---------------------------------------------------------

@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+STELA Core algorithm
+====================
 
 Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm
 

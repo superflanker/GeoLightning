@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Bearing Position Functions
+==========================
 
 Bearing Calculation - Destination Point on a Sphere
 

@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Candidate Solutions Remapping
+=============================
 
 Remapping of Candidate Solutions
 

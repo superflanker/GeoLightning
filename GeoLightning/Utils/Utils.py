@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Utilities
+=========
 
 Utilities - Atmospheric Event Geolocation
 ------------------------------------------

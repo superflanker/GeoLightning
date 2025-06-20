@@ -1,7 +1,4 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
-
 Metaheuristic Optimizers
 --------------------------------
 
@@ -19,6 +16,7 @@ Submodules
 - ESO.py: ESO Optimizer.
 - FHO.py: FHO Optimizer.
 - LSA.py: LSA Optimizer.
+
 Notes
 -----
 This module is part of the activities of the discipline  

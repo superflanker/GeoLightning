@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+ST-DBSCAN
+=========
 
 Numba-Optimized Spatio-Temporal DBSCAN Algorithm for Event Clustering
 
@@ -87,16 +87,24 @@ def calcular_centroides(solucoes: np.ndarray,
                         mapeamento_tempos_para_solucoes: np.ndarray,
                         labels: np.ndarray) -> np.ndarray:
     """
-    Obtém o tempo médio de cada cluster e o número de sensores
-    Args:
-        solucoes (np.ndarray): vetor de soluções
-        mapeamento_tempos_para_solucoes (np.ndarray): mapeamento de tempos para soluções
-                devido ao remapeamento do espaço de buscas
-        labels (np.ndarray): vetor com os rótulos de cluster atribuídos
-                a cada ponto
-    Returns:
-        medias (np.ndarray): os centróides temporais (médias)
-                                      de cada cluster
+    Computes the mean location of occurrence for each cluster and the number of sensors associated.
+
+    This function aggregates the origin times of events based on cluster labels and 
+    returns the temporal centroid (mean) for each cluster.
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    mapeamento_tempos_para_solucoes: np.ndarray
+        time to solutions mapping
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+
+    Returns
+    -------
+    medias : np.ndarray
+        Array of temporal centroids (mean origin times) for each cluster.
     """
 
     n_clusters = np.int32(np.max(labels) + 1)

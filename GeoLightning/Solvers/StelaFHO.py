@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela FHO Wrapper
+=================
 
 STELA-FHO Wrapper - Adaptive Optimization for Lightning Event Localization
 
@@ -49,8 +49,6 @@ class StelaFHO(FHO):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the STELA-based geolocation problem.
     epoch : int, optional
         Number of optimization iterations (default is 1000).
     pop_size : int, optional

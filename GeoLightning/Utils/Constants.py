@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Constants
+=========
 
 Constants for Atmospheric Event Geolocation
 -------------------------------------------
@@ -32,35 +32,35 @@ Dependencies
 ------------
 numpy
 """
+
 import numpy as np
 
-# Average radius of Earth (in meters)
 AVG_EARTH_RADIUS: np.float64 = 1000 * 6371.0088
+"""float: Mean radius of the Earth in meters."""
 
-# Average speed of light in vacuum (in meters per second)
 AVG_LIGHT_SPEED: np.float64 = 299_792_458.0
+"""float: Speed of light in vacuum, in meters per second."""
 
-# Temporal standard deviation (sensor uncertainty, in seconds)
 SIGMA_T: np.float64 = 1.0e-6
+"""float: Temporal standard deviation of detection uncertainty (in seconds)."""
 
-# Spatial standard deviation, derived from temporal uncertainty
 SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
+"""float: Spatial standard deviation corresponding to SIGMA_T (in meters)."""
 
-# Maximum admissible deviations
-# Temporal tolerance
 EPSILON_T: np.float64 = 1000 * SIGMA_T
-# Spatial tolerance
+"""float: Maximum admissible temporal tolerance (in seconds)."""
+
 EPSILON_D: np.float64 = 1000 * SIGMA_D
+"""float: Maximum admissible spatial tolerance (in meters)."""
 
-# Maximum bounding radius for metaheuristic search (in meters)
 LIMIT_D: np.float64 = 10 * SIGMA_D
+"""float: Maximum search radius for metaheuristic methods (in meters)."""
 
-# Minimum number of points required to form a valid cluster
 CLUSTER_MIN_PTS: np.int32 = 3
+"""int: Minimum number of points to form a valid cluster."""
 
-# Conversion factor: meters per degree of latitude
 R_LAT: np.float64 = 111_320.0
+"""float: Latitude conversion factor — meters per degree."""
 
-# Maximum detection range of a sensor (in meters)
 MAX_DISTANCE: np.float64 = 160_000.0
-
+"""float: Range maximum detection of a sensor (in meters)."""

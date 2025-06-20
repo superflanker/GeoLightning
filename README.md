@@ -1,6 +1,6 @@
 # GeoLightning: Detection and Localization of Lightning Discharges Using STELA
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 GeoLightning is a Python package for the **spatiotemporal estimation of geophysical events**, with emphasis on **lightning discharge localization** using the **STELA algorithm**. It supports advanced **metaheuristic optimization** through seamless integration with the [MEALPY](https://pypi.org/project/mealpy/) framework.
 

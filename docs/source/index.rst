@@ -1,17 +1,28 @@
-.. GeoLightning documentation master file, created by
-   sphinx-quickstart on Thu Jun 19 11:33:03 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 GeoLightning documentation
 ==========================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+Official documentation of the **GeoLightning** project, with emphasis on simulation, location of atmospheric events, and analysis by probabilistic and metaheuristic methods.
 
+.. include:: readme.md
+   :parser: myst_parser.sphinx_
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
+   :caption: Main modules:
+
+   modules
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Constants Reference:
+
+   constantes
+
+Indexes
+=======
+
+* :ref:`genindex`
+* :ref:`modindex`
+
+
 

@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Log-Likelihood
+==============
 
 Log-Likelihood Function - Objective Function
 

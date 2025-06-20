@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Spatial DBSCAN Clustering
+=========================
 
 Numba-Optimized 3D DBSCAN Algorithm for Event Clustering
 

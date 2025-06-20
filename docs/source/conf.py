@@ -16,9 +16,19 @@ release = '0.1.0'
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',  # Necessário para Google/NumPy style
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
+    'myst_parser',
 ]
+
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,  # isso força aparecer mesmo sem docstring
+    'show-inheritance': True,
+}
+
+autosummary_generate = True
 
 templates_path = ['_templates']
 exclude_patterns = []

@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Network and Event Simulator
+===========================
 
 Sensor and Event Simulator – Atmospheric Event Geolocation
 

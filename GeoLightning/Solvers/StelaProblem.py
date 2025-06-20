@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela Problem Wrapper
+=====================
 
 StelaProblem Class - Spatio-Temporal Event Estimation
 

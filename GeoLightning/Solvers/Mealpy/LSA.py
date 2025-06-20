@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Mealpy LSA Wrapper
+==================
 
 Lightning Search Algorithm (LSA)
 
@@ -64,8 +64,8 @@ class LSA(Optimizer):
         Best solution found during the optimization process.
     """
 
-    def __init__(self, problem, epoch=1000, pop_size=50, **kwargs):
-        super().__init__(problem, epoch, pop_size, **kwargs)
+    def __init__(self, epoch=1000, pop_size=50, **kwargs):
+        super().__init__(epoch, pop_size, **kwargs)
 
     def evolve(self, pop=None):
         for agent in pop:

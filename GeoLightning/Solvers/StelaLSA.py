@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela LSA Wrapper
+=================
 
 STELA Wrapper for the Lightning Search Algorithm (LSA)
 
@@ -50,8 +50,6 @@ class StelaLSA(LSA):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the STELA geolocation problem.
     epoch : int, optional
         Maximum number of iterations. Default is 1000.
     pop_size : int, optional

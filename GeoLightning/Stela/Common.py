@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+STELA Common Utilities
+======================
 
 Common Functions of STELA Algorithms
 
@@ -73,7 +73,7 @@ def calcular_media_clusters_ak(tempos: np.ndarray,
 def calcular_centroides_ak(solucoes: np.ndarray,
                            labels: np.ndarray) -> np.ndarray:
     """
-    Computes the mean time of occurrence for each cluster and the number of sensors associated.
+    Computes the mean location of occurrence for each cluster and the number of sensors associated.
 
     This function aggregates the origin times of events based on cluster labels and 
     returns the temporal centroid (mean) for each cluster.

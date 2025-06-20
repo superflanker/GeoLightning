@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Sensor Model
+============
 
 Sensor Model - Geolocation of Atmospheric Events
 

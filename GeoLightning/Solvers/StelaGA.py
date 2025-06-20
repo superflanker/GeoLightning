@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Stela GA Wrapper
+================
 
 STELA-GA Wrapper - Adaptive Genetic Algorithm for Atmospheric Event Localization
 
@@ -51,8 +51,6 @@ class StelaGA(BaseGA):
 
     Parameters
     ----------
-    problem : StelaProblem
-        An instance of the STELA geolocation problem class.
     epoch : int, optional
         Maximum number of iterations. Default is 1000.
     pop_size : int, optional

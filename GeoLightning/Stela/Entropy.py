@@ -1,6 +1,6 @@
 """
-EELT 7019 - Applied Artificial Intelligence
-===========================================
+Shannon Entropy
+===============
 
 Shannon Entropy Calculation
 
