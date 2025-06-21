@@ -74,7 +74,7 @@ def test_stela_pso():
                            max_d=MAX_DISTANCE,
                            sistema_cartesiano=False)
     
-    model = StelaPSO(epoch=100, pop_size=10)
+    model = StelaPSO(epoch=10, pop_size=10)
     agent = model.solve(problem)
     best_solution = agent.solution
     best_fitness = agent.target

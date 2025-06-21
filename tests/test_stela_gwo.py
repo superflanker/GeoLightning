@@ -74,7 +74,7 @@ def test_stela_gwo():
                            max_d=MAX_DISTANCE,
                            sistema_cartesiano=False)
     
-    model = StelaGWO(epoch=100, pop_size=10)
+    model = StelaGWO(epoch=10, pop_size=10)
     agent = model.solve(problem)
     best_solution = agent.solution
     best_fitness = agent.target

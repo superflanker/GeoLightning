@@ -75,7 +75,7 @@ def test_stela_aoa():
                            max_d=MAX_DISTANCE,
                            sistema_cartesiano=False)
     
-    model = StelaAOA(epoch=100, pop_size=10)
+    model = StelaAOA(epoch=10, pop_size=10)
     agent = model.solve(problem)
     best_solution = agent.solution
     best_fitness = agent.target
