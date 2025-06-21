@@ -33,7 +33,7 @@ def test_clusterizacao_espacial_stela_sintetico():
         min_alt = 0
         max_alt = 10000
         min_time = 10000
-        max_time = 10100
+        max_time = min_time + 72 * 3600
 
         event_positions, event_times = generate_events(num_events[i],
                                                        min_lat,
