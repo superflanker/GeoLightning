@@ -59,32 +59,16 @@ class StelaAOA(OriginalAOA):
         Additional arguments passed to the parent class.
     """
 
-    def evolve(self, pop=None):
+    def evolve(self, epoch):
         """
-        Performs one iteration of the AOA algorithm with adaptive 
-        search space refinement.
-
-        This method overrides the default `evolve` function in MEALPY.
-        It integrates the dynamic space contraction mechanism by 
-        calling `restart_search_space()` before each update cycle.
+        Executes one iteration of the algorithm with adaptive search space refinement.
 
         Parameters
         ----------
-        pop : list of Agent, optional
-            Current population of candidate solutions. If not provided,
-            the internal population is used.
-
-        Raises
-        ------
-        TypeError
-            If the provided problem is not an instance of `StelaProblem`.
-
-        Returns
-        -------
-        tuple
-            Updated population and the global best agent.
+        epoch : int
+            The current epoch number.
         """
         if not isinstance(self.problem, StelaProblem):
-            raise TypeError("O problema fornecido deve ser uma instância de StelaProblem.")
+            raise TypeError("The associated problem must be an instance of StelaProblem.")
         self.problem.restart_search_space()
-        super().evolve(pop)
+        super().evolve(epoch)

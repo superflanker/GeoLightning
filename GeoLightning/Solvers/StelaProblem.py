@@ -151,21 +151,16 @@ class StelaProblem(Problem):
         if len(self.fitness_values) > 0:
             print(self.fitness_values)
             fitness_values = np.array(self.fitness_values)
-            # encontrando a melhor solução dentre as sugeridas
-            if self.minmax == "min":
-                best_fitness_index = np.argwhere(
-                    fitness_values == np.min(fitness_values)).flatten()[0]
-            else:
-                best_fitness_index = np.argwhere(
-                    fitness_values == np.max(fitness_values)).flatten()[0]
+            best_fitness_idx = np.argmin(self.fitness_values) if self.minmax == "min" else np.argmax(
+            self.fitness_values)
             # ajustando os limites 
-            bounds = FloatVar(ub=self.stela_ub[best_fitness_index],
-                              lb=self.stela_lb[best_fitness_index])
+            bounds = FloatVar(ub=self.stela_ub[best_fitness_idx],
+                              lb=self.stela_lb[best_fitness_idx])
             self.set_bounds(bounds)
             # guardando informações finais
-            self.clusters_espaciais = self.stela_clusters_espaciais[best_fitness_index]
-            self.centroides = self.stela_centroides[best_fitness_index]
-            self.detectores = self.stela_detectores[best_fitness_index]
+            self.clusters_espaciais = self.stela_clusters_espaciais[best_fitness_idx]
+            self.centroides = self.stela_centroides[best_fitness_idx]
+            self.detectores = self.stela_detectores[best_fitness_idx]
             # reiniciando as listas
             self.fitness_values = list()
             self.stela_ub = list()
@@ -263,4 +258,4 @@ class StelaProblem(Problem):
 
         # Retorna a verossimilhança como valor de fitness (negativa para problema
         # de maximização)
-        return -verossimilhanca if self.minmax == "max" else verossimilhanca
+        return verossimilhanca

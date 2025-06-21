@@ -27,7 +27,7 @@ def test_stela_eso():
     max_alt = 935
     min_time = 10000
     max_time = 12100
-    num_events = 2
+    num_events = 2000
 
     event_positions, event_times = generate_events(num_events,
                                                    min_lat,

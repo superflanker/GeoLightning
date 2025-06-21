@@ -18,7 +18,7 @@ Augusto Mathias Adams <augusto.adams@ufpr.br>
 Contents
 --------
 - LSA class: main optimizer logic
-- Step Leader, Space Projectile, and Lead Projectile sampling mechanisms
+- Transition Projectile, Space Projectile, and Lead Projectile sampling mechanisms
 
 Notes
 -----
@@ -34,6 +34,7 @@ Dependencies
 
 
 from mealpy import Optimizer
+from mealpy.utils.agent import Agent
 import numpy as np
 import random
 
@@ -43,70 +44,180 @@ class LSA(Optimizer):
     """
     Lightning Search Algorithm (LSA)
 
-    A metaheuristic optimization algorithm inspired by lightning dynamics, 
-    combining uniform (step leader), exponential (space projectile), and 
-    Gaussian (lead projectile) perturbations to balance exploration and exploitation.
+    A metaheuristic optimization algorithm inspired by lightning dynamics,
+    combining three distinct movement mechanisms to explore and exploit the
+    search space: transition projectile (uniform), space projectile (exponential),
+    and lead projectile (Gaussian).
 
     Parameters
     ----------
     problem : object
-        Optimization problem instance with defined objective function and bounds.
+        An instance of the optimization problem, defining bounds and objective.
     epoch : int, optional
-        Maximum number of iterations (generations). Default is 1000.
+        Maximum number of iterations to execute. Default is 1000.
     pop_size : int, optional
-        Number of individuals in the population. Default is 50.
+        Number of agents (solutions) in the population. Default is 50.
     **kwargs : dict, optional
-        Additional keyword arguments passed to the base Optimizer class.
+        Additional arguments passed to the base Optimizer class.
 
     Attributes
     ----------
     g_best : Agent
-        Best solution found during the optimization process.
+        The best solution found during the optimization.
+    is_parallelizable : bool
+        Indicates whether the algorithm supports parallel evaluation. Always False.
+    sort_flag : bool
+        Sorting flag for population ranking. Not used in this algorithm.
     """
 
-    def __init__(self, epoch=1000, pop_size=50, **kwargs):        
+    def __init__(self, epoch=1000, pop_size=50, **kwargs):
         super().__init__(**kwargs)
         self.epoch = self.validator.check_int("epoch", epoch, [1, 100000])
-        self.pop_size = self.validator.check_int("pop_size", pop_size, [5, 10000])
-        
+        self.pop_size = self.validator.check_int(
+            "pop_size", pop_size, [5, 10000])
+        self.set_parameters(["epoch", "pop_size"])
+        self.is_parallelizable = False
+        self.sort_flag = False
+
+    def compute_mu(self, agent):
+        """
+        Compute the distance (mu) from a given agent to the global best.
+
+        This value controls the magnitude of the exponential perturbation (space projectile).
+
+        Parameters
+        ----------
+        agent : Agent
+            Current solution agent.
+
+        Returns
+        -------
+        float
+            Euclidean distance between the agent and the global best.
+        """
+        mu = np.linalg.norm(self.g_best.solution - agent.solution)
+        return mu
+
+    def compute_sigma(self, mu):
+        """
+        Compute the standard deviation (sigma) for Gaussian sampling.
+
+        Sigma is derived from mu and controls the lead projectile's spread.
+
+        Parameters
+        ----------
+        mu : float
+            Distance from the current agent to the global best.
+
+        Returns
+        -------
+        float
+            Standard deviation used for Gaussian sampling.
+        """
+        return mu / 2.0
+    
+    def transition_projectile(self):
+        """
+        Generate a transition projectile (TP) candidate.
+
+        Samples a new position uniformly within the search bounds. Represents a random
+        discharge independent of current population dynamics.
+
+        Returns
+        -------
+        ndarray
+            A new solution vector sampled uniformly within bounds.
+        """
+        tp_new = np.random.uniform(self.problem.lb,
+                                   self.problem.ub,
+                                   self.problem.n_dims)
+        return tp_new
+
+    def space_projectile(self, agent,  mu):
+        """
+        Generate a space projectile (SP) candidate.
+
+        Samples a perturbation from an exponential distribution and applies it in a
+        random direction to the current agent. Explores the space based on distance to the best.
+
+        Parameters
+        ----------
+        agent : Agent
+            The current agent.
+        mu : float
+            Characteristic length scale based on distance to the global best.
+
+        Returns
+        -------
+        ndarray
+            A new solution vector generated via exponential displacement.
+        """
+        sp_offset = np.random.exponential(mu, self.problem.n_dims)
+        direction = np.random.choice([-1, 1], self.problem.n_dims)
+        sp_new = agent.solution + direction * sp_offset
+        return sp_new
+
+    def lead_projectile(self, sigma):
+        """
+        Generate a lead projectile (LP) candidate.
+
+        Applies Gaussian perturbation to the global best position, promoting local
+        exploitation of the most promising region found so far.
+
+        Parameters
+        ----------
+        sigma : float
+            Standard deviation controlling the Gaussian spread.
+
+        Returns
+        -------
+        ndarray
+            A new solution vector generated via Gaussian perturbation of the global best.
+        """
+        lp_offset = np.random.normal(
+            loc=0, scale=sigma, size=self.problem.n_dims)
+        lp_new = self.g_best.solution + lp_offset
+        return lp_new
+
     def evolve(self, pop=None):
-        for agent in pop:
-            current_pos = agent.solution
+        """
+        Perform one iteration of the Lightning Search Algorithm (LSA).
 
-            # Atualiza g_best em cada agente
-            g_best = self.g_best.solution
+        For each agent in the population:
+        - Computes mu (distance to global best),
+        - Computes sigma (Gaussian spread),
+        - Generates one candidate from each projectile type (TP, SP, LP),
+        - Randomly selects one,
+        - Updates the agent if the new solution improves its fitness.
 
-            # Step leader (SL) usando uniforme
-            sl_new = np.random.uniform(
-                self.problem.lb, self.problem.ub, self.problem.n_dims)
+        Parameters
+        ----------
+        pop : list of Agent, optional
+            Population to evolve (not used directly). Operates on `self.pop`.
+        """
+        for idx, agent in enumerate(self.pop):
 
-            # Space projectile (SP) usando exponencial
-            mu = np.linalg.norm(g_best - current_pos)
-            sp_offset = np.random.exponential(mu, self.problem.n_dims)
-            direction = np.random.choice([-1, 1], self.problem.n_dims)
-            sp_new = current_pos + direction * sp_offset
+            mu = self.compute_mu(agent)
 
-            # Lead projectile (LP) usando gaussiana
-            sigma = mu / 2
-            lp_offset = np.random.normal(
-                loc=0, scale=sigma, size=self.problem.n_dims)
-            lp_new = g_best + lp_offset
+            sigma = self.compute_sigma(mu)
+
+            tp_new = self.transition_projectile()
+
+            sp_new = self.space_projectile(agent, mu)
+
+            lp_new = self.lead_projectile(sigma)
 
             # Seleciona aleatoriamente um dos três
-            pos_new = random.choice([sl_new, sp_new, lp_new])
+            pos_new = random.choice([tp_new, sp_new, lp_new])
 
             # Limita aos bounds
-            pos_new = self.amend_position(pos_new)
-
-            # Avalia
-            fit_new = self.get_fitness_position(pos_new)
+            pos_new = self.amend_solution(pos_new)
+            target = self.problem.get_target(pos_new)
+            new_agent = Agent(pos_new, target)
 
             # Se melhor, aceita
-            if self.compare_agent(agent.fit, fit_new):
-                agent.solution = pos_new
-                agent.fit = fit_new
+            if self.compare_target(new_agent.target, agent.target):
+                self.pop[idx] = new_agent
 
-                if self.compare_agent(self.g_best.fit, fit_new):
-                    self.g_best = agent.copy()
-
-        return pop, self.g_best
+                if self.compare_target(new_agent.target, self.g_best.target):
+                    self.g_best = new_agent.copy()

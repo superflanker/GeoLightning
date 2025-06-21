@@ -58,26 +58,16 @@ class StelaLSA(LSA):
         Additional arguments for the base optimizer.
     """
 
-    def evolve(self, pop=None):
+    def evolve(self, epoch):
         """
-        Executes one iteration of the LSA algorithm with adaptive 
-        search space refinement for `StelaProblem`.
-
-        This method overrides the original `evolve()` implementation in MEALPY 
-        to include dynamic bounds update via `restart_search_space()`.
+        Executes one iteration of the algorithm with adaptive search space refinement.
 
         Parameters
         ----------
-        pop : list, optional
-            Current population of agents (particles). If not provided, 
-            the internal population is used.
-
-        Raises
-        ------
-        TypeError
-            Raised if the associated problem is not an instance of `StelaProblem`.
+        epoch : int
+            The current epoch number.
         """
         if not isinstance(self.problem, StelaProblem):
-            raise TypeError("O problema fornecido deve ser uma instância de StelaProblem.")
+            raise TypeError("The associated problem must be an instance of StelaProblem.")
         self.problem.restart_search_space()
-        super().evolve(pop)
+        super().evolve(epoch)

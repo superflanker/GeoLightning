@@ -284,7 +284,7 @@ def generate_detections(event_positions: np.ndarray,
                                 min=-6 * jitter_std,
                                 max=6 * jitter_std)
                 t_detect = event_time + \
-                    event_distances[j] / AVG_LIGHT_SPEED + noise
+                    event_distances[j] / AVG_LIGHT_SPEED #+ noise
                 if sensor_detection(event_distances[j]):
                     t_detections.append(sensor_positions[j])
                     t_detection_times.append(t_detect)

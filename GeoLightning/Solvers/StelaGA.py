@@ -59,34 +59,16 @@ class StelaGA(BaseGA):
         Additional keyword arguments for the base optimizer.
     """
 
-    def evolve(self, pop=None):
-        
+    def evolve(self, epoch):
         """
-        Performs one iteration of the Genetic Algorithm with adaptive
-        search space refinement.
-
-        This method overrides the default `evolve` behavior by first
-        invoking the `restart_search_space()` method of the problem
-        to dynamically reduce the search region based on the current best solution.
+        Executes one iteration of the algorithm with adaptive search space refinement.
 
         Parameters
         ----------
-        pop : list of Agent, optional
-            The current population of candidate solutions. If not provided,
-            the internal population is used.
-
-        Raises
-        ------
-        TypeError
-            If the associated problem is not an instance of `StelaProblem`.
-
-        Returns
-        -------
-        tuple
-            Updated population and the best global solution.
+        epoch : int
+            The current epoch number.
         """
-        
         if not isinstance(self.problem, StelaProblem):
-            raise TypeError("O problema fornecido deve ser uma instância de StelaProblem.")
+            raise TypeError("The associated problem must be an instance of StelaProblem.")
         self.problem.restart_search_space()
-        super().evolve(pop)
+        super().evolve(epoch)
