@@ -170,7 +170,7 @@ class ESO(Optimizer):
         else:
             self.ionized_areas_index = sorted_idx[-n_ion:]
         self.ionized_areas_positions = [
-            self.pop[i].position.copy() for i in self.ionized_areas_index]
+            self.pop[i].solution.copy() for i in self.ionized_areas_index]
 
     def calculate_field_resistance(self):
         """

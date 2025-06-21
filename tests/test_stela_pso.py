@@ -26,7 +26,7 @@ def test_stela_pso():
     min_alt = 0
     max_alt = 1
     min_time = 10000
-    max_time = 12100
+    max_time = min_time + 72 * 3600
     num_events = 2000
 
     event_positions, event_times = generate_events(num_events,
