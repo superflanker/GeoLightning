@@ -20,14 +20,6 @@ GeoLightning.Stela.Common module
    :undoc-members:
    :show-inheritance:
 
-GeoLightning.Stela.DBSCAN3D module
-----------------------------------
-
-.. automodule:: GeoLightning.Stela.DBSCAN3D
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 GeoLightning.Stela.Dimensions module
 ------------------------------------
 
@@ -52,34 +44,11 @@ GeoLightning.Stela.LogLikelihood module
    :undoc-members:
    :show-inheritance:
 
-GeoLightning.Stela.STDBSCAN module
-----------------------------------
-
-.. automodule:: GeoLightning.Stela.STDBSCAN
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-GeoLightning.Stela.SpatialClustering module
--------------------------------------------
-
-.. automodule:: GeoLightning.Stela.SpatialClustering
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 GeoLightning.Stela.Stela module
 -------------------------------
 
 .. automodule:: GeoLightning.Stela.Stela
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-GeoLightning.Stela.TemporalClustering module
---------------------------------------------
-
-.. automodule:: GeoLightning.Stela.TemporalClustering
    :members:
    :undoc-members:
    :show-inheritance:

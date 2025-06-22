@@ -14,6 +14,7 @@ from GeoLightning.Utils.Constants import *
 from GeoLightning.Solvers.StelaLSA import StelaLSA
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
+from GeoLightning.Stela.Stela import stela
 from mealpy import FloatVar
 
 def test_stela_lsa():
@@ -67,18 +68,26 @@ def test_stela_lsa():
                            pontos_de_chegada=detections, 
                            tempos_de_chegada=detection_times,
                            min_pts=CLUSTER_MIN_PTS,
-                           sigma_d=SIGMA_D,
-                           epsilon_d=EPSILON_D,
+                           SIGMA_T=SIGMA_T,
                            epsilon_t=EPSILON_T,
-                           limit_d=LIMIT_D,
-                           max_d=MAX_DISTANCE,
                            sistema_cartesiano=False)
     
-    model = StelaLSA(epoch=10, pop_size=10)
+    model = StelaLSA(epoch=100, pop_size=10)
     agent = model.solve(problem)
     best_solution = agent.solution
     best_fitness = agent.target
-    print(best_fitness, best_solution)
-    print(problem.clusters_espaciais)
-    print(problem.lb)
-test_stela_lsa()
+    best_solution = np.array(best_solution).reshape(-1,3)
+       # recomputando a clusterização - índice de associação aplicado ao algoritmo
+    (clusters_espaciais, 
+     verossimilhanca) = stela(solucoes=best_solution,
+                              tempos_de_chegada=detection_times,
+                              pontos_de_deteccao=detections,
+                              sistema_cartesiano=False,
+                              epsilon_t=EPSILON_T,
+                              min_pts=CLUSTER_MIN_PTS,
+                              c=AVG_LIGHT_SPEED)
+    len_clusterizados = len(
+        np.unique(clusters_espaciais[clusters_espaciais >= 0]))
+    len_reais = len(event_positions)
+    assert len_clusterizados == len_reais
+

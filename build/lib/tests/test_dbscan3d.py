@@ -4,7 +4,7 @@
     Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
-from GeoLightning.Stela.DBSCAN3D import clusterizacao_DBSCAN3D
+from GeoLightning.Stela.Deprecated.DBSCAN3D import clusterizacao_DBSCAN3D
 
 def test_dbscan3d():
     cluster1 = np.array([[0,0,0], [0,0.1,0], [0,0.2,0]])

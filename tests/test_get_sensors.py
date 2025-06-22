@@ -42,16 +42,10 @@ def test_simulations():
                                              sensors)
     
     # clusterizando
-    (lb,
-     ub,
-     centroides,
-     detectores,
-     clusters_espaciais,
-     novas_solucoes,
+    (clusters_espaciais,
      verossimilhanca) = stela(n_event_positions,
                               detection_times,
                               detections,
-                              spatial_clusters,
                               sistema_cartesiano=False)
     
     assert len(np.unique(clusters_espaciais)) == len(event_positions)
@@ -75,16 +69,10 @@ def test_simulations():
                                              sensors)
     
     # clusterizando
-    (lb,
-     ub,
-     centroides,
-     detectores,
-     clusters_espaciais,
-     novas_solucoes,
+    (clusters_espaciais,
      verossimilhanca) = stela(n_event_positions,
                               detection_times,
                               detections,
-                              spatial_clusters,
                               sistema_cartesiano=False)
     
     assert len(np.unique(clusters_espaciais)) == len(event_positions)

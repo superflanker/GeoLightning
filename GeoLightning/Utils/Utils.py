@@ -130,8 +130,102 @@ def determinacao_angular_minima(angulo: np.float64) -> np.float64:
     return angulo
 
 #################################################################
-# Distâncias 
+# Distâncias
 #################################################################
+
+
+@jit(nopython=True, cache=True, fastmath=True)
+def coordenadas_esfericas_para_cartesianas(coordinates: np.ndarray) -> np.ndarray:
+    """
+    Convert spherical (geodetic) coordinates to Cartesian ECEF coordinates.
+
+    Parameters
+    ----------
+    coordinates : ndarray
+        Input vector [latitude, longitude, altitude] in degrees and meters.
+
+    Returns
+    -------
+    ndarray
+        Output vector [x, y, z] in meters (ECEF Cartesian coordinates).
+    """
+    radius = AVG_EARTH_RADIUS + coordinates[2]
+    new_coordinates = np.array([
+        np.cos(np.radians(coordinates[0])) *
+        np.cos(np.radians(coordinates[1])) * radius,
+        np.cos(np.radians(coordinates[0])) *
+        np.sin(np.radians(coordinates[1])) * radius,
+        np.sin(np.radians(coordinates[0])) * radius
+    ], dtype=np.float64)
+    return new_coordinates
+
+
+@jit(nopython=True, cache=True, fastmath=True)
+def coordenadas_esfericas_para_cartesianas_batelada(coordinates: np.ndarray) -> np.ndarray:
+    """
+    Convert spherical (geodetic) coordinates to Cartesian ECEF coordinates - batch version.
+
+    Parameters
+    ----------
+    coordinates : ndarray
+        Input vector [[latitude, longitude, altitude],...] in degrees and meters.
+
+    Returns
+    -------
+    ndarray
+        Output vector [[x, y, z],...] in meters (ECEF Cartesian coordinates).
+    """
+    new_coordinates = np.empty(coordinates.shape, dtype=coordinates.dtype)
+    for i in range(coordinates.shape[0]):
+        new_coordinates[i] = coordenadas_esfericas_para_cartesianas(
+            coordinates[i])
+    return new_coordinates
+
+
+@jit(nopython=True, cache=True, fastmath=True)
+def coordenadas_cartesianas_para_esfericas(coordinates: np.ndarray) -> np.ndarray:
+    """
+    Convert Cartesian ECEF coordinates to spherical (geodetic) coordinates.
+
+    Parameters
+    ----------
+    coordinates : ndarray
+        Input vector [x, y, z] in meters (ECEF Cartesian coordinates).
+
+    Returns
+    -------
+    ndarray
+        Output vector [latitude, longitude, altitude] in degrees and meters.
+    """
+    radius = np.sqrt(coordinates.T.dot(coordinates))
+    new_coordinates = np.array([
+        np.degrees(np.arcsin(coordinates[2] / radius)),
+        np.degrees(np.arctan2(coordinates[1], coordinates[0])),
+        radius - AVG_EARTH_RADIUS
+    ], dtype=np.float64)
+    return new_coordinates
+
+
+@jit(nopython=True, cache=True, fastmath=True)
+def coordenadas_cartesianas_para_esfericas_batelada(coordinates: np.ndarray) -> np.ndarray:
+    """
+    Convert Cartesian ECEF coordinates to spherical (geodetic) coordinates - batch version.
+
+    Parameters
+    ----------
+    coordinates : ndarray
+        Input vector [[x, y, z], ...] in meters (ECEF Cartesian coordinates).
+
+    Returns
+    -------
+    ndarray
+        Output vector [[latitude, longitude, altitude], ...] in degrees and meters.
+    """
+    new_coordinates = np.empty(coordinates.shape, dtype=coordinates.dtype)
+    for i in range(coordinates.shape[0]):
+        new_coordinates[i] = coordenadas_cartesianas_para_esfericas(
+            coordinates[i])
+    return new_coordinates
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -205,6 +299,7 @@ def distancia_cartesiana_entre_pontos(a: np.ndarray,
     temp = np.subtract(a, s)
     return np.sqrt(temp.dot(temp.T))
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def computa_distancia(a: np.ndarray,
                       s: np.ndarray,
@@ -237,7 +332,7 @@ def computa_distancia(a: np.ndarray,
     """
     if sistema_cartesiano:
         return distancia_cartesiana_entre_pontos(
-                a, s)
+            a, s)
     return distancia_esferica_entre_pontos(a, s)
 
 
@@ -284,9 +379,9 @@ def computa_distancias(origem: np.ndarray,
 
     return distancias
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def computa_tempos_de_origem(solucoes: np.ndarray,
-                             clusters_espaciais: np.ndarray,
                              tempos_de_chegada: np.ndarray,
                              pontos_de_deteccao: np.ndarray,
                              sistema_cartesiano: bool = False) -> np.ndarray:
@@ -300,9 +395,7 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     Parameters
     ----------
     solucoes : np.ndarray
-        Array of shape (N, 3) containing the spatial coordinates of candidate event locations.
-    clusters_espaciais : np.ndarray
-        Array of shape (M,) mapping each arrival time and sensor position to a candidate solution (M ≤ N).
+        Array of shape (N, 3) containing the spatial coordinates of candidate event locations..
     tempos_de_chegada : np.ndarray
         Array of shape (M,) with the absolute arrival times of signals at the sensors.
     pontos_de_deteccao : np.ndarray
@@ -323,17 +416,16 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     - Optimized using Numba for high-performance numerical computation.
     """
 
-    N = len(clusters_espaciais)
+    N = len(solucoes)
     distancias = np.zeros(N, dtype=np.float64)
-    clusters_espaciais = clusters_espaciais.astype(np.int64)
-    
+
     for i in range(N):
         if sistema_cartesiano:
             distancias[i] = distancia_cartesiana_entre_pontos(
-                solucoes[clusters_espaciais[i]], pontos_de_deteccao[i])
+                solucoes[i], pontos_de_deteccao[i])
         else:
             distancias[i] = distancia_esferica_entre_pontos(
-                solucoes[clusters_espaciais[i]], pontos_de_deteccao[i])
+                solucoes[i], pontos_de_deteccao[i])
 
     tempos_de_origem = tempos_de_chegada - distancias / AVG_LIGHT_SPEED
 

@@ -68,5 +68,4 @@ class StelaFHO(FHO):
         """
         if not isinstance(self.problem, StelaProblem):
             raise TypeError("The associated problem must be an instance of StelaProblem.")
-        self.problem.restart_search_space()
         super().evolve(epoch)

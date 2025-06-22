@@ -4,7 +4,7 @@
     Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
-from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
+from GeoLightning.Stela.Deprecated.TemporalClustering import clusterizacao_temporal_stela
 
 def test_temporal_clustering_dois_grupos():
     tempos = np.array([1.0, 1.001, 1.002, 5.0, 5.001, 5.002])

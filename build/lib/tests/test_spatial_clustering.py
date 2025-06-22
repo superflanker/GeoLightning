@@ -4,7 +4,7 @@
     Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
-from GeoLightning.Stela.SpatialClustering import clusterizacao_espacial_stela
+from GeoLightning.Stela.Deprecated.SpatialClustering import clusterizacao_espacial_stela
 
 def test_clusterizacao_espacial_stela_sintetico():
     solucoes = np.array([[0,0,0], [0,0.1,0], [5,5,5], [5.1,5,5]])

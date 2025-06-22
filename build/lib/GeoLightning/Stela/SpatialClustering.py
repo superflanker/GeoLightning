@@ -10,7 +10,7 @@ from GeoLightning.Utils.Constants import SIGMA_T, \
     SIGMA_D, \
     EPSILON_D, \
     CLUSTER_MIN_PTS
-from GeoLightning.Stela.DBSCAN3D import clusterizacao_DBSCAN3D
+from GeoLightning.Stela.Deprecated.DBSCAN3D import clusterizacao_DBSCAN3D
 from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
 from GeoLightning.Stela.Dimensions import remapeia_solucoes, \
     remapeia_solucoes_unicas
@@ -112,7 +112,7 @@ def clusterizacao_espacial_stela(solucoes: np.ndarray,
 
 if __name__ == "__main__":
 
-    from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
+    from GeoLightning.Stela.Deprecated.TemporalClustering import clusterizacao_temporal_stela
     from GeoLightning.Utils.Utils import computa_tempos_de_origem
     from time import perf_counter
 

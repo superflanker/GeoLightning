@@ -7,13 +7,13 @@ Official documentation of the **GeoLightning** project, with emphasis on simulat
    :parser: myst_parser.sphinx_
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
    :caption: Main modules:
 
    modules
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
    :caption: Constants Reference:
 
    constantes

@@ -17,14 +17,11 @@ Submodules
 ----------
 - Bounds.py: spatio-tempral bounds computation.
 - Common.py: common utilities for the module.
-- DBSCAN3D.py: DBSCAN 3D optimized with numba.
 - Dimensions.py: Remapping of Candidate Solutions.
 - Entropy.py: Shannon Entropy computation.
+- LightDBSCAN.py: DBSCAN Algorithm using a true spatio-temporal metric
 - LogLikelihood.py: Log likelihood computation.
-- SpatialClustering.py: Spatial Clustering and Log-likelihood computation.
-- STDBSCAN.py: Spatio-Temporal DBSCAN (used for comparisions)
 - Stela.py: Core spatio-temporal likelihood computation.
-- TemporalClustering.py: Temporal Clustering using 1D DBSCAN.
 
 Notes
 -----

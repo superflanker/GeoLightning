@@ -43,12 +43,10 @@ Dependencies
 import numpy as np
 from mealpy import FloatVar, Problem
 from GeoLightning.Stela.Stela import stela
-from GeoLightning.Utils.Constants import SIGMA_D, \
-    EPSILON_D, \
+from GeoLightning.Utils.Constants import SIGMA_T, \
     EPSILON_T, \
-    LIMIT_D, \
     CLUSTER_MIN_PTS, \
-    MAX_DISTANCE
+    AVG_LIGHT_SPEED
 
 
 class StelaProblem(Problem):
@@ -58,12 +56,10 @@ class StelaProblem(Problem):
                  pontos_de_chegada: np.ndarray,
                  tempos_de_chegada: np.ndarray,
                  sistema_cartesiano: bool = False,
-                 sigma_d: np.float64 = SIGMA_D,
+                 sigma_t: np.float64 = SIGMA_T,
                  epsilon_t: np.float64 = EPSILON_T,
-                 epsilon_d: np.float64 = EPSILON_D,
-                 limit_d: np.float64 = LIMIT_D,
-                 max_d: np.float64 = MAX_DISTANCE,
                  min_pts: np.int32 = CLUSTER_MIN_PTS,
+                 c: np.float64 = AVG_LIGHT_SPEED,
                  **kwargs):
         """
         Initialize an instance of the STELA problem for use with MEALPY 
@@ -82,18 +78,14 @@ class StelaProblem(Problem):
             Arrival times of signals at each sensor (shape: N,).
         sistema_cartesiano : bool, optional
             If True, uses Cartesian coordinates; otherwise, geodetic coordinates.
-        sigma_d : float, optional
-            Standard deviation of distance measurement error.
+        sigma_t: float, optional
+            Standard deviation of time measurement error.
         epsilon_t : float, optional
             Maximum temporal tolerance for clustering.
-        epsilon_d : float, optional
-            Maximum spatial tolerance for clustering.
-        limit_d : float, optional
-            Radius for local refinement during optimization.
-        max_d : float, optional
-            Maximum admissible distance between events and detections.
         min_pts : int, optional
             Minimum number of detections for a cluster to be considered valid.
+        c: float, optional
+            wave propagation velocity (Default is average light speed)
         **kwargs : dict
             Additional arguments for the MEALPY `Problem` base class.
 
@@ -110,66 +102,13 @@ class StelaProblem(Problem):
         self.pontos_de_chegada = pontos_de_chegada
         self.tempos_de_chegada = tempos_de_chegada
         self.sistema_cartesiano = sistema_cartesiano
-        self.sigma_d = sigma_d
-        self.epsilon_d = epsilon_d
+        self.sigma_t = sigma_t
         self.epsilon_t = epsilon_t
-        self.limit_d = limit_d
-        self.max_d = max_d
         self.min_pts = min_pts
-        self.n_vars = 3 # para encode/decode solutions
+        self.avg_speed = c
 
-        # variáveis internas de controle
-        self.fitness_values = list()
-        self.stela_ub = list()
-        self.stela_lb = list()
-        self.stela_centroides = list()
-        self.stela_clusters_espaciais = list()
-        self.stela_novas_solucoes = list()
-        self.stela_detectores = list()
-        # variáveis de resposta
-        self.clusters_espaciais = - \
-            np.ones(pontos_de_chegada.shape[0], dtype=np.int32)
-        self.centroides = -np.ones(pontos_de_chegada.shape)
-        self.detectores = -np.ones(pontos_de_chegada.shape[0], dtype=np.int32)
         super().__init__(bounds, minmax, solution_encoding="float", **kwargs)
-
-    def restart_search_space(self):
-        """
-        Dynamically refines the search space based on the best solution 
-        encountered during the evolutionary process.
-
-        Updates the internal upper (`self.ub`) and lower (`self.lb`) bounds
-        using the highest scoring solution (according to `minmax`). This method 
-        is intended to iteratively focus the search around more promising regions.
-
-        Side Effects
-        ------------
-        - Updates the internal search bounds (`self.lb`, `self.ub`).
-        - Updates the attributes `clusters_espaciais`, `centroides`, `detectores`.
-        - Clears all temporary storage used in the previous evaluation cycle.
-        """
-        if len(self.fitness_values) > 0:
-            print(self.fitness_values)
-            fitness_values = np.array(self.fitness_values)
-            best_fitness_idx = np.argmin(self.fitness_values) if self.minmax == "min" else np.argmax(
-            self.fitness_values)
-            # ajustando os limites 
-            bounds = FloatVar(ub=self.stela_ub[best_fitness_idx],
-                              lb=self.stela_lb[best_fitness_idx])
-            self.set_bounds(bounds)
-            # guardando informações finais
-            self.clusters_espaciais = self.stela_clusters_espaciais[best_fitness_idx]
-            self.centroides = self.stela_centroides[best_fitness_idx]
-            self.detectores = self.stela_detectores[best_fitness_idx]
-            # reiniciando as listas
-            self.fitness_values = list()
-            self.stela_ub = list()
-            self.stela_lb = list()
-            self.stela_centroides = list()
-            self.stela_clusters_espaciais = list()
-            self.stela_novas_solucoes = list()
-            self.stela_detectores = list()
-
+            
     def evaluate(self, solution):
         """
         Evaluates a solution using the defined objective function.
@@ -185,23 +124,6 @@ class StelaProblem(Problem):
             A list with one element containing the objective function value.
         """
         return [self.obj_func(solution)]
-
-    def get_best_solution(self):
-        """
-        Retrieves the best solution and its fitness score found so far.
-
-        Returns
-        -------
-        tuple
-            - np.ndarray: the best solution vector.
-            - float: the corresponding fitness value.
-        """
-        if not self.fitness_values:
-            return None, None
-        idx = np.argmin(self.fitness_values) if self.minmax == "min" else np.argmax(
-            self.fitness_values)
-
-        return self.stela_novas_solucoes[idx], self.fitness_values[idx]
 
     def obj_func(self, solution):
         """
@@ -228,33 +150,15 @@ class StelaProblem(Problem):
         solucoes = np.array(solution.reshape(-1, 3))
 
         # Executa o algoritmo STELA
-        (lb,
-         ub,
-         centroides,
-         detectores,
-         clusters_espaciais,
-         novas_solucoes,
+        (clusters_espaciais,
          verossimilhanca) = stela(solucoes,
                                   self.tempos_de_chegada,
                                   self.pontos_de_chegada,
-                                  self.clusters_espaciais,
                                   self.sistema_cartesiano,
-                                  self.sigma_d,
+                                  self.sigma_t,
                                   self.epsilon_t,
-                                  self.epsilon_d,
-                                  self.limit_d,
-                                  self.max_d,
-                                  self.min_pts)
-
-        # Armazena resultados auxiliares para possível refinamento posterior
-        self.fitness_values.append(-verossimilhanca if self.minmax ==
-                                   "max" else verossimilhanca)
-        self.stela_ub.append(ub)
-        self.stela_lb.append(lb)
-        self.stela_centroides.append(centroides)
-        self.stela_clusters_espaciais.append(clusters_espaciais)
-        self.stela_novas_solucoes.append(novas_solucoes)
-        self.stela_detectores.append(detectores)
+                                  self.min_pts,
+                                  self.avg_speed)
 
         # Retorna a verossimilhança como valor de fitness (negativa para problema
         # de maximização)

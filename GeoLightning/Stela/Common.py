@@ -30,8 +30,8 @@ from GeoLightning.Utils.Utils import computa_distancia
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def calcular_media_clusters_ak(tempos: np.ndarray,
-                               labels: np.ndarray) -> tuple:
+def calcula_centroides_temporais(tempos: np.ndarray,
+                                 labels: np.ndarray) -> tuple:
     """
     Computes the average origin time and the number of detectors for each cluster.
 
@@ -70,8 +70,42 @@ def calcular_media_clusters_ak(tempos: np.ndarray,
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def calcular_centroides_ak(solucoes: np.ndarray,
-                           labels: np.ndarray) -> np.ndarray:
+def calcula_residuos_temporais(tempos: np.ndarray,
+                               labels: np.ndarray,
+                               centroides: np.ndarray) -> np.ndarray:
+    """
+    Computes the temporal resuduals around the mean solution time
+
+    Parameters
+    ----------
+    tempos: np.ndarray
+        vetor of origin times ([t1, t2, t3, ...])
+    labels: np.ndarray 
+        clusterings labels ([la, la, lb, ...])
+    centroides: np.ndarray
+        clusterings centroids ([ta, tb, tc, ...])
+
+    Returns
+    -------
+    residuos_de_tempo : np.ndarray
+        Array containing mean times for each solution point 
+        relative to its cluster centroid. 
+
+    """
+    residuos_de_tempo = np.zeros(len(np.argwhere(labels >= 0)), dtype=np.float64)
+    d_idx = 0
+    for i in range(labels.shape[0]):
+        if labels[i] == -1:
+            continue
+        residuos_de_tempo[d_idx] = np.abs(tempos[i] - centroides[labels[i]])
+        d_idx += 1
+
+    return residuos_de_tempo
+
+
+@jit(nopython=True, cache=True, fastmath=True)
+def calcular_centroides_espaciais(solucoes: np.ndarray,
+                                  labels: np.ndarray) -> np.ndarray:
     """
     Computes the mean location of occurrence for each cluster and the number of sensors associated.
 
@@ -112,10 +146,10 @@ def calcular_centroides_ak(solucoes: np.ndarray,
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def calcula_distancias_ao_centroide_ak(solucoes: np.ndarray,
-                                       labels: np.ndarray,
-                                       centroides: np.ndarray,
-                                       sistema_cartesiano: bool = False) -> np.ndarray:
+def calcula_distancias_ao_centroide(solucoes: np.ndarray,
+                                    labels: np.ndarray,
+                                    centroides: np.ndarray,
+                                    sistema_cartesiano: bool = False) -> np.ndarray:
     """
     Computes the delta D used in likelihood calculations.
 

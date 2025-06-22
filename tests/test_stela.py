@@ -13,9 +13,7 @@ from GeoLightning.Simulator.Simulator import (get_sensors,
                                               generate_events)
 
 def test_stela():
-    from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
-    from GeoLightning.Utils.Utils import computa_tempos_de_origem
-
+ 
     num_events = [2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000]
 
@@ -25,8 +23,8 @@ def test_stela():
         min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
         # gerando os eventos
-        min_alt = 0
-        max_alt = 10000
+        min_alt = 935.0
+        max_alt = 935.0
         min_time = 10000
         max_time = min_time + 72 * 3600
 
@@ -49,16 +47,10 @@ def test_stela():
          spatial_clusters) = generate_detections(event_positions,
                                                  event_times,
                                                  sensors)
-        (lb,
-         ub,
-         centroides,
-         detectores,
-         clusters_espaciais,
-         novas_solucoes,
+        (clusters_espaciais,
          verossimilhanca) = stela(n_event_positions,
                                   detection_times,
                                   detections,
-                                  spatial_clusters,
                                   sistema_cartesiano=False)
         
         assert len(np.unique(clusters_espaciais)) == len(event_positions)

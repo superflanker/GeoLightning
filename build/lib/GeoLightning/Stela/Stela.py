@@ -31,8 +31,8 @@ from GeoLightning.Utils.Constants import SIGMA_D, \
     CLUSTER_MIN_PTS, \
     MAX_DISTANCE
 from GeoLightning.Utils.Utils import computa_tempos_de_origem
-from GeoLightning.Stela.TemporalClustering import clusterizacao_temporal_stela
-from GeoLightning.Stela.SpatialClustering import clusterizacao_espacial_stela
+from GeoLightning.Stela.Deprecated.TemporalClustering import clusterizacao_temporal_stela
+from GeoLightning.Stela.Deprecated.SpatialClustering import clusterizacao_espacial_stela
 from GeoLightning.Stela.Bounds import gera_limites
 
 
