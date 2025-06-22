@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Simulator package &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GeoLightning.Solvers package" href="GeoLightning.Solvers.html" />
+    <link rel="prev" title="GeoLightning.Runners package" href="GeoLightning.Runners.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">GeoLightning.Simulator package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.html">GeoLightning.Solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Stela.html">GeoLightning.Stela package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Utils.html">GeoLightning.Utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.html#module-GeoLightning">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">GeoLightning</a></li>
+          <li class="breadcrumb-item"><a href="GeoLightning.html">GeoLightning package</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Simulator package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/GeoLightning.Simulator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geolightning-simulator-package">
+<h1>GeoLightning.Simulator package<a class="headerlink" href="#geolightning-simulator-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-GeoLightning.Simulator.Metrics">
+<span id="geolightning-simulator-metrics-module"></span><h2>GeoLightning.Simulator.Metrics module<a class="headerlink" href="#module-GeoLightning.Simulator.Metrics" title="Link to this heading"></a></h2>
+<section id="performance-metrics">
+<h3>Performance Metrics<a class="headerlink" href="#performance-metrics" title="Link to this heading"></a></h3>
+<p>This module defines the performance metrics used in atmospheric discharge geolocation experiments.</p>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
+<p>The functions implemented in this module are designed to evaluate the
+accuracy and consistency of geolocation algorithms applied to atmospheric
+discharges (e.g., lightning events). It supports metrics such as
+positioning error, timing residuals, likelihood values, and statistical
+criteria for evaluating candidate solutions.</p>
+</section>
+<section id="author">
+<h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="contents">
+<h4>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Metric evaluation functions for estimated positions and times.</p></li>
+<li><p>Support for spatial and temporal residuals.</p></li>
+<li><p>Adapted for use with likelihood-based geolocation pipelines.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numpy.linalg.inv</p></li>
+<li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Constants (SIGMA_D, SIGMA_T)</p></li>
+</ul>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.acuracia_associacao">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">acuracia_associacao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">associacoes_estimadas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">associacoes_reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#acuracia_associacao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.acuracia_associacao" title="Link to this definition"></a></dt>
+<dd><p>Calculates the accuracy of the association between detections and events.</p>
+<p>The accuracy of the association is defined as the proportion of correct associations between the estimated and real indices, expressing the effectiveness of the algorithm in the task of identifying corresponding events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimated_associations</strong> (<em>np.ndarray</em>) – One-dimensional vector containing the estimated indices of the associations for each detection.</p></li>
+<li><p><strong>real_associations</strong> (<em>np.ndarray</em>) – One-dimensional vector containing the real indices of the corresponding associations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>np.float64</em></p></li>
+<li><p><em>Value of the accuracy of the association, defined as the ratio between the number of correct associations and the total number of detections.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.average_mean_squared_error">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">average_mean_squared_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#average_mean_squared_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.average_mean_squared_error" title="Link to this definition"></a></dt>
+<dd><p>Calculates the mean squared error (AMSE) between estimated values ​​and real values.</p>
+<p>AMSE (Average Mean Squared Error) is a metric that quantifies the average of the squares of the differences between estimated values ​​and real values, penalizing larger errors with greater severity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated values, usually from predictions of a model.</p></li>
+<li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real values, considered as reference or ground truth.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the mean squared error (AMSE) between the provided vectors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcula_prmse">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcula_prmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rmse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referencia</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcula_prmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcula_prmse" title="Link to this definition"></a></dt>
+<dd><p>Calculates the percentage root mean square error (PRMSE).</p>
+<p>PRMSE (Percentage Root Mean Square Error) is defined as the percentage ratio between the RMSE value and a reference value (usually the full scale), and is useful for relative performance analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rmse</strong> (<em>float</em>) – Absolute value of the root mean square error (RMSE).</p></li>
+<li><p><strong>reference</strong> (<em>float</em>) – Full scale value or reference adopted for normalization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the root mean square error expressed as a percentage (PRMSE), given by: <cite>(rmse / reference) * 100</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_espacial">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_espacial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_espacial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_espacial" title="Link to this definition"></a></dt>
+<dd><p>Calculates the Cramér-Rao Lower Bound (CRLB) matrix for estimating the position of an event.</p>
+<p>A model of isotropic spatial variance is assumed and distance measurements are subject to Gaussian noise with constant standard deviation. The CRLB matrix expresses the lower bound of the variance of any unbiased estimator of the event’s position in three-dimensional space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_d</strong> (<em>float</em>) – Standard deviation of distance measurements (in meters), assumed to be the same for all sensors.</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – Total number of sensors used in the geolocation system.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_rmse">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crlb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_rmse" title="Link to this definition"></a></dt>
+<dd><p>Computes the root mean square error (RMSE) derived from the CRLB matrix.</p>
+<p>This function calculates the quadratic mean of the trace of the product of
+the CRLB matrix with itself, normalized by its dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>crlb</strong> (<em>np.ndarray</em>) – CRLB matrix from which the RMSE is to be computed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>RMSE value computed from the CRLB matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_temporal">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_temporal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_temporal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_temporal" title="Link to this definition"></a></dt>
+<dd><p>Computes the Cramér-Rao Lower Bound (CRLB) for estimating the time of origin of an event.</p>
+<p>The CRLB represents the theoretical lower bound on the variance of any unbiased estimator
+for the temporal origin, under Gaussian noise with standard deviation <cite>sigma_t</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the time measurements (in seconds). Default is <cite>SIGMA_T</cite>.</p></li>
+<li><p><strong>N</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sensors involved in the estimation. Default is 7.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A (1, 1) array representing the CRLB for the origin time estimate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_mean_crlb">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_mean_crlb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crlb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_mean_crlb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_mean_crlb" title="Link to this definition"></a></dt>
+<dd><p>Computes the mean of the variances along the diagonal of the CRLB matrix.</p>
+<p>This metric represents the average uncertainty (variance) associated with
+the estimation of each parameter under the CRLB model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>crlb</strong> (<em>np.ndarray</em>) – CRLB matrix obtained from the estimation process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean value of the variances in the CRLB matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.erro_relativo_funcao_ajuste">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">erro_relativo_funcao_ajuste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_estimado</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F_referencia</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#erro_relativo_funcao_ajuste"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.erro_relativo_funcao_ajuste" title="Link to this definition"></a></dt>
+<dd><p>Calculates the percentage relative error between the estimated fitting function and a reference.</p>
+<p>The percentage relative error is defined as the percentage difference between the estimated value of the fitting function and a reference value, the latter usually being a benchmark, known optimum value or ideal solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F_estimado</strong> (<em>float</em>) – Value of the fitting function obtained by the algorithm.</p></li>
+<li><p><strong>F_referencia</strong> (<em>float</em>) – Reference value used for comparison, such as the theoretical optimum or a benchmark.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>float</em></p></li>
+<li><p><em>Percentage relative error between the given values, calculated as</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">*</span> <span class="pre">abs(F_estimado</span> <span class="pre">-</span> <span class="pre">F_referencia)</span> <span class="pre">/</span> <span class="pre">abs(F_referencia)</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.mae">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mae" title="Link to this definition"></a></dt>
+<dd><p>Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.</p>
+<p>MAE is a widely used metric in the evaluation of prediction models, providing a direct measure of the average magnitude of the errors, without considering their direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated values, representing the model predictions.</p></li>
+<li><p><strong>actual</strong> (<em>np.ndarray</em>) – Vector of actual values, representing the reference or true values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the mean absolute error (MAE) between the given vectors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.mean_location_error">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mean_location_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mean_location_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mean_location_error" title="Link to this definition"></a></dt>
+<dd><p>Calculates the mean localization error (MLE) between the estimated values ​​and the real values.</p>
+<p>The MLE (Mean Localization Error) is defined as the average of the Euclidean distances between pairs of estimated and real positions, and is widely used in geolocation problems to quantify spatial accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated positions</p></li>
+<li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real reference positions, with the same dimension as <cite>estimated</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.rmse">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimadas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.rmse" title="Link to this definition"></a></dt>
+<dd><p>Calculates the root mean square error (RMSE) between estimated and real values.</p>
+<p>A fundamental parameter for evaluating the accuracy of event location algorithms, the RMSE provides a measure of the average discrepancy between the estimated and real position vectors, and is particularly useful in quantifying spatial accuracy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated positions</p></li>
+<li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real positions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the root mean square error (RMSE) between the given vectors.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.tempo_execucao">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">tempo_execucao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempo_inicial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo_final</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#tempo_execucao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.tempo_execucao" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total execution time between two time instants.</p>
+<p>This method computes the difference between the end time and the start time,
+returning the total elapsed time in seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_time</strong> (<em>float</em>) – Timestamp of the start of the execution, expressed in seconds.</p></li>
+<li><p><strong>end_time</strong> (<em>float</em>) – Timestamp of the end of the execution, expressed in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Total execution time, in seconds, calculated as the difference
+between <cite>end_time</cite> and <cite>start_time</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Simulator.SensorModel">
+<span id="geolightning-simulator-sensormodel-module"></span><h2>GeoLightning.Simulator.SensorModel module<a class="headerlink" href="#module-GeoLightning.Simulator.SensorModel" title="Link to this heading"></a></h2>
+<section id="sensor-model">
+<h3>Sensor Model<a class="headerlink" href="#sensor-model" title="Link to this heading"></a></h3>
+<p>Sensor Model - Geolocation of Atmospheric Events</p>
+<section id="id1">
+<h4>Summary<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>This module defines the probabilistic detection model for atmospheric
+events by a distributed sensor network. It includes a function to compute
+the detection probability as a function of the distance between a sensor
+and an event, and a Monte Carlo-based simulation function to determine
+whether detection occurs.</p>
+<p>The detection model is calibrated based on the StormDetector V2 device,
+and is suitable for simulating sparse and range-limited detection scenarios
+in lightning localization and similar geophysical applications.</p>
+</section>
+<section id="id2">
+<h4>Author<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id3">
+<h4>Contents<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>get_detection_probability: computes probability of detection based on distance</p></li>
+<li><p>sensor_detection: probabilistically simulates whether an event is detected</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id4">
+<h4>Dependencies<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+</ul>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.SensorModel.get_detection_probability">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.SensorModel.</span></span><span class="sig-name descname"><span class="pre">get_detection_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/SensorModel.html#get_detection_probability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.SensorModel.get_detection_probability" title="Link to this definition"></a></dt>
+<dd><p>Compute the probability of detecting an atmospheric event
+based on the distance to the sensor.</p>
+<p>This function models the detection likelihood based on a
+linear decay of efficiency beyond a 120 km threshold. The
+maximum probability is 96% and decreases linearly
+as distance increases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>distance</strong> (<em>np.float64</em>) – Distance between the sensor and the event (in meters).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Detection probability (between 0 and 1).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.SensorModel.sensor_detection">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.SensorModel.</span></span><span class="sig-name descname"><span class="pre">sensor_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/SensorModel.html#sensor_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.SensorModel.sensor_detection" title="Link to this definition"></a></dt>
+<dd><p>Simulate the detection of an atmospheric event by a sensor
+based on the detection probability.</p>
+<p>This function uses the <cite>get_detection_probability</cite> model
+and performs a random draw from a uniform distribution
+to decide if the event is detected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>distance</strong> (<em>np.float64</em>) – Distance between the sensor and the event (in meters).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the event was detected; False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Simulator.Simulator">
+<span id="geolightning-simulator-simulator-module"></span><h2>GeoLightning.Simulator.Simulator module<a class="headerlink" href="#module-GeoLightning.Simulator.Simulator" title="Link to this heading"></a></h2>
+<section id="network-and-event-simulator">
+<h3>Network and Event Simulator<a class="headerlink" href="#network-and-event-simulator" title="Link to this heading"></a></h3>
+<p>Sensor and Event Simulator – Atmospheric Event Geolocation</p>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>This module implements the simulation of sensor detections and event generation for atmospheric discharge localization experiments.
+It is used to evaluate the performance of geolocation algorithms under varying spatial and temporal configurations.</p>
+<p>The simulator includes:
+- Emission of impulsive events at known positions and times;
+- Probabilistic detection by sensors based on propagation distance;
+- Addition of Gaussian noise in detection times;
+- Derivation of Time-of-Arrival (TOA) information for multilateration.</p>
+</section>
+<section id="id6">
+<h4>Author<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id7">
+<h4>Contents<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Sensor-event interaction model</p></li>
+<li><p>Distance and TOA calculations</p></li>
+<li><p>Time jitter simulation (σₜ)</p></li>
+<li><p>TOA-based emission time estimation</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id8">
+<h4>Dependencies<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Constants</p></li>
+<li><p>GeoLightning.Utils.Utils</p></li>
+<li><p>GeoLightning.Simulator.SensorModel</p></li>
+</ul>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.generate_detections">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">generate_detections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jitter_std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#generate_detections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.generate_detections" title="Link to this definition"></a></dt>
+<dd><p>Simulates detections from a sensor network based on lightning events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Array of event coordinates with shape (N, 3).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Array of event timestamps with shape (N,).</p></li>
+<li><p><strong>sensor_positions</strong> (<em>np.ndarray</em>) – Array of sensor coordinates with shape (M, 3).</p></li>
+<li><p><strong>jitter_std</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of temporal noise added to detection times (default is SIGMA_T).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>detections<span class="classifier">np.ndarray</span></dt><dd><p>Array of sensor positions that detected events.</p>
+</dd>
+<dt>detection_times<span class="classifier">np.ndarray</span></dt><dd><p>Corresponding detection timestamps.</p>
+</dd>
+<dt>n_event_positions<span class="classifier">np.ndarray</span></dt><dd><p>Event positions repeated for each detection (for traceability).</p>
+</dd>
+<dt>n_event_times<span class="classifier">np.ndarray</span></dt><dd><p>Event times repeated for each detection (for traceability).</p>
+</dd>
+<dt>distances<span class="classifier">np.ndarray</span></dt><dd><p>Propagation distances between each detection pair.</p>
+</dd>
+<dt>spatial_clusters<span class="classifier">np.ndarray</span></dt><dd><p>Cluster IDs identifying to which event each detection belongs.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.generate_events">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">generate_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_events</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_lon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#generate_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.generate_events" title="Link to this definition"></a></dt>
+<dd><p>Generates atmospheric events with spatial and temporal attributes,
+ensuring a minimum temporal spacing of 6 * sigma_t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_events</strong> (<em>int</em>) – Number of events to generate.</p></li>
+<li><p><strong>min_lat</strong> (<em>float</em>) – Minimum latitude.</p></li>
+<li><p><strong>max_lat</strong> (<em>float</em>) – Maximum latitude.</p></li>
+<li><p><strong>min_lon</strong> (<em>float</em>) – Minimum longitude.</p></li>
+<li><p><strong>max_lon</strong> (<em>float</em>) – Maximum longitude.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum altitude.</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum altitude.</p></li>
+<li><p><strong>min_time</strong> (<em>float</em>) – Minimum timestamp.</p></li>
+<li><p><strong>max_time</strong> (<em>float</em>) – Maximum timestamp.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Temporal standard deviation (default is SIGMA_T).</p></li>
+<li><p><strong>max_attempts</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of attempts to generate valid timestamps (default is 10000).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>event_positions : (N, 3) array of (lat, lon, alt)
+event_times : (N,) array of timestamps</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.get_lightning_limits">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_lightning_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensores_latlon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margem_metros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_lightning_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_lightning_limits" title="Link to this definition"></a></dt>
+<dd><p>Computes geographic bounding box around sensor constellation with an additional margin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensores_latlon</strong> (<em>np.ndarray</em>) – Array of shape (N, 2) with latitude and longitude in degrees.</p></li>
+<li><p><strong>margem_metros</strong> (<em>float</em><em>, </em><em>optional</em>) – Margin in meters around the bounding box (default is 5000.0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(min_lat, max_lat, min_lon, max_lon) with margin applied.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.get_random_sensors">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_random_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_lon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_random_sensors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_random_sensors" title="Link to this definition"></a></dt>
+<dd><p>Generates random geographic coordinates for a given number of sensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_sensors</strong> (<em>np.int32</em>) – Number of sensors.</p></li>
+<li><p><strong>min_lat</strong> (<em>np.float64</em>) – Minimum latitude.</p></li>
+<li><p><strong>max_lat</strong> (<em>np.float64</em>) – Maximum latitude.</p></li>
+<li><p><strong>min_lon</strong> (<em>np.float64</em>) – Minimum longitude.</p></li>
+<li><p><strong>max_lon</strong> (<em>np.float64</em>) – Maximum longitude.</p></li>
+<li><p><strong>min_alt</strong> (<em>np.float64</em>) – Minimum altitude.</p></li>
+<li><p><strong>max_alt</strong> (<em>np.float64</em>) – Maximum altitude.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of shape (num_sensors, 3) with sensor positions as (lat, lon, alt).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.get_sensors">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_sensors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_sensors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_sensors" title="Link to this definition"></a></dt>
+<dd><p>Returns a static array of sensor positions (lat, lon, alt).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of shape (7, 3) with fixed sensor coordinates.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Simulator">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GeoLightning.Simulator" title="Link to this heading"></a></h2>
+<section id="event-and-sensor-simulator">
+<h3>Event and Sensor Simulator<a class="headerlink" href="#event-and-sensor-simulator" title="Link to this heading"></a></h3>
+</section>
+<section id="id9">
+<h3>Summary<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>Provides tools to generate synthetic sensor networks and atmospheric
+events (e.g., lightning strikes), simulating their spatio-temporal
+detection across the sensor array. Useful for testing and validation
+of localization algorithms.</p>
+</section>
+<section id="id10">
+<h3>Author<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id11">
+<h3>Submodules<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Metrics.py: Metrics used to evaluate algorithms’s performance</p></li>
+<li><p>SensorModel.py: Models the detection process of sensors.</p></li>
+<li><p>Simulator.py: Generates synthetic atmospheric events.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id12">
+<h3>Dependencies<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GeoLightning.Runners.html" class="btn btn-neutral float-left" title="GeoLightning.Runners package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GeoLightning.Solvers.html" class="btn btn-neutral float-right" title="GeoLightning.Solvers package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

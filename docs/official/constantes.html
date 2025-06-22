@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global System Constants &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="GeoLightning.Utils package" href="GeoLightning.Utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Global System Constants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#physical-constants">Physical Constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#AVG_EARTH_RADIUS"><code class="docutils literal notranslate"><span class="pre">AVG_EARTH_RADIUS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AVG_LIGHT_SPEED"><code class="docutils literal notranslate"><span class="pre">AVG_LIGHT_SPEED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#statistical-constants">Statistical Constants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SIGMA_T"><code class="docutils literal notranslate"><span class="pre">SIGMA_T</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#SIGMA_D"><code class="docutils literal notranslate"><span class="pre">SIGMA_D</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detection-tolerances">Detection tolerances</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#EPSILON_T"><code class="docutils literal notranslate"><span class="pre">EPSILON_T</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#EPSILON_D"><code class="docutils literal notranslate"><span class="pre">EPSILON_D</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#LIMIT_D"><code class="docutils literal notranslate"><span class="pre">LIMIT_D</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#clustering-and-range-parameters">Clustering and range parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#CLUSTER_MIN_PTS"><code class="docutils literal notranslate"><span class="pre">CLUSTER_MIN_PTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#R_LAT"><code class="docutils literal notranslate"><span class="pre">R_LAT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#MAX_DISTANCE"><code class="docutils literal notranslate"><span class="pre">MAX_DISTANCE</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Global System Constants</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/constantes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="global-system-constants">
+<h1>Global System Constants<a class="headerlink" href="#global-system-constants" title="Link to this heading"></a></h1>
+<p>This page presents the fundamental constants used in the geolocation modules of the <strong>GeoLightning</strong> project, with emphasis on physical, temporal, spatial and clustering parameters.</p>
+<section id="physical-constants">
+<h2>Physical Constants<a class="headerlink" href="#physical-constants" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="AVG_EARTH_RADIUS">
+<span class="sig-name descname"><span class="pre">AVG_EARTH_RADIUS</span></span><a class="headerlink" href="#AVG_EARTH_RADIUS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Mean radius of the Earth in meters (6371.0088 km).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="AVG_LIGHT_SPEED">
+<span class="sig-name descname"><span class="pre">AVG_LIGHT_SPEED</span></span><a class="headerlink" href="#AVG_LIGHT_SPEED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Speed ​​of light in vacuum, in meters per second.</p>
+</section>
+<section id="statistical-constants">
+<h2>Statistical Constants<a class="headerlink" href="#statistical-constants" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="SIGMA_T">
+<span class="sig-name descname"><span class="pre">SIGMA_T</span></span><a class="headerlink" href="#SIGMA_T" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Standard deviation of temporal uncertainty (in seconds).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="SIGMA_D">
+<span class="sig-name descname"><span class="pre">SIGMA_D</span></span><a class="headerlink" href="#SIGMA_D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Equivalent spatial standard deviation (in meters), obtained by multiplying the speed of light by SIGMA_T.</p>
+</section>
+<section id="detection-tolerances">
+<h2>Detection tolerances<a class="headerlink" href="#detection-tolerances" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="EPSILON_T">
+<span class="sig-name descname"><span class="pre">EPSILON_T</span></span><a class="headerlink" href="#EPSILON_T" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Maximum admissible temporal tolerance (1000 × SIGMA_T).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="EPSILON_D">
+<span class="sig-name descname"><span class="pre">EPSILON_D</span></span><a class="headerlink" href="#EPSILON_D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Maximum admissible spatial tolerance (1000 × SIGMA_D).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="LIMIT_D">
+<span class="sig-name descname"><span class="pre">LIMIT_D</span></span><a class="headerlink" href="#LIMIT_D" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Spatial limit (in meters) for the global search for solutions by metaheuristic methods.</p>
+</section>
+<section id="clustering-and-range-parameters">
+<h2>Clustering and range parameters<a class="headerlink" href="#clustering-and-range-parameters" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="CLUSTER_MIN_PTS">
+<span class="sig-name descname"><span class="pre">CLUSTER_MIN_PTS</span></span><a class="headerlink" href="#CLUSTER_MIN_PTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>int: Minimum number of points to consider a valid cluster (DBSCAN).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="R_LAT">
+<span class="sig-name descname"><span class="pre">R_LAT</span></span><a class="headerlink" href="#R_LAT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Conversion factor: meters per degree of latitude (approximately 111,320 m/°).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="MAX_DISTANCE">
+<span class="sig-name descname"><span class="pre">MAX_DISTANCE</span></span><a class="headerlink" href="#MAX_DISTANCE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>float: Maximum detection range of a sensor, in meters (160 km).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GeoLightning.Utils.html" class="btn btn-neutral float-left" title="GeoLightning.Utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

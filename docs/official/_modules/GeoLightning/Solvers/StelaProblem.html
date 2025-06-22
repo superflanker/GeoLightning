@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Solvers.StelaProblem &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Solvers.StelaProblem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for GeoLightning.Solvers.StelaProblem</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Stela Problem Wrapper</span>
+<span class="sd">=====================</span>
+
+<span class="sd">StelaProblem Class - Spatio-Temporal Event Estimation</span>
+
+<span class="sd">Summary</span>
+<span class="sd">-------</span>
+<span class="sd">This module defines the `StelaProblem` class, which encapsulates a spatio-temporal </span>
+<span class="sd">localization problem using time-of-arrival (TOA) information from a distributed </span>
+<span class="sd">sensor network. It is suitable for atmospheric event localization, such as lightning, </span>
+<span class="sd">using a maximum-likelihood-based fitness function calculated via the STELA algorithm.</span>
+
+<span class="sd">Each candidate solution encodes the (lat, lon, alt) coordinates of M potential events, </span>
+<span class="sd">and the quality of each solution is evaluated based on spatial and temporal clustering </span>
+<span class="sd">likelihood.</span>
+
+<span class="sd">Author</span>
+<span class="sd">------</span>
+<span class="sd">Augusto Mathias Adams &lt;augusto.adams@ufpr.br&gt;</span>
+
+<span class="sd">Contents</span>
+<span class="sd">--------</span>
+<span class="sd">- StelaProblem class: problem formulation compatible with MEALPY</span>
+<span class="sd">- restart_search_space(): dynamically adjusts bounds</span>
+<span class="sd">- evaluate(): objective function wrapper</span>
+<span class="sd">- get_best_solution(): retrieves the current best candidate</span>
+<span class="sd">- obj_func(): spatio-temporal likelihood function based on STELA</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is part of the activities of the discipline  </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</span>
+
+<span class="sd">Dependencies</span>
+<span class="sd">------------</span>
+<span class="sd">- numpy</span>
+<span class="sd">- mealpy</span>
+<span class="sd">- GeoLightning.Stela.Stela</span>
+<span class="sd">- GeoLightning.Utils.Constants</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mealpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatVar</span><span class="p">,</span> <span class="n">Problem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIGMA_T</span><span class="p">,</span> \
+    <span class="n">EPSILON_T</span><span class="p">,</span> \
+    <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span> \
+    <span class="n">AVG_LIGHT_SPEED</span>
+
+
+<div class="viewcode-block" id="StelaProblem">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StelaProblem</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">bounds</span><span class="p">,</span>
+                 <span class="n">minmax</span><span class="p">,</span>
+                 <span class="n">pontos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">tempos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
+                 <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
+                 <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
+                 <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an instance of the STELA problem for use with MEALPY </span>
+<span class="sd">        metaheuristic optimization algorithms.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bounds : list of np.ndarray</span>
+<span class="sd">            A list containing two arrays [lower_bounds, upper_bounds] of shape (3M,).</span>
+<span class="sd">            Each triplet (lat, lon, alt) corresponds to one candidate event.</span>
+<span class="sd">        minmax : str</span>
+<span class="sd">            Optimization type: &quot;min&quot; or &quot;max&quot;.</span>
+<span class="sd">        pontos_de_chegada : np.ndarray</span>
+<span class="sd">            Array of shape (N, 3) with sensor positions [latitude, longitude, altitude].</span>
+<span class="sd">        tempos_de_chegada : np.ndarray</span>
+<span class="sd">            Arrival times of signals at each sensor (shape: N,).</span>
+<span class="sd">        sistema_cartesiano : bool, optional</span>
+<span class="sd">            If True, uses Cartesian coordinates; otherwise, geodetic coordinates.</span>
+<span class="sd">        sigma_t: float, optional</span>
+<span class="sd">            Standard deviation of time measurement error.</span>
+<span class="sd">        epsilon_t : float, optional</span>
+<span class="sd">            Maximum temporal tolerance for clustering.</span>
+<span class="sd">        min_pts : int, optional</span>
+<span class="sd">            Minimum number of detections for a cluster to be considered valid.</span>
+<span class="sd">        c: float, optional</span>
+<span class="sd">            wave propagation velocity (Default is average light speed)</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Additional arguments for the MEALPY `Problem` base class.</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        clusters_espaciais : np.ndarray</span>
+<span class="sd">            Spatial cluster labels assigned to each detection.</span>
+<span class="sd">        centroides : np.ndarray</span>
+<span class="sd">            Coordinates of event centroids (lat, lon, alt).</span>
+<span class="sd">        detectores : np.ndarray</span>
+<span class="sd">            Binary mask indicating whether each sensor was involved in a solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># parâmetros passados</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span> <span class="o">=</span> <span class="n">pontos_de_chegada</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span> <span class="o">=</span> <span class="n">tempos_de_chegada</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span> <span class="o">=</span> <span class="n">sistema_cartesiano</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span> <span class="o">=</span> <span class="n">sigma_t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span> <span class="o">=</span> <span class="n">epsilon_t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span> <span class="o">=</span> <span class="n">min_pts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="n">solution_encoding</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            
+<div class="viewcode-block" id="StelaProblem.evaluate">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates a solution using the defined objective function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        solution : np.ndarray</span>
+<span class="sd">            A 1D array encoding the flattened coordinates of M candidate events.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list with one element containing the objective function value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_func</span><span class="p">(</span><span class="n">solution</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="StelaProblem.obj_func">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.obj_func">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">obj_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Objective function for the STELA problem.</span>
+
+<span class="sd">        Evaluates the spatio-temporal likelihood of a candidate solution, </span>
+<span class="sd">        calculated using the STELA algorithm. This algorithm performs clustering</span>
+<span class="sd">        and refinement using both arrival times and spatial data from sensors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        solution : np.ndarray</span>
+<span class="sd">            A flat array representing (lat, lon, alt) coordinates for M events.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The objective value (likelihood). Returns the negative value if</span>
+<span class="sd">            the problem is a maximization task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Converte o vetor linear para o formato (M, 3)</span>
+        <span class="c1"># solucoes = self.decode_solution(solution)</span>
+
+        <span class="n">solucoes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># Executa o algoritmo STELA</span>
+        <span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">,</span>
+         <span class="n">verossimilhanca</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
+
+        <span class="c1"># Retorna a verossimilhança como valor de fitness (negativa para problema</span>
+        <span class="c1"># de maximização)</span>
+        <span class="k">return</span> <span class="n">verossimilhanca</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

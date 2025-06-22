@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Simulator.Simulator &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Simulator.Simulator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for GeoLightning.Simulator.Simulator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Network and Event Simulator</span>
+<span class="sd">===========================</span>
+
+<span class="sd">Sensor and Event Simulator – Atmospheric Event Geolocation</span>
+
+<span class="sd">Summary</span>
+<span class="sd">-------</span>
+<span class="sd">This module implements the simulation of sensor detections and event generation for atmospheric discharge localization experiments.</span>
+<span class="sd">It is used to evaluate the performance of geolocation algorithms under varying spatial and temporal configurations.</span>
+
+<span class="sd">The simulator includes:</span>
+<span class="sd">- Emission of impulsive events at known positions and times;</span>
+<span class="sd">- Probabilistic detection by sensors based on propagation distance;</span>
+<span class="sd">- Addition of Gaussian noise in detection times;</span>
+<span class="sd">- Derivation of Time-of-Arrival (TOA) information for multilateration.</span>
+
+<span class="sd">Author</span>
+<span class="sd">------</span>
+<span class="sd">Augusto Mathias Adams &lt;augusto.adams@ufpr.br&gt;</span>
+
+<span class="sd">Contents</span>
+<span class="sd">--------</span>
+<span class="sd">- Sensor-event interaction model</span>
+<span class="sd">- Distance and TOA calculations</span>
+<span class="sd">- Time jitter simulation (σₜ)</span>
+<span class="sd">- TOA-based emission time estimation</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is part of the activities of the discipline </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</span>
+
+<span class="sd">Dependencies</span>
+<span class="sd">------------</span>
+<span class="sd">- numpy</span>
+<span class="sd">- numba</span>
+<span class="sd">- GeoLightning.Utils.Constants</span>
+<span class="sd">- GeoLightning.Utils.Utils</span>
+<span class="sd">- GeoLightning.Simulator.SensorModel</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba.typed</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">R_LAT</span><span class="p">,</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span> <span class="n">SIGMA_T</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancias</span><span class="p">,</span> <span class="n">computa_tempos_de_origem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.SensorModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">sensor_detection</span>
+
+
+<div class="viewcode-block" id="get_random_sensors">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_random_sensors">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_random_sensors</span><span class="p">(</span><span class="n">num_sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                       <span class="n">min_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                       <span class="n">max_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                       <span class="n">min_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                       <span class="n">max_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                       <span class="n">min_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                       <span class="n">max_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates random geographic coordinates for a given number of sensors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_sensors : np.int32</span>
+<span class="sd">        Number of sensors.</span>
+<span class="sd">    min_lat : np.float64</span>
+<span class="sd">        Minimum latitude.</span>
+<span class="sd">    max_lat : np.float64</span>
+<span class="sd">        Maximum latitude.</span>
+<span class="sd">    min_lon : np.float64</span>
+<span class="sd">        Minimum longitude.</span>
+<span class="sd">    max_lon : np.float64</span>
+<span class="sd">        Maximum longitude.</span>
+<span class="sd">    min_alt : np.float64</span>
+<span class="sd">        Minimum altitude.</span>
+<span class="sd">    max_alt : np.float64</span>
+<span class="sd">        Maximum altitude.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of shape (num_sensors, 3) with sensor positions as (lat, lon, alt).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">num_sensors</span><span class="p">)</span>
+    <span class="n">lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">num_sensors</span><span class="p">)</span>
+    <span class="n">alts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">,</span> <span class="n">num_sensors</span><span class="p">)</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">num_sensors</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_sensors</span><span class="p">):</span>
+        <span class="n">sensors</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lats</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">sensors</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">sensors</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">alts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">sensors</span></div>
+
+
+
+<div class="viewcode-block" id="get_sensors">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_sensors">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_sensors</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a static array of sensor positions (lat, lon, alt).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of shape (7, 3) with fixed sensor coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">24.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.0</span><span class="p">,</span>  <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.77771914</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.0</span><span class="p">,</span>  <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.13733229</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.3183839</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.85955584</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.31447896</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.22221178</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.0</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.85955584</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.68552104</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.13733229</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.6816161</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">sensors</span></div>
+
+
+
+<div class="viewcode-block" id="get_lightning_limits">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_lightning_limits">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_lightning_limits</span><span class="p">(</span><span class="n">sensores_latlon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                         <span class="n">margem_metros</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes geographic bounding box around sensor constellation with an additional margin.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sensores_latlon : np.ndarray</span>
+<span class="sd">        Array of shape (N, 2) with latitude and longitude in degrees.</span>
+<span class="sd">    margem_metros : float, optional</span>
+<span class="sd">        Margin in meters around the bounding box (default is 5000.0).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (min_lat, max_lat, min_lon, max_lon) with margin applied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">latitudes</span> <span class="o">=</span> <span class="n">sensores_latlon</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">longitudes</span> <span class="o">=</span> <span class="n">sensores_latlon</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">min_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">latitudes</span><span class="p">)</span>
+    <span class="n">max_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">latitudes</span><span class="p">)</span>
+    <span class="n">min_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">longitudes</span><span class="p">)</span>
+    <span class="n">max_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">longitudes</span><span class="p">)</span>
+
+    <span class="n">lat_media</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">latitudes</span><span class="p">)</span>
+
+    <span class="n">delta_lat</span> <span class="o">=</span> <span class="n">margem_metros</span> <span class="o">/</span> <span class="n">R_LAT</span>
+    <span class="n">delta_lon</span> <span class="o">=</span> <span class="n">margem_metros</span> <span class="o">/</span> <span class="p">(</span><span class="n">R_LAT</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat_media</span><span class="p">)))</span>
+
+    <span class="n">min_lat</span> <span class="o">-=</span> <span class="n">delta_lat</span>
+    <span class="n">max_lat</span> <span class="o">+=</span> <span class="n">delta_lat</span>
+    <span class="n">min_lon</span> <span class="o">-=</span> <span class="n">delta_lon</span>
+    <span class="n">max_lon</span> <span class="o">+=</span> <span class="n">delta_lon</span>
+
+    <span class="k">return</span> <span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span></div>
+
+
+<div class="viewcode-block" id="generate_events">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.generate_events">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="n">min_lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">max_lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">min_lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">max_lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">min_alt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">max_alt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">min_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">max_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">sigma_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
+                    <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates atmospheric events with spatial and temporal attributes,</span>
+<span class="sd">    ensuring a minimum temporal spacing of 6 * sigma_t.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_events : int</span>
+<span class="sd">        Number of events to generate.</span>
+<span class="sd">    min_lat : float</span>
+<span class="sd">        Minimum latitude.</span>
+<span class="sd">    max_lat : float</span>
+<span class="sd">        Maximum latitude.</span>
+<span class="sd">    min_lon : float</span>
+<span class="sd">        Minimum longitude.</span>
+<span class="sd">    max_lon : float</span>
+<span class="sd">        Maximum longitude.</span>
+<span class="sd">    min_alt : float</span>
+<span class="sd">        Minimum altitude.</span>
+<span class="sd">    max_alt : float</span>
+<span class="sd">        Maximum altitude.</span>
+<span class="sd">    min_time : float</span>
+<span class="sd">        Minimum timestamp.</span>
+<span class="sd">    max_time : float</span>
+<span class="sd">        Maximum timestamp.</span>
+<span class="sd">    sigma_t : float, optional</span>
+<span class="sd">        Temporal standard deviation (default is SIGMA_T).</span>
+<span class="sd">    max_attempts : int, optional</span>
+<span class="sd">        Maximum number of attempts to generate valid timestamps (default is 10000).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple of np.ndarray</span>
+<span class="sd">        event_positions : (N, 3) array of (lat, lon, alt)</span>
+<span class="sd">        event_times : (N,) array of timestamps</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">min_dt</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="n">sigma_t</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;event_times = []</span>
+
+<span class="sd">    attempts = 0</span>
+<span class="sd">    while len(event_times) &lt; num_events and attempts &lt; max_attempts:</span>
+<span class="sd">        candidate = np.random.uniform(min_time, max_time)</span>
+<span class="sd">        if all(abs(candidate - t) &gt;= min_dt for t in event_times):</span>
+<span class="sd">            event_times.append(candidate)</span>
+<span class="sd">        attempts += 1</span>
+
+<span class="sd">    if len(event_times) &lt; num_events:</span>
+<span class="sd">        raise RuntimeError(&quot;Unable to generate events with minimum time spacing within the number of attempts.&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># event_times = np.array(sorted(event_times))</span>
+
+    <span class="n">lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
+    <span class="n">lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
+    <span class="n">alts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
+    <span class="n">event_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
+    <span class="n">event_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">lats</span><span class="p">,</span> <span class="n">lons</span><span class="p">,</span> <span class="n">alts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span></div>
+
+
+
+<div class="viewcode-block" id="generate_detections">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.generate_detections">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_detections</span><span class="p">(</span><span class="n">event_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">event_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">sensor_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">jitter_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulates detections from a sensor network based on lightning events.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    event_positions : np.ndarray</span>
+<span class="sd">        Array of event coordinates with shape (N, 3).</span>
+<span class="sd">    event_times : np.ndarray</span>
+<span class="sd">        Array of event timestamps with shape (N,).</span>
+<span class="sd">    sensor_positions : np.ndarray</span>
+<span class="sd">        Array of sensor coordinates with shape (M, 3).</span>
+<span class="sd">    jitter_std : float, optional</span>
+<span class="sd">        Standard deviation of temporal noise added to detection times (default is SIGMA_T).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        detections : np.ndarray</span>
+<span class="sd">            Array of sensor positions that detected events.</span>
+<span class="sd">        detection_times : np.ndarray</span>
+<span class="sd">            Corresponding detection timestamps.</span>
+<span class="sd">        n_event_positions : np.ndarray</span>
+<span class="sd">            Event positions repeated for each detection (for traceability).</span>
+<span class="sd">        n_event_times : np.ndarray</span>
+<span class="sd">            Event times repeated for each detection (for traceability).</span>
+<span class="sd">        distances : np.ndarray</span>
+<span class="sd">            Propagation distances between each detection pair.</span>
+<span class="sd">        spatial_clusters : np.ndarray</span>
+<span class="sd">            Cluster IDs identifying to which event each detection belongs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">detections</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">detection_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n_event_positions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n_event_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">spatial_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">cluster_id</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">event_positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">event_position</span> <span class="o">=</span> <span class="n">event_positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">event_time</span> <span class="o">=</span> <span class="n">event_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">event_distances</span> <span class="o">=</span> <span class="n">computa_distancias</span><span class="p">(</span><span class="n">event_position</span><span class="p">,</span> <span class="n">sensor_positions</span><span class="p">)</span>
+            <span class="n">t_detections</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_detection_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_n_event_positions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_n_event_times</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_distances</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_spatial_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensor_positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">jitter_std</span><span class="p">),</span>
+                                <span class="nb">min</span><span class="o">=-</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">,</span>
+                                <span class="nb">max</span><span class="o">=</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">)</span>
+                <span class="n">t_detect</span> <span class="o">=</span> <span class="n">event_time</span> <span class="o">+</span> \
+                    <span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span> <span class="o">+</span> <span class="n">noise</span>
+                <span class="k">if</span> <span class="n">sensor_detection</span><span class="p">(</span><span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                    <span class="n">t_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensor_positions</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="n">t_detection_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_detect</span><span class="p">)</span>
+                    <span class="n">t_n_event_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_position</span><span class="p">)</span>
+                    <span class="n">t_n_event_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_time</span><span class="p">)</span>
+                    <span class="n">t_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                    <span class="n">t_spatial_clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_detections</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">cluster_id</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">detections</span> <span class="o">+=</span> <span class="n">t_detections</span>
+                <span class="n">detection_times</span> <span class="o">+=</span> <span class="n">t_detection_times</span>
+                <span class="n">n_event_positions</span> <span class="o">+=</span> <span class="n">t_n_event_positions</span>
+                <span class="n">n_event_times</span> <span class="o">+=</span> <span class="n">t_n_event_times</span>
+                <span class="n">distances</span> <span class="o">+=</span> <span class="n">t_distances</span>
+                <span class="n">spatial_clusters</span> <span class="o">+=</span> <span class="n">t_spatial_clusters</span>
+                <span class="k">break</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detections</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detection_times</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n_event_positions</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n_event_times</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spatial_clusters</span><span class="p">))</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># recuperando o grupo de sensores</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">get_sensors</span><span class="p">()</span>
+    <span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span> <span class="o">=</span> <span class="n">get_lightning_limits</span><span class="p">(</span><span class="n">sensors</span><span class="p">)</span>
+
+    <span class="c1"># gerando os eventos</span>
+    <span class="n">min_alt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">max_alt</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="n">min_time</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="n">max_time</span> <span class="o">=</span> <span class="mi">10100</span>
+    <span class="n">num_events</span> <span class="o">=</span> <span class="mi">500</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">)</span>
+
+    <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span> <span class="o">=</span> <span class="n">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">,</span>
+                                                   <span class="n">min_lat</span><span class="p">,</span>
+                                                   <span class="n">max_lat</span><span class="p">,</span>
+                                                   <span class="n">min_lon</span><span class="p">,</span>
+                                                   <span class="n">max_lon</span><span class="p">,</span>
+                                                   <span class="n">min_alt</span><span class="p">,</span>
+                                                   <span class="n">max_alt</span><span class="p">,</span>
+                                                   <span class="n">min_time</span><span class="p">,</span>
+                                                   <span class="n">max_time</span><span class="p">)</span>
+
+    <span class="c1"># gerando as detecções</span>
+    <span class="p">(</span><span class="n">detections</span><span class="p">,</span>
+     <span class="n">detection_times</span><span class="p">,</span>
+     <span class="n">n_event_positions</span><span class="p">,</span>
+     <span class="n">n_event_times</span><span class="p">,</span>
+     <span class="n">distances</span><span class="p">,</span>
+     <span class="n">spatial_clusters</span><span class="p">)</span> <span class="o">=</span> <span class="n">generate_detections</span><span class="p">(</span><span class="n">event_positions</span><span class="p">,</span>
+                                             <span class="n">event_times</span><span class="p">,</span>
+                                             <span class="n">sensors</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">detections</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">n_event_positions</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">detection_times</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

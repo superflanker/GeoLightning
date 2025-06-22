@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Solvers.Mealpy package &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GeoLightning.Stela package" href="GeoLightning.Stela.html" />
+    <link rel="prev" title="GeoLightning.Solvers package" href="GeoLightning.Solvers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="GeoLightning.Solvers.html">GeoLightning.Solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Stela.html">GeoLightning.Stela package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Utils.html">GeoLightning.Utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.html#module-GeoLightning">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">GeoLightning</a></li>
+          <li class="breadcrumb-item"><a href="GeoLightning.html">GeoLightning package</a></li>
+          <li class="breadcrumb-item"><a href="GeoLightning.Solvers.html">GeoLightning.Solvers package</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Solvers.Mealpy package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/GeoLightning.Solvers.Mealpy.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geolightning-solvers-mealpy-package">
+<h1>GeoLightning.Solvers.Mealpy package<a class="headerlink" href="#geolightning-solvers-mealpy-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-GeoLightning.Solvers.Mealpy.ESO">
+<span id="geolightning-solvers-mealpy-eso-module"></span><h2>GeoLightning.Solvers.Mealpy.ESO module<a class="headerlink" href="#module-GeoLightning.Solvers.Mealpy.ESO" title="Link to this heading"></a></h2>
+<section id="mealpy-eso-wrapper">
+<h3>Mealpy ESO Wrapper<a class="headerlink" href="#mealpy-eso-wrapper" title="Link to this heading"></a></h3>
+<p>Electrical Storm Optimization (ESO) Algorithm</p>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
+<p>This module implements the Electrical Storm Optimization (ESO) algorithm, a nature-inspired
+metaheuristic that simulates the dynamic behavior of electrical storms to solve continuous
+optimization problems. It models the interactions between field intensity, resistance,
+conductivity, and ionization zones to guide the search process in the solution space.</p>
+</section>
+<section id="author">
+<h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="contents">
+<h4>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>ESO class: core optimizer implementing the electrical storm metaphor.</p></li>
+<li><p>Parameters include iteration-dependent field behavior and selective ionization.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.Mealpy.ESO.</span></span><span class="sig-name descname"><span class="pre">ESO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
+<p>Electrical Storm Optimization (ESO)</p>
+<p>A bio-inspired metaheuristic algorithm that simulates the physical behavior of
+electrical storms, including concepts such as field strength, intensity,
+conductivity (ke), and ionized zones to guide the population towards the global optimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (generations) of the algorithm. Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions (bolts) in the population. Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional arguments inherited from the <cite>Optimizer</cite> class, such as <cite>problem</cite>, <cite>verbosity</cite>, etc.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.field_resistance">
+<span class="sig-name descname"><span class="pre">field_resistance</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.field_resistance" title="Link to this definition"></a></dt>
+<dd><p>Normalized measure of spatial variation of the population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.field_intensity">
+<span class="sig-name descname"><span class="pre">field_intensity</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.field_intensity" title="Link to this definition"></a></dt>
+<dd><p>Field strength in the current iteration, influenced by ke and progress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.storm_power">
+<span class="sig-name descname"><span class="pre">storm_power</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.storm_power" title="Link to this definition"></a></dt>
+<dd><p>Power of the field generated by the storm, used to propagate the solutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.ke">
+<span class="sig-name descname"><span class="pre">ke</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.ke" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Equivalent</span> <span class="pre">electrical</span> <span class="pre">conductivity,</span> <span class="pre">controlling</span> <span class="pre">disturbances.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.stagnation">
+<span class="sig-name descname"><span class="pre">stagnation</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.stagnation" title="Link to this definition"></a></dt>
+<dd><p>Individual stagnation vector of each agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_index">
+<span class="sig-name descname"><span class="pre">ionized_areas_index</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_index" title="Link to this definition"></a></dt>
+<dd><p>Indices of the most promising solutions at the current time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_positions">
+<span class="sig-name descname"><span class="pre">ionized_areas_positions</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_positions" title="Link to this definition"></a></dt>
+<dd><p>Positions corresponding to the ionized zones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.adjust_field_intensity">
+<span class="sig-name descname"><span class="pre">adjust_field_intensity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.adjust_field_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.adjust_field_intensity" title="Link to this definition"></a></dt>
+<dd><p>Adjust the electric field intensity.</p>
+<p>Dynamically updates the field intensity based on the current field resistance,
+iteration progress, and electrical conductivity. This value controls the scaling
+of the storm power during propagation.</p>
+<section id="updates">
+<h3>Updates<a class="headerlink" href="#updates" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>field_intensity<span class="classifier">float</span></dt><dd><p>Current intensity of the field, increasing adaptively with iteration progress.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_field_resistance">
+<span class="sig-name descname"><span class="pre">calculate_field_resistance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.calculate_field_resistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_field_resistance" title="Link to this definition"></a></dt>
+<dd><p>Calculate the normalized field resistance.</p>
+<p>Estimates the spatial resistance of the current population by computing the ratio
+between the standard deviation and the peak-to-peak range of fitness values. This
+metric reflects the population’s dispersion and guides the storm’s behavior.</p>
+<section id="id1">
+<h3>Updates<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>field_resistance<span class="classifier">float</span></dt><dd><p>Normalized resistance of the field, bounded away from zero.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_ke">
+<span class="sig-name descname"><span class="pre">calculate_ke</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.calculate_ke"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_ke" title="Link to this definition"></a></dt>
+<dd><p>Compute the equivalent electrical conductivity (ke).</p>
+<p>Calculates the adaptive conductivity coefficient based on the current field resistance.
+This value modulates the magnitude of perturbations during the propagation phase,
+balancing exploration and exploitation.</p>
+<section id="id2">
+<h3>Updates<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ke<span class="classifier">float</span></dt><dd><p>Equivalent electrical conductivity used to scale positional perturbations.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_storm_power">
+<span class="sig-name descname"><span class="pre">calculate_storm_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.calculate_storm_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_storm_power" title="Link to this definition"></a></dt>
+<dd><p>Calculate the storm power.</p>
+<p>Computes the overall storm power as a function of field resistance, field intensity,
+and electrical conductivity. This parameter determines the scale of movement for agents
+during the propagation step.</p>
+<section id="id3">
+<h3>Updates<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>storm_power<span class="classifier">float</span></dt><dd><p>The resulting power of the storm, used to guide solution propagation.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Perform one iteration of the ESO optimization process.</p>
+<p>Updates the internal storm dynamics (ionized zones, resistance, conductivity,
+intensity, and power), then applies the propagation rule to each agent.
+Accepts new agents based on fitness improvement and tracks stagnation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – Current iteration number within the optimization process.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.exp">
+<span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.exp" title="Link to this definition"></a></dt>
+<dd><p>Exp protected against overflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em>) – Input value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Result of the exponential of x, with safety limits.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.identify_ionized_areas">
+<span class="sig-name descname"><span class="pre">identify_ionized_areas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.identify_ionized_areas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.identify_ionized_areas" title="Link to this definition"></a></dt>
+<dd><p>Identify the most promising ionized zones in the population.</p>
+<p>Selects a subset of agents with the best fitness values, based on the current
+field resistance, to define the ionized areas. These zones guide the propagation
+of new candidate solutions in subsequent steps.</p>
+<section id="id4">
+<h3>Updates<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>ionized_areas_index<span class="classifier">list of int</span></dt><dd><p>Indices of the selected ionized agents in the population.</p>
+</dd>
+<dt>ionized_areas_positions<span class="classifier">list of ndarray</span></dt><dd><p>Positions corresponding to the ionized zones.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.log" title="Link to this definition"></a></dt>
+<dd><p>Safe natural logarithm function.</p>
+<p>Clips the input to avoid numerical issues with very small or non-positive values,
+ensuring a stable logarithmic computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em><em> or </em><em>ndarray</em>) – Input value or array of values to compute the natural logarithm.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The natural logarithm of the clipped input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.logistic_curve">
+<span class="sig-name descname"><span class="pre">logistic_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.logistic_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.logistic_curve" title="Link to this definition"></a></dt>
+<dd><p>Modified logistic activation curve.</p>
+<p>Computes a smooth nonlinear transformation based on the input value and a scaling multiplier.
+This function enhances sensitivity near critical transitions, combining a standard logistic
+curve with a logarithmic correction term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>float</em>) – The input value to be transformed.</p></li>
+<li><p><strong>multiplier</strong> (<em>float</em>) – The scaling factor that controls the steepness of the logistic response.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed output in the range (0, 1), emphasizing local adaptivity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.propagate">
+<span class="sig-name descname"><span class="pre">propagate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.propagate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.propagate" title="Link to this definition"></a></dt>
+<dd><p>Propagate a new candidate solution based on ionization and storm dynamics.</p>
+<p>Generates a new agent by either reinitialization (in case of stagnation),
+direct multiplication with storm power (if ionized), or perturbed averaging
+of ionized centers (if not). Ensures that all new positions remain within bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – Index of the agent to be propagated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new agent instance with updated position and evaluated target.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Agent</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.Mealpy.FHO">
+<span id="geolightning-solvers-mealpy-fho-module"></span><h2>GeoLightning.Solvers.Mealpy.FHO module<a class="headerlink" href="#module-GeoLightning.Solvers.Mealpy.FHO" title="Link to this heading"></a></h2>
+<section id="mealpy-fho-wrapper">
+<h3>Mealpy FHO Wrapper<a class="headerlink" href="#mealpy-fho-wrapper" title="Link to this heading"></a></h3>
+<p>Fire Hawk Optimizer (FHO)</p>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>This module implements the Fire Hawk Optimizer (FHO), a population-based metaheuristic
+inspired by the natural behavior of fire hawks and their hunting strategy. It divides
+the population into two classes — fire hawks and prey — and updates their positions
+based on predator-prey dynamics and safe regions.</p>
+</section>
+<section id="id6">
+<h4>Author<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id7">
+<h4>Contents<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>FHO class: optimization algorithm implementation</p></li>
+<li><p>Fire hawk and prey update mechanisms</p></li>
+<li><p>Dynamic exploitation of safe zones</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id8">
+<h4>Dependencies<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.Mealpy.FHO.</span></span><span class="sig-name descname"><span class="pre">FHO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
+<p>Fire Hawk Optimizer (FHO)</p>
+<p>A nature-inspired metaheuristic algorithm based on the hunting and fire-spreading
+behavior of fire hawks. This optimizer models interactions between fire hawks and
+prey, including dynamic territory formation, safe zone calculation, and adaptive
+movement strategies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (generations). Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of agents (hawks + prey). Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to the base Optimizer class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.n_hawks">
+<span class="sig-name descname"><span class="pre">n_hawks</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.n_hawks" title="Link to this definition"></a></dt>
+<dd><p>Number of fire hawks in the population (30% of pop_size).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.n_preys">
+<span class="sig-name descname"><span class="pre">n_preys</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.n_preys" title="Link to this definition"></a></dt>
+<dd><p>Number of prey in the population (70% of pop_size).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.compute_distance">
+<span class="sig-name descname"><span class="pre">compute_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.compute_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.compute_distance" title="Link to this definition"></a></dt>
+<dd><p>Compute the Euclidean distance between two solution vectors.</p>
+<p>This distance metric is used to associate each prey with the closest
+fire hawk based on spatial proximity in the solution space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>ndarray</em>) – First solution vector.</p></li>
+<li><p><strong>x2</strong> (<em>ndarray</em>) – Second solution vector.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Euclidean distance between x1 and x2.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Perform one iteration of the Fire Hawk Optimizer.</p>
+<p>This method updates the positions of both hawks and preys based on dynamic
+rules of fire hawk hunting. It consists of:</p>
+<ol class="arabic simple">
+<li><p>Updating hawk positions via attraction to the global best and repulsion from other hawks;</p></li>
+<li><p>Assigning each prey to the nearest hawk’s territory based on Euclidean distance;</p></li>
+<li><p>Updating the position of preys within territories by moving them toward their assigned hawk
+and away from a computed safe zone (local mean);</p></li>
+<li><p>Updating the position of escaped preys outside any territory by attracting them to a random hawk
+and repelling them from the global safe zone (mean of escaped preys);</p></li>
+<li><p>Updating the global best solution.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – Current iteration number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.initialize_variables">
+<span class="sig-name descname"><span class="pre">initialize_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.initialize_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.initialize_variables" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks">
+<span class="sig-name descname"><span class="pre">update_hawks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.update_hawks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks" title="Link to this definition"></a></dt>
+<dd><p>Update the positions of all fire hawks.</p>
+<p>Each hawk moves toward the global best solution while being repelled by a randomly
+selected hawk, encouraging both convergence and diversity in the population.
+Position updates are subject to boundary constraints and fitness evaluation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks_territories">
+<span class="sig-name descname"><span class="pre">update_hawks_territories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">territories</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.update_hawks_territories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks_territories" title="Link to this definition"></a></dt>
+<dd><p>Assign each prey to the territory of the closest fire hawk.</p>
+<p>The Euclidean distance is used to associate preys with the nearest hawk,
+forming dynamic territorial clusters that reflect local exploitation zones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>territories</strong> (<em>list</em><em> of </em><em>list</em>) – A list where each sublist contains the preys assigned to a hawk.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated territory assignment of preys per hawk.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_inside_territory">
+<span class="sig-name descname"><span class="pre">update_preys_inside_territory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_preys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">territories</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.update_preys_inside_territory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_inside_territory" title="Link to this definition"></a></dt>
+<dd><p>Update the positions of preys located within a hawk’s territory.</p>
+<p>Each prey is attracted to its assigned hawk and repelled from the mean position
+(safe place) of all preys in the same territory, balancing convergence and dispersion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_preys</strong> (<em>list</em>) – A list to accumulate the updated prey agents.</p></li>
+<li><p><strong>territories</strong> (<em>list</em><em> of </em><em>list</em>) – Territory assignment for each hawk.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_outside_territory">
+<span class="sig-name descname"><span class="pre">update_preys_outside_territory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_preys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">territories</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/FHO.html#FHO.update_preys_outside_territory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_outside_territory" title="Link to this definition"></a></dt>
+<dd><p>Update the positions of preys not assigned to any hawk territory (escaped preys).</p>
+<p>Each escaped prey moves toward a randomly selected hawk and away from the global
+safe zone, computed as the mean of all escaped prey positions. This enables exploration
+in globally less-exploited areas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_preys</strong> (<em>list</em>) – A list to accumulate the updated prey agents.</p></li>
+<li><p><strong>territories</strong> (<em>list</em><em> of </em><em>list</em>) – Territory assignment for each hawk (used to identify escaped preys).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.Mealpy.LSA">
+<span id="geolightning-solvers-mealpy-lsa-module"></span><h2>GeoLightning.Solvers.Mealpy.LSA module<a class="headerlink" href="#module-GeoLightning.Solvers.Mealpy.LSA" title="Link to this heading"></a></h2>
+<section id="mealpy-lsa-wrapper">
+<h3>Mealpy LSA Wrapper<a class="headerlink" href="#mealpy-lsa-wrapper" title="Link to this heading"></a></h3>
+<p>Lightning Search Algorithm (LSA)</p>
+<section id="id9">
+<h4>Summary<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<p>This module implements the Lightning Search Algorithm (LSA), a nature-inspired
+metaheuristic based on the behavior of electrical discharges in the atmosphere.
+It combines three movement strategies — Step Leader (SL), Space Projectile (SP),
+and Lead Projectile (LP) — to explore and exploit the solution space.</p>
+</section>
+<section id="id10">
+<h4>Author<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id11">
+<h4>Contents<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>LSA class: main optimizer logic</p></li>
+<li><p>Transition Projectile, Space Projectile, and Lead Projectile sampling mechanisms</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id12">
+<h4>Dependencies<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>random</p></li>
+<li><p>mealpy</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.Mealpy.LSA.</span></span><span class="sig-name descname"><span class="pre">LSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
+<p>Lightning Search Algorithm (LSA)</p>
+<p>A metaheuristic optimization algorithm inspired by lightning dynamics,
+combining three distinct movement mechanisms to explore and exploit the
+search space: transition projectile (uniform), space projectile (exponential),
+and lead projectile (Gaussian).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (<em>object</em>) – An instance of the optimization problem, defining bounds and objective.</p></li>
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations to execute. Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of agents (solutions) in the population. Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments passed to the base Optimizer class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.g_best">
+<span class="sig-name descname"><span class="pre">g_best</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.g_best" title="Link to this definition"></a></dt>
+<dd><p>The best solution found during the optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Agent</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.is_parallelizable">
+<span class="sig-name descname"><span class="pre">is_parallelizable</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.is_parallelizable" title="Link to this definition"></a></dt>
+<dd><p>Indicates whether the algorithm supports parallel evaluation. Always False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.sort_flag">
+<span class="sig-name descname"><span class="pre">sort_flag</span></span><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.sort_flag" title="Link to this definition"></a></dt>
+<dd><p>Sorting flag for population ranking. Not used in this algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu">
+<span class="sig-name descname"><span class="pre">compute_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.compute_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu" title="Link to this definition"></a></dt>
+<dd><p>Compute the distance (mu) from a given agent to the global best.</p>
+<p>This value controls the magnitude of the exponential perturbation (space projectile).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent</strong> (<em>Agent</em>) – Current solution agent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Euclidean distance between the agent and the global best.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.compute_sigma">
+<span class="sig-name descname"><span class="pre">compute_sigma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.compute_sigma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_sigma" title="Link to this definition"></a></dt>
+<dd><p>Compute the standard deviation (sigma) for Gaussian sampling.</p>
+<p>Sigma is derived from mu and controls the lead projectile’s spread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mu</strong> (<em>float</em>) – Distance from the current agent to the global best.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Standard deviation used for Gaussian sampling.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.evolve" title="Link to this definition"></a></dt>
+<dd><p>Perform one iteration of the Lightning Search Algorithm (LSA).</p>
+<p>For each agent in the population:
+- Computes mu (distance to global best),
+- Computes sigma (Gaussian spread),
+- Generates one candidate from each projectile type (TP, SP, LP),
+- Randomly selects one,
+- Updates the agent if the new solution improves its fitness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pop</strong> (<em>list</em><em> of </em><em>Agent</em><em>, </em><em>optional</em>) – Population to evolve (not used directly). Operates on <cite>self.pop</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.lead_projectile">
+<span class="sig-name descname"><span class="pre">lead_projectile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.lead_projectile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.lead_projectile" title="Link to this definition"></a></dt>
+<dd><p>Generate a lead projectile (LP) candidate.</p>
+<p>Applies Gaussian perturbation to the global best position, promoting local
+exploitation of the most promising region found so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sigma</strong> (<em>float</em>) – Standard deviation controlling the Gaussian spread.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new solution vector generated via Gaussian perturbation of the global best.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.space_projectile">
+<span class="sig-name descname"><span class="pre">space_projectile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.space_projectile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.space_projectile" title="Link to this definition"></a></dt>
+<dd><p>Generate a space projectile (SP) candidate.</p>
+<p>Samples a perturbation from an exponential distribution and applies it in a
+random direction to the current agent. Explores the space based on distance to the best.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent</strong> (<em>Agent</em>) – The current agent.</p></li>
+<li><p><strong>mu</strong> (<em>float</em>) – Characteristic length scale based on distance to the global best.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new solution vector generated via exponential displacement.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.transition_projectile">
+<span class="sig-name descname"><span class="pre">transition_projectile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.transition_projectile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.transition_projectile" title="Link to this definition"></a></dt>
+<dd><p>Generate a transition projectile (TP) candidate.</p>
+<p>Samples a new position uniformly within the search bounds. Represents a random
+discharge independent of current population dynamics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new solution vector sampled uniformly within bounds.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.Mealpy">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GeoLightning.Solvers.Mealpy" title="Link to this heading"></a></h2>
+<section id="metaheuristic-optimizers">
+<h3>Metaheuristic Optimizers<a class="headerlink" href="#metaheuristic-optimizers" title="Link to this heading"></a></h3>
+</section>
+<section id="id13">
+<h3>Summary<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>Contains custom classes for MEALPY optimizers such as
+ESO, LSA and FHO.</p>
+</section>
+<section id="id14">
+<h3>Author<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id15">
+<h3>Submodules<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>ESO.py: ESO Optimizer.</p></li>
+<li><p>FHO.py: FHO Optimizer.</p></li>
+<li><p>LSA.py: LSA Optimizer.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id16">
+<h3>Dependencies<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GeoLightning.Solvers.html" class="btn btn-neutral float-left" title="GeoLightning.Solvers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GeoLightning.Stela.html" class="btn btn-neutral float-right" title="GeoLightning.Stela package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

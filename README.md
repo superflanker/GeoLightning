@@ -56,6 +56,7 @@ GeoLightning relies on the following Python libraries:
 ```
 GeoLightning/
 ├── GeoLightning/
+│   ├── Runners/               # Convenience Wrappers for Mealpy Solvers
 │   ├── Simulator/             # Sensor modeling and synthetic data
 │   ├── Solvers/               # STELA wrappers and metaheuristics
 │   ├── Stela/                 # Core spatiotemporal clustering and likelihood

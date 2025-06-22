@@ -1,0 +1,822 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Solvers package &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GeoLightning.Solvers.Mealpy package" href="GeoLightning.Solvers.Mealpy.html" />
+    <link rel="prev" title="GeoLightning.Simulator package" href="GeoLightning.Simulator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">GeoLightning.Solvers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Stela.html">GeoLightning.Stela package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Utils.html">GeoLightning.Utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.html#module-GeoLightning">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">GeoLightning</a></li>
+          <li class="breadcrumb-item"><a href="GeoLightning.html">GeoLightning package</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Solvers package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/GeoLightning.Solvers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geolightning-solvers-package">
+<h1>GeoLightning.Solvers package<a class="headerlink" href="#geolightning-solvers-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html">GeoLightning.Solvers.Mealpy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#module-GeoLightning.Solvers.Mealpy.ESO">GeoLightning.Solvers.Mealpy.ESO module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#mealpy-eso-wrapper">Mealpy ESO Wrapper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#summary">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#author">Author</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#contents">Contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO"><code class="docutils literal notranslate"><span class="pre">ESO</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.field_resistance"><code class="docutils literal notranslate"><span class="pre">ESO.field_resistance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.field_intensity"><code class="docutils literal notranslate"><span class="pre">ESO.field_intensity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.storm_power"><code class="docutils literal notranslate"><span class="pre">ESO.storm_power</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.ke"><code class="docutils literal notranslate"><span class="pre">ESO.ke</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.stagnation"><code class="docutils literal notranslate"><span class="pre">ESO.stagnation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_index"><code class="docutils literal notranslate"><span class="pre">ESO.ionized_areas_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.ionized_areas_positions"><code class="docutils literal notranslate"><span class="pre">ESO.ionized_areas_positions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.adjust_field_intensity"><code class="docutils literal notranslate"><span class="pre">ESO.adjust_field_intensity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_field_resistance"><code class="docutils literal notranslate"><span class="pre">ESO.calculate_field_resistance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_ke"><code class="docutils literal notranslate"><span class="pre">ESO.calculate_ke()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.calculate_storm_power"><code class="docutils literal notranslate"><span class="pre">ESO.calculate_storm_power()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.evolve"><code class="docutils literal notranslate"><span class="pre">ESO.evolve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.exp"><code class="docutils literal notranslate"><span class="pre">ESO.exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.identify_ionized_areas"><code class="docutils literal notranslate"><span class="pre">ESO.identify_ionized_areas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.log"><code class="docutils literal notranslate"><span class="pre">ESO.log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.logistic_curve"><code class="docutils literal notranslate"><span class="pre">ESO.logistic_curve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO.propagate"><code class="docutils literal notranslate"><span class="pre">ESO.propagate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#module-GeoLightning.Solvers.Mealpy.FHO">GeoLightning.Solvers.Mealpy.FHO module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#mealpy-fho-wrapper">Mealpy FHO Wrapper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id5">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id6">Author</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id7">Contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id8">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO"><code class="docutils literal notranslate"><span class="pre">FHO</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.n_hawks"><code class="docutils literal notranslate"><span class="pre">FHO.n_hawks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.n_preys"><code class="docutils literal notranslate"><span class="pre">FHO.n_preys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.compute_distance"><code class="docutils literal notranslate"><span class="pre">FHO.compute_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.evolve"><code class="docutils literal notranslate"><span class="pre">FHO.evolve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.initialize_variables"><code class="docutils literal notranslate"><span class="pre">FHO.initialize_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks"><code class="docutils literal notranslate"><span class="pre">FHO.update_hawks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.update_hawks_territories"><code class="docutils literal notranslate"><span class="pre">FHO.update_hawks_territories()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_inside_territory"><code class="docutils literal notranslate"><span class="pre">FHO.update_preys_inside_territory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.update_preys_outside_territory"><code class="docutils literal notranslate"><span class="pre">FHO.update_preys_outside_territory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#module-GeoLightning.Solvers.Mealpy.LSA">GeoLightning.Solvers.Mealpy.LSA module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#mealpy-lsa-wrapper">Mealpy LSA Wrapper</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id9">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id10">Author</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id11">Contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id12">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA"><code class="docutils literal notranslate"><span class="pre">LSA</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.g_best"><code class="docutils literal notranslate"><span class="pre">LSA.g_best</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.is_parallelizable"><code class="docutils literal notranslate"><span class="pre">LSA.is_parallelizable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.sort_flag"><code class="docutils literal notranslate"><span class="pre">LSA.sort_flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu"><code class="docutils literal notranslate"><span class="pre">LSA.compute_mu()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_sigma"><code class="docutils literal notranslate"><span class="pre">LSA.compute_sigma()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.evolve"><code class="docutils literal notranslate"><span class="pre">LSA.evolve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.lead_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.lead_projectile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.space_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.space_projectile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.transition_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.transition_projectile()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#module-GeoLightning.Solvers.Mealpy">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#metaheuristic-optimizers">Metaheuristic Optimizers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id13">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id14">Author</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id15">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#id16">Dependencies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-GeoLightning.Solvers.StelaAOA">
+<span id="geolightning-solvers-stelaaoa-module"></span><h2>GeoLightning.Solvers.StelaAOA module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaAOA" title="Link to this heading"></a></h2>
+<section id="stela-aoa-wrapper">
+<h3>Stela AOA Wrapper<a class="headerlink" href="#stela-aoa-wrapper" title="Link to this heading"></a></h3>
+<p>STELA-AOA Wrapper - Adaptive Optimization for Lightning Event Localization</p>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
+<p>This module defines a wrapper class that extends the Arithmetic Optimization Algorithm (AOA)
+from the MEALPY framework to directly operate on instances of the <cite>StelaProblem</cite> class.</p>
+<p>The optimization process dynamically refines the search space boundaries based on
+the best solution found so far, integrating a feedback loop via the
+<cite>restart_search_space()</cite> method of the problem.</p>
+</section>
+<section id="author">
+<h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="contents">
+<h4>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaAOA class: customized AOA with adaptive search space refinement.</p></li>
+<li><p>Integration with STELA-based geolocation problems.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaAOA.StelaAOA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaAOA.</span></span><span class="sig-name descname"><span class="pre">StelaAOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moa_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moa_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaAOA.html#StelaAOA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaAOA.StelaAOA" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OriginalAOA</span></code></p>
+<p>A customized version of the Arithmetic Optimization Algorithm (AOA)
+designed to solve geolocation problems formulated as <cite>StelaProblem</cite>.</p>
+<p>This class overrides the standard AOA behavior by adaptively refining
+the search space before each evolutionary step using the problem’s
+internal logic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of evolutionary iterations (default is 1000).</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions (default is 50).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments passed to the parent class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaAOA.StelaAOA.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaAOA.html#StelaAOA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaAOA.StelaAOA.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaESO">
+<span id="geolightning-solvers-stelaeso-module"></span><h2>GeoLightning.Solvers.StelaESO module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaESO" title="Link to this heading"></a></h2>
+<section id="stela-eso-wrapper">
+<h3>Stela ESO Wrapper<a class="headerlink" href="#stela-eso-wrapper" title="Link to this heading"></a></h3>
+<p>STELA-ESO Wrapper - Adaptive Optimization for Lightning Event Localization</p>
+<section id="id1">
+<h4>Summary<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>This module defines a wrapper class that extends the Electrical Storm Optimization (ESO)
+algorithm from the MEALPY framework to work directly with instances of the <cite>StelaProblem</cite> class.</p>
+<p>The optimization process includes adaptive search space refinement using the
+<cite>restart_search_space()</cite> method from the STELA geolocation problem formulation.</p>
+</section>
+<section id="id2">
+<h4>Author<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id3">
+<h4>Contents<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaESO class: customized ESO with problem-specific space adaptation.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id4">
+<h4>Dependencies<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaESO.StelaESO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaESO.</span></span><span class="sig-name descname"><span class="pre">StelaESO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaESO.html#StelaESO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaESO.StelaESO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.ESO.ESO" title="GeoLightning.Solvers.Mealpy.ESO.ESO"><code class="xref py py-class docutils literal notranslate"><span class="pre">ESO</span></code></a></p>
+<p>A customized version of the Electrical Storm Optimization (ESO) algorithm
+adapted to solve geolocation problems defined as <cite>StelaProblem</cite>.</p>
+<p>This class overrides the default behavior by applying adaptive search
+space refinement prior to each evolutionary step, based on the best
+solution found so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of optimization iterations (default is 1000).</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions (default is 50).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional arguments passed to the MEALPY base optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaESO.StelaESO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaESO.html#StelaESO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaESO.StelaESO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaFHO">
+<span id="geolightning-solvers-stelafho-module"></span><h2>GeoLightning.Solvers.StelaFHO module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaFHO" title="Link to this heading"></a></h2>
+<section id="stela-fho-wrapper">
+<h3>Stela FHO Wrapper<a class="headerlink" href="#stela-fho-wrapper" title="Link to this heading"></a></h3>
+<p>STELA-FHO Wrapper - Adaptive Optimization for Lightning Event Localization</p>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>This module defines a wrapper class that extends the Fire Hawk Optimizer (FHO)
+from the MEALPY framework to work directly with instances of the <cite>StelaProblem</cite> class.</p>
+<p>The optimization process includes adaptive search space refinement using the
+<cite>restart_search_space()</cite> method from the STELA geolocation problem formulation.</p>
+</section>
+<section id="id6">
+<h4>Author<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id7">
+<h4>Contents<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaFHO class: customized FHO with problem-specific space adaptation.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id8">
+<h4>Dependencies<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>GeoLightning.Solvers.Mealpy.FHO</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaFHO.StelaFHO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaFHO.</span></span><span class="sig-name descname"><span class="pre">StelaFHO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaFHO.html#StelaFHO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaFHO.StelaFHO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO" title="GeoLightning.Solvers.Mealpy.FHO.FHO"><code class="xref py py-class docutils literal notranslate"><span class="pre">FHO</span></code></a></p>
+<p>A customized version of the Fire Hawk Optimizer (FHO) algorithm
+adapted to solve geolocation problems defined as <cite>StelaProblem</cite>.</p>
+<p>This class overrides the default behavior by applying adaptive search
+space refinement prior to each evolutionary step, based on the best
+solution found so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of optimization iterations (default is 1000).</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions (default is 50).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional arguments passed to the MEALPY base optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaFHO.StelaFHO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaFHO.html#StelaFHO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaFHO.StelaFHO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaGA">
+<span id="geolightning-solvers-stelaga-module"></span><h2>GeoLightning.Solvers.StelaGA module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaGA" title="Link to this heading"></a></h2>
+<section id="stela-ga-wrapper">
+<h3>Stela GA Wrapper<a class="headerlink" href="#stela-ga-wrapper" title="Link to this heading"></a></h3>
+<p>STELA-GA Wrapper - Adaptive Genetic Algorithm for Atmospheric Event Localization</p>
+<section id="id9">
+<h4>Summary<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<p>This module defines a custom wrapper that extends the Genetic Algorithm (GA)
+implementation from the MEALPY framework to operate directly on instances of the
+<cite>StelaProblem</cite> class, which is designed for lightning geolocation using
+spatio-temporal data.</p>
+<p>Before each evolutionary iteration, the search space is dynamically refined
+according to the best solution found so far, using the <cite>restart_search_space()</cite>
+method from the problem definition.</p>
+</section>
+<section id="id10">
+<h4>Author<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id11">
+<h4>Contents<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaGA class: Genetic Algorithm adapted to STELA geolocation models.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id12">
+<h4>Dependencies<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy.evolutionary_based.GA</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGA.StelaGA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaGA.</span></span><span class="sig-name descname"><span class="pre">StelaGA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGA.html#StelaGA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGA.StelaGA" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGA</span></code></p>
+<p>Customized Genetic Algorithm (GA) that integrates STELA’s adaptive search
+space refinement mechanism for lightning event localization.</p>
+<p>This class inherits from MEALPY’s BaseGA and is modified to work with
+geolocation problems formalized via the <cite>StelaProblem</cite> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations. Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of individuals in the population. Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments for the base optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGA.StelaGA.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGA.html#StelaGA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGA.StelaGA.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaGWO">
+<span id="geolightning-solvers-stelagwo-module"></span><h2>GeoLightning.Solvers.StelaGWO module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaGWO" title="Link to this heading"></a></h2>
+<section id="stela-gwo-wrapper">
+<h3>Stela GWO Wrapper<a class="headerlink" href="#stela-gwo-wrapper" title="Link to this heading"></a></h3>
+<p>STELA-GWO Wrapper - Grey Wolf Optimizer for Atmospheric Event Localization</p>
+<section id="id13">
+<h4>Summary<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
+<p>This module defines a custom wrapper that extends the Grey Wolf Optimizer (GWO)
+from the MEALPY framework to operate directly on instances of the <cite>StelaProblem</cite>
+class, designed for lightning geolocation using spatio-temporal information.</p>
+<p>Before each evolutionary iteration, the search space is dynamically refined
+based on the current best solution, using the method <cite>restart_search_space()</cite>
+from the STELA problem instance.</p>
+</section>
+<section id="id14">
+<h4>Author<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id15">
+<h4>Contents<a class="headerlink" href="#id15" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaGWO class: Grey Wolf Optimizer adapted for STELA-based localization.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id16">
+<h4>Dependencies<a class="headerlink" href="#id16" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy.swarm_based.GWO</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGWO.StelaGWO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaGWO.</span></span><span class="sig-name descname"><span class="pre">StelaGWO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGWO.html#StelaGWO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGWO.StelaGWO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OriginalGWO</span></code></p>
+<p>Customized Grey Wolf Optimizer (GWO) integrated with STELA’s
+adaptive geolocation problem formulation.</p>
+<p>This class extends MEALPY’s original GWO to operate on dynamic
+search spaces defined by the <cite>StelaProblem</cite> class, which handles
+lightning geolocation with spatial and temporal constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations. Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of individuals in the population. Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional arguments for the base optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGWO.StelaGWO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGWO.html#StelaGWO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGWO.StelaGWO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaLSA">
+<span id="geolightning-solvers-stelalsa-module"></span><h2>GeoLightning.Solvers.StelaLSA module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaLSA" title="Link to this heading"></a></h2>
+<section id="stela-lsa-wrapper">
+<h3>Stela LSA Wrapper<a class="headerlink" href="#stela-lsa-wrapper" title="Link to this heading"></a></h3>
+<p>STELA Wrapper for the Lightning Search Algorithm (LSA)</p>
+<section id="id17">
+<h4>Summary<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
+<p>This module defines the class <cite>StelaLSA</cite>, a specialized extension of the
+Lightning Search Algorithm (LSA) optimizer from the MEALPY library. It is designed
+to directly operate on instances of the <cite>StelaProblem</cite> class, which models
+spatio-temporal localization problems, such as atmospheric lightning events.</p>
+<p>Before each evolutionary iteration, the search space is adaptively refined
+based on the current best solution through the <cite>restart_search_space()</cite> method
+defined in <cite>StelaProblem</cite>.</p>
+</section>
+<section id="id18">
+<h4>Author<a class="headerlink" href="#id18" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id19">
+<h4>Contents<a class="headerlink" href="#id19" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaLSA class: adaptive LSA wrapper for STELA</p></li>
+<li><p>evolve(): executes one iteration with dynamic bounds adjustment</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id20">
+<h4>Dependencies<a class="headerlink" href="#id20" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>GeoLightning.Solvers.Mealpy.LSA</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaLSA.StelaLSA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaLSA.</span></span><span class="sig-name descname"><span class="pre">StelaLSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaLSA.html#StelaLSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaLSA.StelaLSA" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA" title="GeoLightning.Solvers.Mealpy.LSA.LSA"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSA</span></code></a></p>
+<p>Specialized class extending MEALPY’s LSA optimizer to work with
+<cite>StelaProblem</cite> instances for spatio-temporal event localization.</p>
+<p>This wrapper integrates dynamic refinement of the search space
+at each iteration based on the current best solution found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations. Default is 1000.</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of individuals in the population. Default is 50.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional arguments for the base optimizer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaLSA.StelaLSA.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaLSA.html#StelaLSA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaLSA.StelaLSA.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaPSO">
+<span id="geolightning-solvers-stelapso-module"></span><h2>GeoLightning.Solvers.StelaPSO module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaPSO" title="Link to this heading"></a></h2>
+<section id="stela-pso-wrapper">
+<h3>Stela PSO Wrapper<a class="headerlink" href="#stela-pso-wrapper" title="Link to this heading"></a></h3>
+<p>STELA Wrapper for the Particle Swarm Optimization (PSO)</p>
+<section id="id21">
+<h4>Summary<a class="headerlink" href="#id21" title="Link to this heading"></a></h4>
+<p>This module defines the <cite>StelaPSO</cite> class, a specialized extension of the
+Particle Swarm Optimization (PSO) algorithm from the MEALPY library. It is
+designed to operate directly on instances of the <cite>StelaProblem</cite> class, which
+models the spatio-temporal localization of events detected by distributed sensors,
+such as atmospheric lightning.</p>
+<p>Before each evolutionary iteration, the search space is adaptively refined
+based on the current best solution using the <cite>restart_search_space()</cite> method
+from the <cite>StelaProblem</cite> class.</p>
+</section>
+<section id="id22">
+<h4>Author<a class="headerlink" href="#id22" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id23">
+<h4>Contents<a class="headerlink" href="#id23" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaPSO class: adaptive PSO wrapper for STELA</p></li>
+<li><p>evolve(): PSO iteration with dynamic bounds refinement</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id24">
+<h4>Dependencies<a class="headerlink" href="#id24" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy.swarm_based.PSO</p></li>
+<li><p>GeoLightning.Solvers.StelaProblem</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaPSO.StelaPSO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaPSO.</span></span><span class="sig-name descname"><span class="pre">StelaPSO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaPSO.html#StelaPSO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaPSO.StelaPSO" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OriginalPSO</span></code></p>
+<p>Specialized class extending MEALPY’s PSO optimizer to operate directly
+on <cite>StelaProblem</cite> instances for spatio-temporal event localization.</p>
+<p>Before each evolutionary iteration, the search space is adaptively
+refined based on the current best solution using the
+<cite>restart_search_space()</cite> method from <cite>StelaProblem</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of evolutionary iterations (default is 1000).</p></li>
+<li><p><strong>pop_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions (default is 50).</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments passed to the parent class.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaPSO.StelaPSO.evolve">
+<span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaPSO.html#StelaPSO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaPSO.StelaPSO.evolve" title="Link to this definition"></a></dt>
+<dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>epoch</strong> (<em>int</em>) – The current epoch number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers.StelaProblem">
+<span id="geolightning-solvers-stelaproblem-module"></span><h2>GeoLightning.Solvers.StelaProblem module<a class="headerlink" href="#module-GeoLightning.Solvers.StelaProblem" title="Link to this heading"></a></h2>
+<section id="stela-problem-wrapper">
+<h3>Stela Problem Wrapper<a class="headerlink" href="#stela-problem-wrapper" title="Link to this heading"></a></h3>
+<p>StelaProblem Class - Spatio-Temporal Event Estimation</p>
+<section id="id25">
+<h4>Summary<a class="headerlink" href="#id25" title="Link to this heading"></a></h4>
+<p>This module defines the <cite>StelaProblem</cite> class, which encapsulates a spatio-temporal
+localization problem using time-of-arrival (TOA) information from a distributed
+sensor network. It is suitable for atmospheric event localization, such as lightning,
+using a maximum-likelihood-based fitness function calculated via the STELA algorithm.</p>
+<p>Each candidate solution encodes the (lat, lon, alt) coordinates of M potential events,
+and the quality of each solution is evaluated based on spatial and temporal clustering
+likelihood.</p>
+</section>
+<section id="id26">
+<h4>Author<a class="headerlink" href="#id26" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id27">
+<h4>Contents<a class="headerlink" href="#id27" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>StelaProblem class: problem formulation compatible with MEALPY</p></li>
+<li><p>restart_search_space(): dynamically adjusts bounds</p></li>
+<li><p>evaluate(): objective function wrapper</p></li>
+<li><p>get_best_solution(): retrieves the current best candidate</p></li>
+<li><p>obj_func(): spatio-temporal likelihood function based on STELA</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id28">
+<h4>Dependencies<a class="headerlink" href="#id28" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+<li><p>GeoLightning.Stela.Stela</p></li>
+<li><p>GeoLightning.Utils.Constants</p></li>
+</ul>
+</section>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaProblem.StelaProblem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaProblem.</span></span><span class="sig-name descname"><span class="pre">StelaProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaProblem.html#StelaProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaProblem.StelaProblem" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Problem</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaProblem.StelaProblem.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaProblem.html#StelaProblem.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaProblem.StelaProblem.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Evaluates a solution using the defined objective function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>solution</strong> (<em>np.ndarray</em>) – A 1D array encoding the flattened coordinates of M candidate events.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list with one element containing the objective function value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaProblem.StelaProblem.obj_func">
+<span class="sig-name descname"><span class="pre">obj_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaProblem.html#StelaProblem.obj_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaProblem.StelaProblem.obj_func" title="Link to this definition"></a></dt>
+<dd><p>Objective function for the STELA problem.</p>
+<p>Evaluates the spatio-temporal likelihood of a candidate solution,
+calculated using the STELA algorithm. This algorithm performs clustering
+and refinement using both arrival times and spatial data from sensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>solution</strong> (<em>np.ndarray</em>) – A flat array representing (lat, lon, alt) coordinates for M events.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The objective value (likelihood). Returns the negative value if
+the problem is a maximization task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Solvers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GeoLightning.Solvers" title="Link to this heading"></a></h2>
+<section id="metaheuristic-optimizer-wrappers">
+<h3>Metaheuristic Optimizer Wrappers<a class="headerlink" href="#metaheuristic-optimizer-wrappers" title="Link to this heading"></a></h3>
+</section>
+<section id="id29">
+<h3>Summary<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<p>Contains custom wrapper classes for MEALPY optimizers such as
+ESO, LSA, FHO, PSO, GWO, GA, and AOA. These wrappers specialize
+each optimizer to work directly with the STELA problem class
+and dynamically adjust the search space during evolution.</p>
+</section>
+<section id="id30">
+<h3>Author<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id31">
+<h3>Submodules<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>StelaProblem.py: Custom MEALPY-compatible problem class for STELA.</p></li>
+<li><p>&lt;algorithms&gt;.py: Custom optimizer wrappers (e.g., StelaPSO, StelaGWO, etc.).</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id32">
+<h3>Dependencies<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>mealpy</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="GeoLightning.Simulator.html" class="btn btn-neutral float-left" title="GeoLightning.Simulator package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GeoLightning.Solvers.Mealpy.html" class="btn btn-neutral float-right" title="GeoLightning.Solvers.Mealpy package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

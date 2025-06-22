@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Stela.Stela &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Stela.Stela</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for GeoLightning.Stela.Stela</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">STELA Core algorithm</span>
+<span class="sd">====================</span>
+
+<span class="sd">Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm</span>
+
+<span class="sd">Summary</span>
+<span class="sd">-------</span>
+<span class="sd">This module implements the STELA algorithm, designed for spatio-temporal association </span>
+<span class="sd">of multisensory detections with simulated physical events, such as lightning strikes </span>
+<span class="sd">or impulsive acoustic sources.</span>
+
+<span class="sd">The algorithm integrates spatial and temporal clustering with a likelihood function </span>
+<span class="sd">based on the consistency between the time-of-arrival (TOA) of signals and the estimated </span>
+<span class="sd">event positions. It refines candidate solutions from multilateration, adjusts </span>
+<span class="sd">search boundaries for meta-heuristics, and identifies plausible groupings </span>
+<span class="sd">of detections that correspond to real-world events.</span>
+
+<span class="sd">This pipeline is compatible with TOA-based localization methods and applicable </span>
+<span class="sd">to geophysical sensing, radio frequency, underwater acoustics, and transient astronomy.</span>
+
+<span class="sd">Author</span>
+<span class="sd">------</span>
+<span class="sd">Augusto Mathias Adams &lt;augusto.adams@ufpr.br&gt;</span>
+
+<span class="sd">Contents</span>
+<span class="sd">--------</span>
+<span class="sd">- STELA Algorithm (main routine)</span>
+<span class="sd">- Temporal clustering</span>
+<span class="sd">- Spatial clustering and likelihood estimation</span>
+<span class="sd">- Search bounds generation</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is part of the activities of the discipline </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</span>
+
+<span class="sd">Dependencies</span>
+<span class="sd">------------</span>
+<span class="sd">- numpy</span>
+<span class="sd">- numba</span>
+<span class="sd">- GeoLightning.Utils.Constants</span>
+<span class="sd">- GeoLightning.Utils.Utils</span>
+<span class="sd">- GeoLightning.Stela.LogLikelihood</span>
+<span class="sd">- GEoLightning.Stela.Entropy</span>
+<span class="sd">- GeoLightning.Stela.Common</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIGMA_T</span><span class="p">,</span> \
+    <span class="n">EPSILON_T</span><span class="p">,</span> \
+    <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span> \
+    <span class="n">AVG_LIGHT_SPEED</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_tempos_de_origem</span><span class="p">,</span> \
+    <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.LogLikelihood</span><span class="w"> </span><span class="kn">import</span> <span class="n">funcao_log_verossimilhanca</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Entropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcular_entropia_local</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcula_residuos_temporais</span><span class="p">,</span> \
+    <span class="n">calcula_centroides_temporais</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBSCAN</span>
+
+
+<div class="viewcode-block" id="stela">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Stela.stela">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stela</span><span class="p">(</span><span class="n">solucoes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+          <span class="n">tempos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+          <span class="n">pontos_de_deteccao</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+          <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+          <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
+          <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
+          <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
+          <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm.</span>
+
+<span class="sd">    This function performs the core association and filtering step based on </span>
+<span class="sd">    the spatio-temporal consistency between multisensory detections and </span>
+<span class="sd">    multilateration-generated candidate event positions.</span>
+
+<span class="sd">    It applies temporal clustering to infer origin times, followed by a spatial </span>
+<span class="sd">    clustering step with compatibility checks, optimizing a log-likelihood function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    solucoes : np.ndarray</span>
+<span class="sd">        Array of shape (N, 3) with candidate event positions in geographic </span>
+<span class="sd">        or Cartesian coordinates.</span>
+<span class="sd">    tempos_de_chegada : np.ndarray</span>
+<span class="sd">        Array of shape (M,) with absolute signal arrival times at the sensors.</span>
+<span class="sd">    pontos_de_deteccao : np.ndarray</span>
+<span class="sd">        Array of shape (M, 3) with sensor positions, using the same coordinate system </span>
+<span class="sd">        as `solucoes`.</span>
+<span class="sd">    sistema_cartesiano : bool, optional</span>
+<span class="sd">        Indicates whether the coordinates are Cartesian (True) or geographic (False). Default is False.</span>
+<span class="sd">    sigma_t : float, optional</span>
+<span class="sd">        Temporal standard deviation (used in likelihood computation).</span>
+<span class="sd">    epsilon_t : float, optional</span>
+<span class="sd">        Temporal tolerance for temporal clustering.</span>
+<span class="sd">        Spatial tolerance for spatial clustering.</span>
+<span class="sd">    min_pts : int, optional</span>
+<span class="sd">        Minimum number of points to form a valid cluster (DBSCAN requirement).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        clusters_espaciais : np.ndarray</span>
+<span class="sd">            Updated spatial cluster labels.</span>
+<span class="sd">        verossimilhanca : float</span>
+<span class="sd">            Total log-likelihood value of the solution.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Optimized with Numba for high-performance execution.</span>
+<span class="sd">    - Compatible with multiple events and multisensor contexts.</span>
+<span class="sd">    - Suitable for pre-processing before global optimization with genetic algorithms,</span>
+<span class="sd">      swarm intelligence, and other meta-heuristics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># primeiro passo - clusters espaço-temporais</span>
+    <span class="n">tempos_de_origem</span> <span class="o">=</span> <span class="n">computa_tempos_de_origem</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                                <span class="n">tempos_de_chegada</span><span class="p">,</span>
+                                                <span class="n">pontos_de_deteccao</span><span class="p">,</span>
+                                                <span class="n">sistema_cartesiano</span><span class="p">)</span>
+
+    <span class="c1"># segundo passo - se o sistemas de coordenadas for esférico, converter para cartesiano</span>
+    <span class="c1"># e &quot;transformar&quot; em tempo</span>
+    <span class="k">if</span> <span class="n">sistema_cartesiano</span><span class="p">:</span>
+        <span class="n">solucoes_cartesianas</span> <span class="o">=</span> <span class="n">solucoes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">/</span><span class="n">c</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">solucoes_cartesianas</span> <span class="o">=</span> <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span><span class="p">(</span>
+            <span class="n">solucoes</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span>
+
+    <span class="c1"># antes de aglutinar tudo - vou fazer um empilhamento de tempos</span>
+    <span class="n">solucoes_cartesianas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">solucoes_cartesianas</span><span class="p">,</span>
+                                     <span class="n">tempos_de_origem</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="n">clustering</span> <span class="o">=</span> <span class="n">DBSCAN</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="n">epsilon_t</span><span class="p">,</span>
+                        <span class="n">min_samples</span><span class="o">=</span><span class="n">min_pts</span><span class="p">,</span>
+                        <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">solucoes_cartesianas</span><span class="p">)</span>
+    <span class="n">clusters_espaciais</span> <span class="o">=</span> <span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span>
+
+    <span class="c1"># centróides</span>
+
+    <span class="n">centroides</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calcula_centroides_temporais</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">,</span>
+                                                  <span class="n">clusters_espaciais</span><span class="p">)</span>
+
+    <span class="n">tempos_medios</span> <span class="o">=</span> <span class="n">calcula_residuos_temporais</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">,</span>
+                                               <span class="n">clusters_espaciais</span><span class="p">,</span>
+                                               <span class="n">centroides</span><span class="p">)</span>
+    
+    <span class="c1"># vetor de resíduos temporais</span>
+
+    <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="mf">1e20</span> <span class="o">*</span> <span class="n">calcular_entropia_local</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    
+
+    <span class="n">verossimilhanca</span> <span class="o">+=</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">(</span><span class="n">tempos_medios</span><span class="p">,</span> <span class="n">sigma_t</span><span class="p">)</span>
+
+    <span class="c1"># tudo pronto, retornando</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">,</span>
+            <span class="n">verossimilhanca</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.Simulator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">get_sensors</span><span class="p">,</span>
+                                                  <span class="n">get_random_sensors</span><span class="p">,</span>
+                                                  <span class="n">get_lightning_limits</span><span class="p">,</span>
+                                                  <span class="n">generate_detections</span><span class="p">,</span>
+                                                  <span class="n">generate_events</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
+
+    <span class="n">num_events</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
+                  <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span>
+                  <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">num_events</span><span class="p">)):</span>
+        <span class="c1"># recuperando o grupo de sensores</span>
+        <span class="n">sensors</span> <span class="o">=</span> <span class="n">get_sensors</span><span class="p">()</span>
+        <span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span> <span class="o">=</span> <span class="n">get_lightning_limits</span><span class="p">(</span><span class="n">sensors</span><span class="p">)</span>
+
+        <span class="c1"># gerando os eventos</span>
+        <span class="n">min_alt</span> <span class="o">=</span> <span class="mf">935.0</span>
+        <span class="n">max_alt</span> <span class="o">=</span> <span class="mf">935.0</span>
+        <span class="n">min_time</span> <span class="o">=</span> <span class="mi">10000</span>
+        <span class="n">max_time</span> <span class="o">=</span> <span class="n">min_time</span> <span class="o">+</span> <span class="mi">72</span> <span class="o">*</span> <span class="mi">3600</span>
+
+        <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span> <span class="o">=</span> <span class="n">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                       <span class="n">min_lat</span><span class="p">,</span>
+                                                       <span class="n">max_lat</span><span class="p">,</span>
+                                                       <span class="n">min_lon</span><span class="p">,</span>
+                                                       <span class="n">max_lon</span><span class="p">,</span>
+                                                       <span class="n">min_alt</span><span class="p">,</span>
+                                                       <span class="n">max_alt</span><span class="p">,</span>
+                                                       <span class="n">min_time</span><span class="p">,</span>
+                                                       <span class="n">max_time</span><span class="p">)</span>
+
+        <span class="c1"># gerando as detecções</span>
+        <span class="p">(</span><span class="n">detections</span><span class="p">,</span>
+         <span class="n">detection_times</span><span class="p">,</span>
+         <span class="n">n_event_positions</span><span class="p">,</span>
+         <span class="n">n_event_times</span><span class="p">,</span>
+         <span class="n">distances</span><span class="p">,</span>
+         <span class="n">spatial_clusters</span><span class="p">)</span> <span class="o">=</span> <span class="n">generate_detections</span><span class="p">(</span><span class="n">event_positions</span><span class="p">,</span>
+                                                 <span class="n">event_times</span><span class="p">,</span>
+                                                 <span class="n">sensors</span><span class="p">)</span>
+        <span class="n">start_st</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+
+        <span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">,</span>
+         <span class="n">verossimilhanca</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela</span><span class="p">(</span><span class="n">n_event_positions</span><span class="p">,</span>
+                                  <span class="n">detection_times</span><span class="p">,</span>
+                                  <span class="n">detections</span><span class="p">,</span>
+                                  <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">end_st</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Eventos: </span><span class="si">{</span><span class="n">num_events</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, Tempo gasto: </span><span class="si">{</span><span class="n">end_st</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_st</span><span class="si">}</span><span class="s2"> Segundos&quot;</span><span class="p">)</span>
+        <span class="n">len_clusterizados</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]))</span>
+        <span class="n">len_reais</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_positions</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">len_clusterizados</span> <span class="o">==</span> <span class="n">len_reais</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clusterizados: </span><span class="si">{</span><span class="n">len_clusterizados</span><span class="si">}</span><span class="s2">, Reais: </span><span class="si">{</span><span class="n">len_reais</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

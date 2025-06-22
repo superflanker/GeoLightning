@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.Simulator.Metrics &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">GeoLightning.Simulator.Metrics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for GeoLightning.Simulator.Metrics</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Performance Metrics</span>
+<span class="sd">===================</span>
+
+<span class="sd">This module defines the performance metrics used in atmospheric discharge geolocation experiments.</span>
+
+<span class="sd">Summary</span>
+<span class="sd">-------</span>
+<span class="sd">The functions implemented in this module are designed to evaluate the </span>
+<span class="sd">accuracy and consistency of geolocation algorithms applied to atmospheric </span>
+<span class="sd">discharges (e.g., lightning events). It supports metrics such as </span>
+<span class="sd">positioning error, timing residuals, likelihood values, and statistical </span>
+<span class="sd">criteria for evaluating candidate solutions.</span>
+
+<span class="sd">Author</span>
+<span class="sd">------</span>
+<span class="sd">Augusto Mathias Adams &lt;augusto.adams@ufpr.br&gt;</span>
+
+<span class="sd">Contents</span>
+<span class="sd">--------</span>
+<span class="sd">- Metric evaluation functions for estimated positions and times.</span>
+<span class="sd">- Support for spatial and temporal residuals.</span>
+<span class="sd">- Adapted for use with likelihood-based geolocation pipelines.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is part of the activities of the discipline </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, </span>
+<span class="sd">Federal University of Paraná (UFPR), Brazil.</span>
+
+<span class="sd">Dependencies</span>
+<span class="sd">------------</span>
+<span class="sd">- numpy</span>
+<span class="sd">- numpy.linalg.inv</span>
+<span class="sd">- numba</span>
+<span class="sd">- GeoLightning.Utils.Constants (SIGMA_D, SIGMA_T)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">inv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIGMA_D</span><span class="p">,</span> <span class="n">SIGMA_T</span>
+
+
+<div class="viewcode-block" id="rmse">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.rmse">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">estimadas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+         <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the root mean square error (RMSE) between estimated and real values.</span>
+
+<span class="sd">    A fundamental parameter for evaluating the accuracy of event location algorithms, the RMSE provides a measure of the average discrepancy between the estimated and real position vectors, and is particularly useful in quantifying spatial accuracy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimated : np.ndarray</span>
+<span class="sd">        Vector of estimated positions</span>
+<span class="sd">    real : np.ndarray</span>
+<span class="sd">        Vector of real positions</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        Value of the root mean square error (RMSE) between the given vectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">estimadas</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="mae">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.mae">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.</span>
+
+<span class="sd">    MAE is a widely used metric in the evaluation of prediction models, providing a direct measure of the average magnitude of the errors, without considering their direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimated : np.ndarray</span>
+<span class="sd">        Vector of estimated values, representing the model predictions.</span>
+<span class="sd">    actual : np.ndarray</span>
+<span class="sd">        Vector of actual values, representing the reference or true values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        Value of the mean absolute error (MAE) between the given vectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="average_mean_squared_error">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.average_mean_squared_error">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">average_mean_squared_error</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the mean squared error (AMSE) between estimated values ​​and real values.</span>
+
+<span class="sd">    AMSE (Average Mean Squared Error) is a metric that quantifies the average of the squares of the differences between estimated values ​​and real values, penalizing larger errors with greater severity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimated : np.ndarray</span>
+<span class="sd">        Vector of estimated values, usually from predictions of a model.</span>
+<span class="sd">    real : np.ndarray</span>
+<span class="sd">        Vector of real values, considered as reference or ground truth.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        Value of the mean squared error (AMSE) between the provided vectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="mean_location_error">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.mean_location_error">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mean_location_error</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the mean localization error (MLE) between the estimated values ​​and the real values.</span>
+
+<span class="sd">    The MLE (Mean Localization Error) is defined as the average of the Euclidean distances between pairs of estimated and real positions, and is widely used in geolocation problems to quantify spatial accuracy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimated : np.ndarray</span>
+<span class="sd">        Vector of estimated positions</span>
+<span class="sd">    real : np.ndarray</span>
+<span class="sd">        Vector of real reference positions, with the same dimension as `estimated`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">        Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="calcula_prmse">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.calcula_prmse">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcula_prmse</span><span class="p">(</span><span class="n">rmse</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                  <span class="n">referencia</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the percentage root mean square error (PRMSE).</span>
+
+<span class="sd">    PRMSE (Percentage Root Mean Square Error) is defined as the percentage ratio between the RMSE value and a reference value (usually the full scale), and is useful for relative performance analysis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rmse : float</span>
+<span class="sd">        Absolute value of the root mean square error (RMSE).</span>
+<span class="sd">    reference : float</span>
+<span class="sd">        Full scale value or reference adopted for normalization.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Value of the root mean square error expressed as a percentage (PRMSE), given by: `(rmse / reference) * 100`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">rmse</span> <span class="o">/</span> <span class="n">referencia</span></div>
+
+
+
+<div class="viewcode-block" id="acuracia_associacao">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.acuracia_associacao">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">acuracia_associacao</span><span class="p">(</span><span class="n">associacoes_estimadas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">associacoes_reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the accuracy of the association between detections and events.</span>
+
+<span class="sd">    The accuracy of the association is defined as the proportion of correct associations between the estimated and real indices, expressing the effectiveness of the algorithm in the task of identifying corresponding events.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    estimated_associations : np.ndarray</span>
+<span class="sd">        One-dimensional vector containing the estimated indices of the associations for each detection.</span>
+<span class="sd">    real_associations : np.ndarray</span>
+<span class="sd">        One-dimensional vector containing the real indices of the corresponding associations.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.float64</span>
+<span class="sd">    Value of the accuracy of the association, defined as the ratio between the number of correct associations and the total number of detections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">associacoes_estimadas</span> <span class="o">==</span> <span class="n">associacoes_reais</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="erro_relativo_funcao_ajuste">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.erro_relativo_funcao_ajuste">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">erro_relativo_funcao_ajuste</span><span class="p">(</span><span class="n">F_estimado</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">F_referencia</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the percentage relative error between the estimated fitting function and a reference.</span>
+
+<span class="sd">    The percentage relative error is defined as the percentage difference between the estimated value of the fitting function and a reference value, the latter usually being a benchmark, known optimum value or ideal solution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    F_estimado : float</span>
+<span class="sd">        Value of the fitting function obtained by the algorithm.</span>
+<span class="sd">    F_referencia : float</span>
+<span class="sd">        Reference value used for comparison, such as the theoretical optimum or a benchmark.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">    Percentage relative error between the given values, calculated as</span>
+<span class="sd">    ``100 * abs(F_estimado - F_referencia) / abs(F_referencia)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_estimado</span> <span class="o">-</span> <span class="n">F_referencia</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_referencia</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span></div>
+
+
+
+<div class="viewcode-block" id="tempo_execucao">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.tempo_execucao">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tempo_execucao</span><span class="p">(</span><span class="n">tempo_inicial</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                   <span class="n">tempo_final</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the total execution time between two time instants.</span>
+
+<span class="sd">    This method computes the difference between the end time and the start time,</span>
+<span class="sd">    returning the total elapsed time in seconds.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start_time : float</span>
+<span class="sd">        Timestamp of the start of the execution, expressed in seconds.</span>
+<span class="sd">    end_time : float</span>
+<span class="sd">        Timestamp of the end of the execution, expressed in seconds.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Total execution time, in seconds, calculated as the difference</span>
+<span class="sd">        between `end_time` and `start_time`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tempo_final</span> <span class="o">-</span> <span class="n">tempo_inicial</span></div>
+
+
+
+<div class="viewcode-block" id="calcular_crlb_espacial">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.calcular_crlb_espacial">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_crlb_espacial</span><span class="p">(</span><span class="n">sigma_d</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SIGMA_D</span><span class="p">,</span>
+                           <span class="n">N</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the Cramér-Rao Lower Bound (CRLB) matrix for estimating the position of an event.</span>
+
+<span class="sd">    A model of isotropic spatial variance is assumed and distance measurements are subject to Gaussian noise with constant standard deviation. The CRLB matrix expresses the lower bound of the variance of any unbiased estimator of the event&#39;s position in three-dimensional space.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sigma_d : float</span>
+<span class="sd">        Standard deviation of distance measurements (in meters), assumed to be the same for all sensors.</span>
+<span class="sd">    N : int</span>
+<span class="sd">        Total number of sensors used in the geolocation system.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">sigma_d</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="calcular_crlb_temporal">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.calcular_crlb_temporal">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_crlb_temporal</span><span class="p">(</span><span class="n">sigma_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
+                           <span class="n">N</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Cramér-Rao Lower Bound (CRLB) for estimating the time of origin of an event.</span>
+
+<span class="sd">    The CRLB represents the theoretical lower bound on the variance of any unbiased estimator </span>
+<span class="sd">    for the temporal origin, under Gaussian noise with standard deviation `sigma_t`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sigma_t : float, optional</span>
+<span class="sd">        Standard deviation of the time measurements (in seconds). Default is `SIGMA_T`.</span>
+<span class="sd">    N : int, optional</span>
+<span class="sd">        Number of sensors involved in the estimation. Default is 7.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        A (1, 1) array representing the CRLB for the origin time estimate.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">sigma_t</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="calcular_crlb_rmse">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.calcular_crlb_rmse">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_crlb_rmse</span><span class="p">(</span><span class="n">crlb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the root mean square error (RMSE) derived from the CRLB matrix.</span>
+
+<span class="sd">    This function calculates the quadratic mean of the trace of the product of </span>
+<span class="sd">    the CRLB matrix with itself, normalized by its dimension.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    crlb : np.ndarray</span>
+<span class="sd">        CRLB matrix from which the RMSE is to be computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        RMSE value computed from the CRLB matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">crlb</span> <span class="o">@</span> <span class="n">crlb</span><span class="p">))</span> <span class="o">/</span> <span class="n">crlb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+
+
+<div class="viewcode-block" id="calcular_mean_crlb">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.calcular_mean_crlb">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_mean_crlb</span><span class="p">(</span><span class="n">crlb</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the mean of the variances along the diagonal of the CRLB matrix.</span>
+
+<span class="sd">    This metric represents the average uncertainty (variance) associated with </span>
+<span class="sd">    the estimation of each parameter under the CRLB model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    crlb : np.ndarray</span>
+<span class="sd">        CRLB matrix obtained from the estimation process.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Mean value of the variances in the CRLB matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">crlb</span><span class="p">)</span> <span class="o">/</span> <span class="n">crlb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
