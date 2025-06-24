@@ -126,14 +126,48 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIGMA_T</span><span class="p">,</span> \
     <span class="n">EPSILON_T</span><span class="p">,</span> \
     <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span> \
-    <span class="n">AVG_LIGHT_SPEED</span>
+    <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span> \
+    <span class="n">AVG_EARTH_RADIUS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_tempos_de_origem</span><span class="p">,</span> \
     <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.LogLikelihood</span><span class="w"> </span><span class="kn">import</span> <span class="n">funcao_log_verossimilhanca</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Entropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcular_entropia_local</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.LogLikelihood</span><span class="w"> </span><span class="kn">import</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">,</span> \
+    <span class="n">raw_amend_positions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcula_residuos_temporais</span><span class="p">,</span> \
-    <span class="n">calcula_centroides_temporais</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBSCAN</span>
+    <span class="n">calcula_centroides_temporais</span><span class="p">,</span> \
+    <span class="n">calcula_distancias_ao_centroide</span><span class="p">,</span> \
+    <span class="n">calcular_centroides_espaciais</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">DBSCAN</span><span class="p">,</span> <span class="n">OPTICS</span>
+
+<div class="viewcode-block" id="gera_novas_solucoes">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Stela.gera_novas_solucoes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gera_novas_solucoes</span><span class="p">(</span><span class="n">solucoes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">centroides</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fill an array with centroids solutions</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    solucoes : np.ndarray</span>
+<span class="sd">        Array of estimated solutions.</span>
+<span class="sd">    labels : np.ndarray</span>
+<span class="sd">        Array of cluster labels assigned to each solution point.</span>
+<span class="sd">    centroides : np.ndarray</span>
+<span class="sd">        Array of centroids for each clusters</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    novas_solucoes: np.ndarray</span>
+<span class="sd">        Array containing new centroids solutions to each </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">novas_solucoes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">solucoes</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solucoes</span><span class="p">)):</span>
+        <span class="n">novas_solucoes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">centroides</span><span class="p">[</span><span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">novas_solucoes</span></div>
+
 
 
 <div class="viewcode-block" id="stela">
@@ -215,25 +249,24 @@
                         <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">solucoes_cartesianas</span><span class="p">)</span>
     <span class="n">clusters_espaciais</span> <span class="o">=</span> <span class="n">clustering</span><span class="o">.</span><span class="n">labels_</span>
 
-    <span class="c1"># centróides</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;centroides_temporais, _ = calcula_centroides_temporais(tempos_de_origem,</span>
+<span class="sd">                                                        clusters_espaciais)</span>
+<span class="sd">    </span>
+<span class="sd">    tempos_medios = calcula_residuos_temporais(tempos_de_origem,</span>
+<span class="sd">                                               clusters_espaciais,</span>
+<span class="sd">                                               centroides_temporais)&quot;&quot;&quot;</span>
 
-    <span class="n">centroides</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calcula_centroides_temporais</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">,</span>
-                                                  <span class="n">clusters_espaciais</span><span class="p">)</span>
+    <span class="n">centroides_espaciais</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calcular_centroides_espaciais</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                                            <span class="n">clusters_espaciais</span><span class="p">)</span>
 
-    <span class="n">tempos_medios</span> <span class="o">=</span> <span class="n">calcula_residuos_temporais</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">,</span>
-                                               <span class="n">clusters_espaciais</span><span class="p">,</span>
-                                               <span class="n">centroides</span><span class="p">)</span>
-    
-    <span class="c1"># vetor de resíduos temporais</span>
-
-    <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="mf">1e20</span> <span class="o">*</span> <span class="n">calcular_entropia_local</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">distancias</span> <span class="o">=</span> <span class="n">calcula_distancias_ao_centroide</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                                 <span class="n">clusters_espaciais</span><span class="p">,</span>
+                                                 <span class="n">centroides_espaciais</span><span class="p">,</span>
+                                                 <span class="n">sistema_cartesiano</span><span class="p">)</span>
     
 
-    <span class="n">verossimilhanca</span> <span class="o">+=</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">(</span><span class="n">tempos_medios</span><span class="p">,</span> <span class="n">sigma_t</span><span class="p">)</span>
+    <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">(</span>
+        <span class="n">distancias</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span> <span class="c1">#\</span>
 
     <span class="c1"># tudo pronto, retornando</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">,</span>
@@ -250,7 +283,7 @@
                                                   <span class="n">generate_events</span><span class="p">)</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
 
-    <span class="n">num_events</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
+    <span class="n">num_events</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span>
                   <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span>
                   <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">]</span>
 
@@ -293,14 +326,15 @@
                                   <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">end_st</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Eventos: </span><span class="si">{</span><span class="n">num_events</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, Tempo gasto: </span><span class="si">{</span><span class="n">end_st</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_st</span><span class="si">}</span><span class="s2"> Segundos&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">verossimilhanca</span><span class="p">)</span>
         <span class="n">len_clusterizados</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]))</span>
         <span class="n">len_reais</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_positions</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">len_clusterizados</span> <span class="o">==</span> <span class="n">len_reais</span>
+            <span class="k">assert</span> <span class="n">spatial_clusters</span> <span class="o">==</span> <span class="n">clusters_espaciais</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clusterizados: </span><span class="si">{</span><span class="n">len_clusterizados</span><span class="si">}</span><span class="s2">, Reais: </span><span class="si">{</span><span class="n">len_reais</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>

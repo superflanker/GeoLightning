@@ -1,36 +1,66 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Constantes - Geolocalização de eventos atmosféricos
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+Constants
+=========
+
+Constants for Atmospheric Event Geolocation
+-------------------------------------------
+
+This module defines global constants used in the simulation and estimation 
+of atmospheric event locations. It includes physical constants, 
+sensor-related noise parameters, spatial tolerances, and thresholds 
+for spatiotemporal clustering and localization bounds.
+
+Author
+-------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Summary
+--------
+The constants defined in this module are used across multiple components
+of the STELA pipeline and simulation tools. These include:
+- Physical constants such as the average Earth radius and speed of light.
+- Noise characteristics of detection systems (e.g., standard deviations).
+- Spatial and temporal tolerances for clustering and validation.
+- Thresholds for determining bounds and sensor coverage.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+numpy
 """
+
 import numpy as np
 
-# raio médio da Terra (em metros)
 AVG_EARTH_RADIUS: np.float64 = 1000 * 6371.0088
+"""float: Mean radius of the Earth in meters."""
 
-# velocidade mpedia da luz no vácuo (em metros por segundo)
 AVG_LIGHT_SPEED: np.float64 = 299_792_458.0
+"""float: Speed of light in vacuum, in meters per second."""
 
-# desvio padrão temporal - caracteristica do sensor (em segundos)
 SIGMA_T: np.float64 = 1.0e-6
+"""float: Temporal standard deviation of detection uncertainty (in seconds)."""
 
-# desvio padrão espacial - relacionada ao std temporal
 SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
+"""float: Spatial standard deviation corresponding to SIGMA_T (in meters)."""
 
-# limites máximos de erro
-# temporal
 EPSILON_T: np.float64 = 1000 * SIGMA_T
-# espacial
+"""float: Maximum admissible temporal tolerance (in seconds)."""
+
 EPSILON_D: np.float64 = 1000 * SIGMA_D
+"""float: Maximum admissible spatial tolerance (in meters)."""
 
 LIMIT_D: np.float64 = 10 * SIGMA_D
+"""float: Maximum search radius for metaheuristic methods (in meters)."""
 
-# numero mínimo de elementos por cluster
 CLUSTER_MIN_PTS: np.int32 = 3
+"""int: Minimum number of points to form a valid cluster."""
 
-# metros por grau de latitude
-R_LAT: np.float64 = 111320.0
+R_LAT: np.float64 = 111_320.0
+"""float: Latitude conversion factor — meters per degree."""
 
-# Distância de alcance de cada sensor
-
-MAX_DISTANCE: np.float64 = 160 * 1000.0
+MAX_DISTANCE: np.float64 = 160_000.0
+"""float: Range maximum detection of a sensor (in meters)."""

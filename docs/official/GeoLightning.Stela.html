@@ -256,7 +256,7 @@ a cluster and its corresponding centroid.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>solucoes</strong> (<em>np.ndarray</em>) – Array of estimated solutions.</p></li>
 <li><p><strong>labels</strong> (<em>np.ndarray</em>) – Array of cluster labels assigned to each solution point.</p></li>
-<li><p><strong>centroides</strong> (<em>np.ndarray</em>) – Array of centroids for each cluster.    s</p></li>
+<li><p><strong>centroides</strong> (<em>np.ndarray</em>) – Array of centroids for each clusters</p></li>
 <li><p><strong>sistema_cartesiano</strong> (<em>bool</em>) – Indicates whether the coordinate system is Cartesian (True)
 or geographic (False)</p></li>
 </ul>
@@ -483,6 +483,7 @@ signal localization, parameter estimation, and inference models.</p>
 <ul class="simple">
 <li><p>Log-likelihood function for normal distribution</p></li>
 <li><p>Fitness evaluation for Gaussian residuals</p></li>
+<li><p>Likelihood gradients</p></li>
 </ul>
 <p class="rubric">Notes</p>
 <p>This module is part of the activities of the discipline
@@ -493,6 +494,8 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Constants</p></li>
+<li><p>GeoLightning.Utils.Utils</p></li>
 </ul>
 </section>
 </section>
@@ -529,14 +532,151 @@ of deviations, assuming they follow a Gaussian distribution N(0, σ²).</p>
 </section>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.LogLikelihood.grad_cartesiano_para_esferico">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.LogLikelihood.</span></span><span class="sig-name descname"><span class="pre">grad_cartesiano_para_esferico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_xyz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6371008.8</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/LogLikelihood.html#grad_cartesiano_para_esferico"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.LogLikelihood.grad_cartesiano_para_esferico" title="Link to this definition"></a></dt>
+<dd><p>Converts the likelihood gradient from Cartesian to spherical coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coordinates</strong> (<em>np.ndarray</em>) – coordinates ([lat, long, alt]) with angles in degrees</p></li>
+<li><p><strong>grad_xyz</strong> (<em>np.ndarray</em>) – Gradient in Cartesian system (shape (3,))</p></li>
+<li><p><strong>R</strong> (<em>float</em>) – Mean radius of the Earth (default: 6371000 m)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>grad_esf</strong> – Gradient in spherical system (dφ, dλ, dh), shape (3,)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.LogLikelihood.grad_verossimilanca_cartesiana">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.LogLikelihood.</span></span><span class="sig-name descname"><span class="pre">grad_verossimilanca_cartesiana</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_of_origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/LogLikelihood.html#grad_verossimilanca_cartesiana"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.LogLikelihood.grad_verossimilanca_cartesiana" title="Link to this definition"></a></dt>
+<dd><p>Computes the gradient of the spatio-temporal log-likelihood for a 1-to-1 mapping
+between events and detections in Cartesian coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events_pos</strong> (<em>np.ndarray</em>) – Estimated event positions (N, 3)</p></li>
+<li><p><strong>detectors_pos</strong> (<em>np.ndarray</em>) – Detector positions (N, 3)</p></li>
+<li><p><strong>times_of_origin</strong> (<em>np.ndarray</em>) – Estimated times of origin (N,)</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Observed times of arrival (N,)</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em>) – Spatial uncertainty</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Propagation speed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>grad_pos</strong> – Gradient of the log-likelihood with respect to position (N, 3)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.LogLikelihood.maxima_log_verossimilhanca">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.LogLikelihood.</span></span><span class="sig-name descname"><span class="pre">maxima_log_verossimilhanca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/LogLikelihood.html#maxima_log_verossimilhanca"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.LogLikelihood.maxima_log_verossimilhanca" title="Link to this definition"></a></dt>
+<dd><p>Computes the maximum log-likelihood under a standard normal distribution
+with zero mean and standard deviation sigma.</p>
+<p>This function evaluates the sum of log-likelihoods for a number of observations,
+assuming they follow a Gaussian distribution N(0, σ²) and have a Δ = 0 each.</p>
+<section id="id15">
+<h3>Formula<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>log(ℒ) = -0.5 * log(2π * σ²) - (Δ² / (2σ²))</p>
+<dl class="field-list simple">
+<dt class="field-odd">param N<span class="colon">:</span></dt>
+<dd class="field-odd"><p>number of observations</p>
+</dd>
+<dt class="field-even">type N<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.int32</p>
+</dd>
+<dt class="field-odd">param sigma<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Standard deviation σ &gt; 0.</p>
+</dd>
+<dt class="field-even">type sigma<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Total maximum log-likelihood value for the observed deviations.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.LogLikelihood.numba_clip">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.LogLikelihood.</span></span><span class="sig-name descname"><span class="pre">numba_clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/LogLikelihood.html#numba_clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.LogLikelihood.numba_clip" title="Link to this definition"></a></dt>
+<dd><p>Clamps a scalar value between specified lower and upper bounds.</p>
+<p>This function returns the input value clipped to the interval
+[<cite>min_bound</cite>, <cite>max_bound</cite>]. It is implemented using Numba for
+high-performance scenarios involving scalar bound enforcement
+within JIT-compiled functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>float</em>) – Input scalar value to be clipped.</p></li>
+<li><p><strong>min_bound</strong> (<em>float</em>) – Lower bound of the valid interval.</p></li>
+<li><p><strong>max_bound</strong> (<em>float</em>) – Upper bound of the valid interval.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The clipped value, satisfying min_bound &lt;= result &lt;= max_bound.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Equivalent to <cite>np.clip(value, min_bound, max_bound)</cite> for scalars,
+but compatible with Numba’s <cite>nopython</cite> mode.</p></li>
+<li><p>This function is particularly useful when used inside other
+JIT-compiled routines where <cite>np.clip</cite> may not be supported.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.LogLikelihood.raw_amend_positions">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.LogLikelihood.</span></span><span class="sig-name descname"><span class="pre">raw_amend_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times_of_origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6371008.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/LogLikelihood.html#raw_amend_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.LogLikelihood.raw_amend_positions" title="Link to this definition"></a></dt>
+<dd><p>Amends events positions towards more promissing regions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>events_pos</strong> (<em>np.ndarray</em>) – Estimated event positions (N, 3)</p></li>
+<li><p><strong>detectors_pos</strong> (<em>np.ndarray</em>) – Detector positions (N, 3)</p></li>
+<li><p><strong>times_of_origin</strong> (<em>np.ndarray</em>) – Estimated times of origin (N,)</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Observed times of arrival (N,)</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em>) – Spatial uncertainty</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – Propagation speed</p></li>
+<li><p><strong>R</strong> (<em>np.float64</em>) – Average Earth Radius</p></li>
+<li><p><strong>learning_rate</strong> (<em>np.float64</em>) – learning rate to avoid overflows</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>amended_positions</strong> – amended positions towards more promissing regions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-GeoLightning.Stela.Stela">
 <span id="geolightning-stela-stela-module"></span><h2>GeoLightning.Stela.Stela module<a class="headerlink" href="#module-GeoLightning.Stela.Stela" title="Link to this heading"></a></h2>
 <section id="stela-core-algorithm">
 <h3>STELA Core algorithm<a class="headerlink" href="#stela-core-algorithm" title="Link to this heading"></a></h3>
 <p>Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm</p>
-<section id="id15">
-<h4>Summary<a class="headerlink" href="#id15" title="Link to this heading"></a></h4>
+<section id="id16">
+<h4>Summary<a class="headerlink" href="#id16" title="Link to this heading"></a></h4>
 <p>This module implements the STELA algorithm, designed for spatio-temporal association
 of multisensory detections with simulated physical events, such as lightning strikes
 or impulsive acoustic sources.</p>
@@ -548,12 +688,12 @@ of detections that correspond to real-world events.</p>
 <p>This pipeline is compatible with TOA-based localization methods and applicable
 to geophysical sensing, radio frequency, underwater acoustics, and transient astronomy.</p>
 </section>
-<section id="id16">
-<h4>Author<a class="headerlink" href="#id16" title="Link to this heading"></a></h4>
+<section id="id17">
+<h4>Author<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id17">
-<h4>Contents<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
+<section id="id18">
+<h4>Contents<a class="headerlink" href="#id18" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>STELA Algorithm (main routine)</p></li>
 <li><p>Temporal clustering</p></li>
@@ -564,8 +704,8 @@ to geophysical sensing, radio frequency, underwater acoustics, and transient ast
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id18">
-<h4>Dependencies<a class="headerlink" href="#id18" title="Link to this heading"></a></h4>
+<section id="id19">
+<h4>Dependencies<a class="headerlink" href="#id19" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
@@ -577,6 +717,26 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 </ul>
 </section>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.Stela.gera_novas_solucoes">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">gera_novas_solucoes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroides</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#gera_novas_solucoes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.gera_novas_solucoes" title="Link to this definition"></a></dt>
+<dd><p>Fill an array with centroids solutions
+:param solucoes: Array of estimated solutions.
+:type solucoes: np.ndarray
+:param labels: Array of cluster labels assigned to each solution point.
+:type labels: np.ndarray
+:param centroides: Array of centroids for each clusters
+:type centroides: np.ndarray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>novas_solucoes</strong> – Array containing new centroids solutions to each</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Stela.Stela.stela">
 <span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">stela</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_deteccao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#stela"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.stela" title="Link to this definition"></a></dt>
@@ -629,19 +789,19 @@ swarm intelligence, and other meta-heuristics.</p></li>
 <section id="stela-core-module">
 <h3>STELA Core Module<a class="headerlink" href="#stela-core-module" title="Link to this heading"></a></h3>
 </section>
-<section id="id19">
-<h3>Summary<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<section id="id20">
+<h3>Summary<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
 <p>Contains the core implementation of the STELA algorithm
 (Spatio-Temporal Likelihood Estimation for Lightning Analysis),
 used to identify and separate multiple atmospheric events based on
 TOA (Time-of-Arrival) data.</p>
 </section>
-<section id="id20">
-<h3>Author<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<section id="id21">
+<h3>Author<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id21">
-<h3>Submodules<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<section id="id22">
+<h3>Submodules<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Bounds.py: spatio-tempral bounds computation.</p></li>
 <li><p>Common.py: common utilities for the module.</p></li>
@@ -655,8 +815,8 @@ TOA (Time-of-Arrival) data.</p>
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id22">
-<h3>Dependencies<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<section id="id23">
+<h3>Dependencies<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>

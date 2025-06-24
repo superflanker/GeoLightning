@@ -301,7 +301,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># event_times = np.array(sorted(event_times))</span>
-
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
     <span class="n">lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">alts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
@@ -348,6 +348,7 @@
 <span class="sd">        spatial_clusters : np.ndarray</span>
 <span class="sd">            Cluster IDs identifying to which event each detection belongs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
     <span class="n">detections</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">detection_times</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">n_event_positions</span> <span class="o">=</span> <span class="p">[]</span>
@@ -373,7 +374,7 @@
                                 <span class="nb">min</span><span class="o">=-</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">,</span>
                                 <span class="nb">max</span><span class="o">=</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">)</span>
                 <span class="n">t_detect</span> <span class="o">=</span> <span class="n">event_time</span> <span class="o">+</span> \
-                    <span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span> <span class="o">+</span> <span class="n">noise</span>
+                    <span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span>  <span class="o">+</span> <span class="n">noise</span>
                 <span class="k">if</span> <span class="n">sensor_detection</span><span class="p">(</span><span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
                     <span class="n">t_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensor_positions</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
                     <span class="n">t_detection_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_detect</span><span class="p">)</span>

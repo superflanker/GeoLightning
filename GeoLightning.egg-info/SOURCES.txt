@@ -7,6 +7,12 @@ GeoLightning.egg-info/SOURCES.txt
 GeoLightning.egg-info/dependency_links.txt
 GeoLightning.egg-info/requires.txt
 GeoLightning.egg-info/top_level.txt
+GeoLightning/HyperParameters/Tuning.py
+GeoLightning/HyperParameters/__init__.py
+GeoLightning/Runners/RunnerAOA.py
+GeoLightning/Runners/RunnerESO.py
+GeoLightning/Runners/RunnerFHO.py
+GeoLightning/Runners/__init__.py
 GeoLightning/Simulator/Metrics.py
 GeoLightning/Simulator/SensorModel.py
 GeoLightning/Simulator/Simulator.py
@@ -41,6 +47,9 @@ tests/test_entropy.py
 tests/test_get_sensors.py
 tests/test_loglikelihood.py
 tests/test_metrics.py
+tests/test_runner_aoa.py
+tests/test_runner_eso.py
+tests/test_runner_fho.py
 tests/test_stela.py
 tests/test_stela_aoa.py
 tests/test_stela_eso.py
@@ -49,4 +58,11 @@ tests/test_stela_ga.py
 tests/test_stela_gwo.py
 tests/test_stela_lsa.py
 tests/test_stela_pso.py
+tests/test_tuner_aoa.py
+tests/test_tuner_eso.py
+tests/test_tuner_fho.py
+tests/test_tuner_ga.py
+tests/test_tuner_gwo.py
+tests/test_tuner_lsa.py
+tests/test_tuner_pso.py
 tests/test_utils.py

@@ -130,15 +130,19 @@
 <span class="sd">        detectores : np.ndarray</span>
 <span class="sd">            Array with the number of detectors associated with each cluster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">n_clusters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">medias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">detectores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempos</span><span class="p">)):</span>
-        <span class="n">lbl</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">lbl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tempos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tempos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">detectores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -172,13 +176,13 @@
 <span class="sd">        relative to its cluster centroid. </span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">residuos_de_tempo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">labels</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-    <span class="n">d_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">residuos_de_tempo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempos</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">residuos_de_tempo</span><span class="p">[</span><span class="n">d_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tempos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroides</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-        <span class="n">d_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">residuos_de_tempo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tempos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">centroides</span><span class="p">[</span><span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
 
     <span class="k">return</span> <span class="n">residuos_de_tempo</span></div>
 
@@ -207,16 +211,22 @@
 <span class="sd">    medias : np.ndarray</span>
 <span class="sd">        Array of temporal centroids (mean origin times) for each cluster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">n_clusters</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
     <span class="n">medias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="n">detectores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">lbl</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">lbl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">solucoes</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-            <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">solucoes</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">detectores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -249,7 +259,7 @@
 <span class="sd">    labels : np.ndarray</span>
 <span class="sd">        Array of cluster labels assigned to each solution point.</span>
 <span class="sd">    centroides : np.ndarray</span>
-<span class="sd">        Array of centroids for each cluster.    s</span>
+<span class="sd">        Array of centroids for each clusters</span>
 <span class="sd">    sistema_cartesiano : bool</span>
 <span class="sd">        Indicates whether the coordinate system is Cartesian (True) </span>
 <span class="sd">        or geographic (False)</span>
@@ -260,15 +270,16 @@
 <span class="sd">        Array containing the distance differences (ΔD) for each solution point </span>
 <span class="sd">        relative to its cluster centroid.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">labels</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)))</span>
-    <span class="n">d_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solucoes</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">distancias</span><span class="p">[</span><span class="n">d_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">computa_distancia</span><span class="p">(</span><span class="n">solucoes</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
-                                              <span class="n">centroides</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
-                                              <span class="n">sistema_cartesiano</span><span class="p">)</span>
-        <span class="n">d_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">distancias</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">computa_distancia</span><span class="p">(</span><span class="n">solucoes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                          <span class="n">centroides</span><span class="p">[</span><span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                                          <span class="n">sistema_cartesiano</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">distancias</span></div>
 

@@ -142,7 +142,7 @@
 <span class="sd">    mle_espacial : float</span>
 <span class="sd">        Mean Location Error between estimated and true positions.</span>
 <span class="sd">    prmse_espacial : float</span>
-<span class="sd">        Pseudo-RMSE normalized by 6 times the spatial noise standard deviation.</span>
+<span class="sd">        Percentage-RMSE normalized by 6 times the spatial noise standard deviation.</span>
 <span class="sd">    acuracia_associacao_atual : float</span>
 <span class="sd">        Percentage of correct associations between estimated and true cluster labels.</span>
 <span class="sd">    tempo_execucao : float</span>
@@ -177,6 +177,7 @@
                <span class="n">event_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">n_event_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">n_event_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+               <span class="n">spatial_clusters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">detections</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">detection_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -185,7 +186,7 @@
                <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
                <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
                <span class="n">sigma_d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_D</span><span class="p">,</span>
-               <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_D</span><span class="p">,</span>
+               <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
                <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
                <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 
@@ -221,7 +222,7 @@
     <span class="n">end_st</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
 
     <span class="n">best_solution</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">solution</span>
-    <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span>
+    <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">fitness</span>
     <span class="n">best_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">best_solution</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
     <span class="c1"># recomputando a clusterização estimada - índice de associação aplicado ao algoritmo</span>
@@ -244,19 +245,26 @@
                            <span class="n">epsilon_t</span><span class="o">=</span><span class="n">epsilon_t</span><span class="p">,</span>
                            <span class="n">min_pts</span><span class="o">=</span><span class="n">min_pts</span><span class="p">,</span>
                            <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-
     <span class="n">len_clusterizados</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">[</span><span class="n">clusters_espaciais</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]))</span>
     <span class="n">len_reais</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_positions</span><span class="p">)</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">spatial_clusters</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">len_clusterizados</span><span class="p">,</span> <span class="n">len_reais</span><span class="p">)</span>
+
+    <span class="n">temp_corretos</span> <span class="o">=</span> <span class="p">(</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="n">spatial_clusters</span><span class="p">)</span>
+    <span class="n">corretos</span> <span class="o">=</span> <span class="n">temp_corretos</span><span class="p">[</span><span class="n">temp_corretos</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Média de Eventos Clusterizados Corretamente: </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">corretos</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_clusters</span><span class="p">)</span><span class="si">:</span><span class="s2">.04f</span><span class="si">}</span><span class="s2"> % &quot;</span><span class="p">)</span>
+
     <span class="c1"># medições</span>
 
     <span class="c1"># distâncias médias à solução</span>
-    <span class="n">centroides_espaciais</span> <span class="o">=</span> <span class="n">calcular_centroides_espaciais</span><span class="p">(</span><span class="n">best_solution</span><span class="p">,</span>
+    <span class="n">centroides_espaciais</span><span class="p">,</span> <span class="n">detectores</span> <span class="o">=</span> <span class="n">calcular_centroides_espaciais</span><span class="p">(</span><span class="n">best_solution</span><span class="p">,</span>
                                                          <span class="n">clusters_espaciais</span><span class="p">)</span>
 
-    <span class="n">delta_d_real</span> <span class="o">=</span> <span class="n">calcula_distancias_ao_centroide</span><span class="p">(</span><span class="n">n_event_times</span><span class="p">,</span>
-                                                   <span class="n">clusters_espaciais</span><span class="p">,</span>
+    <span class="n">delta_d_real</span> <span class="o">=</span> <span class="n">calcula_distancias_ao_centroide</span><span class="p">(</span><span class="n">n_event_positions</span><span class="p">,</span>
+                                                   <span class="n">clusters_espaciais_reais</span><span class="p">,</span>
                                                    <span class="n">event_positions</span><span class="p">,</span>
                                                    <span class="n">sistema_cartesiano</span><span class="p">)</span>
 
@@ -337,6 +345,7 @@
             <span class="n">amse_espacial</span><span class="p">,</span>
             <span class="n">mle_espacial</span><span class="p">,</span>
             <span class="n">prmse_espacial</span><span class="p">,</span>
+            <span class="n">mae_temporal</span><span class="p">,</span>
             <span class="n">acuracia_associacao_atual</span><span class="p">,</span>
             <span class="n">tempo_execucao</span><span class="p">,</span> 
             <span class="n">crlb_temporal</span><span class="p">,</span>

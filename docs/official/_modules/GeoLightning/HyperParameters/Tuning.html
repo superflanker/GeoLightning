@@ -1,0 +1,272 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeoLightning.HyperParameters.Tuning &mdash; GeoLightning 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GeoLightning
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Main modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">GeoLightning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Constants Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../constantes.html">Global System Constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GeoLightning</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">GeoLightning.HyperParameters.Tuning</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for GeoLightning.HyperParameters.Tuning</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">HyperParameter Tunning</span>
+<span class="sd">----------------------</span>
+
+<span class="sd">Summary</span>
+<span class="sd">-------</span>
+
+<span class="sd">Tiner Wrapper for PSO, GA and AOA Algorithms</span>
+
+<span class="sd">Author</span>
+<span class="sd">------</span>
+<span class="sd">Augusto Mathias Adams &lt;augusto.adams@ufpr.br&gt;</span>
+
+<span class="sd">Submodules</span>
+<span class="sd">----------</span>
+<span class="sd">- Tuning.py: Hyperparameter wrapper</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is part of the activities of the discipline  </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</span>
+
+<span class="sd">Dependencies</span>
+<span class="sd">------------</span>
+<span class="sd">- Mealpy.Tuner</span>
+<span class="sd">- GeoLighting.Stela</span>
+<span class="sd">- GeoLightning.Solvers</span>
+<span class="sd">- GeoLightning.Simulator</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaProblem</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaProblem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Bounds</span><span class="w"> </span><span class="kn">import</span> <span class="n">gera_limites_iniciais</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.Simulator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">get_sensors</span><span class="p">,</span>
+                                              <span class="n">get_random_sensors</span><span class="p">,</span>
+                                              <span class="n">get_lightning_limits</span><span class="p">,</span>
+                                              <span class="n">generate_detections</span><span class="p">,</span>
+                                              <span class="n">generate_events</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.Simulator</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mealpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatVar</span><span class="p">,</span> <span class="n">Tuner</span><span class="p">,</span> <span class="n">Optimizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+
+<div class="viewcode-block" id="tuneit">
+<a class="viewcode-back" href="../../../GeoLightning.HyperParameters.html#GeoLightning.HyperParameters.Tuning.tuneit">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tuneit</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Optimizer</span><span class="p">,</span>
+           <span class="n">param_grid</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+           <span class="n">term</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform hyperparameter tuning for a MEALPY-based optimizer on a synthetic lightning event localization problem.</span>
+
+<span class="sd">    This function sets up a localization scenario with synthetic atmospheric lightning events and detections</span>
+<span class="sd">    from a known sensor network, builds a corresponding optimization problem, and applies grid-based</span>
+<span class="sd">    hyperparameter tuning using the MEALPY Tuner. After executing the trials, it resolves the best configuration</span>
+<span class="sd">    and returns the optimal hyperparameters and objective value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model : Optimizer</span>
+<span class="sd">        An instance of a MEALPY-compatible solver (e.g., LSA, PSO, GA, etc.).</span>
+<span class="sd">    param_grid : dict of str to list</span>
+<span class="sd">        Dictionary specifying the hyperparameter grid to explore.</span>
+<span class="sd">        Each key is a hyperparameter name, and its value is a list of candidate values.</span>
+<span class="sd">    term : dict of str to int</span>
+<span class="sd">        Dictionary of stopping criteria passed to the solver, e.g., {&quot;max_epochs&quot;: 100}.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary with the following keys:</span>
+<span class="sd">        - &#39;best_score&#39; (float): Best fitness score obtained across all trials.</span>
+<span class="sd">        - &#39;best_params&#39; (dict): Dictionary of the best hyperparameter combination found.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The synthetic scenario includes one lightning event and generates arrival times for a sensor network.</span>
+<span class="sd">    - The problem is constructed using the StelaProblem class, with parameters such as spatial and temporal tolerances.</span>
+<span class="sd">    - The tuning is parallelized using threads and includes a post-tuning resolution phase with the best configuration.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mealpy.Tuner : Interface used for parameter tuning.</span>
+<span class="sd">    StelaProblem : Custom optimization problem based on TOA geolocation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">logging</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># recuperando o grupo de sensores</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">get_sensors</span><span class="p">()</span>
+    <span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span> <span class="o">=</span> <span class="n">get_lightning_limits</span><span class="p">(</span><span class="n">sensors</span><span class="p">)</span>
+
+    <span class="c1"># gerando os eventos</span>
+    <span class="n">min_alt</span> <span class="o">=</span> <span class="mi">935</span>
+    <span class="n">max_alt</span> <span class="o">=</span> <span class="mi">935</span>
+    <span class="n">min_time</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="n">max_time</span> <span class="o">=</span> <span class="n">min_time</span> <span class="o">+</span> <span class="mi">72</span> <span class="o">*</span> <span class="mi">3600</span>
+    <span class="n">num_events</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span> <span class="o">=</span> <span class="n">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">,</span>
+                                                   <span class="n">min_lat</span><span class="p">,</span>
+                                                   <span class="n">max_lat</span><span class="p">,</span>
+                                                   <span class="n">min_lon</span><span class="p">,</span>
+                                                   <span class="n">max_lon</span><span class="p">,</span>
+                                                   <span class="n">min_alt</span><span class="p">,</span>
+                                                   <span class="n">max_alt</span><span class="p">,</span>
+                                                   <span class="n">min_time</span><span class="p">,</span>
+                                                   <span class="n">max_time</span><span class="p">)</span>
+
+    <span class="c1"># gerando as detecções</span>
+    <span class="p">(</span><span class="n">detections</span><span class="p">,</span>
+     <span class="n">detection_times</span><span class="p">,</span>
+     <span class="n">n_event_positions</span><span class="p">,</span>
+     <span class="n">n_event_times</span><span class="p">,</span>
+     <span class="n">distances</span><span class="p">,</span>
+     <span class="n">spatial_clusters</span><span class="p">)</span> <span class="o">=</span> <span class="n">generate_detections</span><span class="p">(</span><span class="n">event_positions</span><span class="p">,</span>
+                                             <span class="n">event_times</span><span class="p">,</span>
+                                             <span class="n">sensors</span><span class="p">)</span>
+
+    <span class="c1"># limites</span>
+
+    <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">gera_limites_iniciais</span><span class="p">(</span><span class="n">detections</span><span class="p">,</span>
+                                   <span class="n">min_lat</span><span class="p">,</span>
+                                   <span class="n">max_lat</span><span class="p">,</span>
+                                   <span class="n">min_lon</span><span class="p">,</span>
+                                   <span class="n">max_lon</span><span class="p">,</span>
+                                   <span class="n">min_alt</span><span class="p">,</span>
+                                   <span class="n">max_alt</span><span class="p">)</span>
+
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">lb</span><span class="p">)</span>
+
+    <span class="c1"># tudo pronto, instanciando a StelaProblem</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">StelaProblem</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span>
+                           <span class="n">minmax</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
+                           <span class="n">pontos_de_chegada</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span>
+                           <span class="n">tempos_de_chegada</span><span class="o">=</span><span class="n">detection_times</span><span class="p">,</span>
+                           <span class="n">min_pts</span><span class="o">=</span><span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
+                           <span class="n">SIGMA_T</span><span class="o">=</span><span class="n">SIGMA_T</span><span class="p">,</span>
+                           <span class="n">epsilon_t</span><span class="o">=</span><span class="n">EPSILON_T</span><span class="p">,</span>
+                           <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="n">problem_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;obj_func&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">evaluate</span><span class="p">,</span>  <span class="c1"># o próprio objeto como função objetivo</span>
+        <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">lb</span><span class="p">),</span>
+        <span class="s2">&quot;minmax&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">lb</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="c1"># semente randomica fixa</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="c1"># tuner</span>
+    <span class="n">tuner</span> <span class="o">=</span> <span class="n">Tuner</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">param_grid</span><span class="p">)</span>
+
+    <span class="n">tuner</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem_dict</span><span class="p">,</span>
+                  <span class="n">termination</span><span class="o">=</span><span class="n">term</span><span class="p">,</span>
+                  <span class="n">n_trials</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                  <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                  <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;single&quot;</span><span class="p">,</span>
+                  <span class="n">n_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">best_row</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">best_score</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">best_params</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;best_score&quot;</span><span class="p">:</span> <span class="n">tuner</span><span class="o">.</span><span class="n">best_score</span><span class="p">,</span>
+            <span class="s2">&quot;best_params&quot;</span><span class="p">:</span> <span class="n">tuner</span><span class="o">.</span><span class="n">best_params</span><span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Augusto Mathias Adams.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

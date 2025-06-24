@@ -441,6 +441,49 @@
 
 
 
+<div class="viewcode-block" id="computa_distancia_batelada">
+<a class="viewcode-back" href="../../../GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_distancia_batelada">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">computa_distancia_batelada</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the distance between two points, depending on the coordinate system - batch version.</span>
+
+<span class="sd">    This function selects either spherical or Cartesian distance calculation based</span>
+<span class="sd">    on the `sistema_cartesiano` flag, enabling compatibility with both geodetic and </span>
+<span class="sd">    Euclidean spatial models.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : np.ndarray</span>
+<span class="sd">        Coordinate vectors of the event (either [lat, lon, alt] in degrees/meters or [x, y, z] in meters).</span>
+<span class="sd">    s : np.ndarray</span>
+<span class="sd">        Coordinate vectors of the station or detector (same format as `a`).</span>
+<span class="sd">    sistema_cartesiano : bool, optional</span>
+<span class="sd">        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Estimated distance between the two points `a` and `s`, in meters.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - For spherical coordinates, this function assumes latitude and longitude in degrees and altitude in meters.</span>
+<span class="sd">    - For Cartesian coordinates, standard Euclidean geometry is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+        <span class="n">distancias</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">computa_distancia</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                          <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                          <span class="n">sistema_cartesiano</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">distancias</span></div>
+
+
+
 <div class="viewcode-block" id="computa_distancias">
 <a class="viewcode-back" href="../../../GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_distancias">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

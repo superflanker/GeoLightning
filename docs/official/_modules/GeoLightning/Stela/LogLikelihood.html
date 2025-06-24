@@ -97,6 +97,7 @@
 <span class="sd">--------</span>
 <span class="sd">- Log-likelihood function for normal distribution</span>
 <span class="sd">- Fitness evaluation for Gaussian residuals</span>
+<span class="sd">- Likelihood gradients</span>
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
@@ -107,10 +108,90 @@
 <span class="sd">------------</span>
 <span class="sd">- numpy</span>
 <span class="sd">- numba</span>
+<span class="sd">- GeoLightning.Utils.Constants</span>
+<span class="sd">- GeoLightning.Utils.Utils</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span> <span class="n">SIGMA_D</span><span class="p">,</span> <span class="n">SIGMA_T</span><span class="p">,</span> <span class="n">AVG_EARTH_RADIUS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span>
+
+<div class="viewcode-block" id="numba_clip">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.numba_clip">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">numba_clip</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> 
+               <span class="n">min_bound</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> 
+               <span class="n">max_bound</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clamps a scalar value between specified lower and upper bounds.</span>
+
+<span class="sd">    This function returns the input value clipped to the interval </span>
+<span class="sd">    [`min_bound`, `max_bound`]. It is implemented using Numba for </span>
+<span class="sd">    high-performance scenarios involving scalar bound enforcement </span>
+<span class="sd">    within JIT-compiled functions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : float</span>
+<span class="sd">        Input scalar value to be clipped.</span>
+<span class="sd">    min_bound : float</span>
+<span class="sd">        Lower bound of the valid interval.</span>
+<span class="sd">    max_bound : float</span>
+<span class="sd">        Upper bound of the valid interval.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        The clipped value, satisfying min_bound &lt;= result &lt;= max_bound.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Equivalent to `np.clip(value, min_bound, max_bound)` for scalars,</span>
+<span class="sd">      but compatible with Numba&#39;s `nopython` mode.</span>
+<span class="sd">    - This function is particularly useful when used inside other </span>
+<span class="sd">      JIT-compiled routines where `np.clip` may not be supported.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">min_bound</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">min_bound</span>
+    <span class="k">elif</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">max_bound</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">max_bound</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="maxima_log_verossimilhanca">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.maxima_log_verossimilhanca">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">maxima_log_verossimilhanca</span><span class="p">(</span><span class="n">N</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                               <span class="n">sigma</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the maximum log-likelihood under a standard normal distribution </span>
+<span class="sd">    with zero mean and standard deviation sigma.</span>
+
+<span class="sd">    This function evaluates the sum of log-likelihoods for a number of observations,</span>
+<span class="sd">    assuming they follow a Gaussian distribution N(0, σ²) and have a Δ = 0 each.</span>
+
+<span class="sd">    Formula</span>
+<span class="sd">    -------</span>
+<span class="sd">    log(ℒ) = -0.5 * log(2π * σ²) - (Δ² / (2σ²))</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    N : np.int32</span>
+<span class="sd">        number of observations</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        Standard deviation σ &gt; 0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Total maximum log-likelihood value for the observed deviations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">const</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="n">const</span></div>
+
 
 
 <div class="viewcode-block" id="funcao_log_verossimilhanca">
@@ -141,10 +222,175 @@
 <span class="sd">    float</span>
 <span class="sd">        Total log-likelihood value for the observed deviations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">const</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">denom</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="n">log_likelihoods</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">const</span> <span class="o">-</span> <span class="p">(</span><span class="n">deltas</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span><span class="p">)</span>
+    <span class="n">const</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">log_likelihoods</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">const</span> <span class="o">-</span> <span class="p">((</span><span class="n">deltas</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">denom</span><span class="p">))</span>
+    <span class="c1"># log_likelihoods = np.sum(-(deltas ** 2))</span>
     <span class="k">return</span> <span class="n">log_likelihoods</span></div>
+
+
+
+<div class="viewcode-block" id="grad_verossimilanca_cartesiana">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.grad_verossimilanca_cartesiana">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">grad_verossimilanca_cartesiana</span><span class="p">(</span><span class="n">events_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># (N, 3)</span>
+                                   <span class="n">detectors_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># (N, 3)</span>
+                                   <span class="n">times_of_origin</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># (N,)</span>
+                                   <span class="n">detection_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># (N,)</span>
+                                   <span class="n">sigma_d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_D</span><span class="p">,</span>
+                                   <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the gradient of the spatio-temporal log-likelihood for a 1-to-1 mapping</span>
+<span class="sd">    between events and detections in Cartesian coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_pos : np.ndarray</span>
+<span class="sd">        Estimated event positions (N, 3)</span>
+<span class="sd">    detectors_pos : np.ndarray</span>
+<span class="sd">        Detector positions (N, 3)</span>
+<span class="sd">    times_of_origin : np.ndarray</span>
+<span class="sd">        Estimated times of origin (N,)</span>
+<span class="sd">    detection_times : np.ndarray</span>
+<span class="sd">        Observed times of arrival (N,)</span>
+<span class="sd">    sigma_d : float</span>
+<span class="sd">        Spatial uncertainty</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Propagation speed</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    grad_pos : np.ndarray</span>
+<span class="sd">        Gradient of the log-likelihood with respect to position (N, 3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">events_pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">grad_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">diff_pos</span> <span class="o">=</span> <span class="n">detectors_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">events_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">diff_pos</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="mf">1e-12</span>  <span class="c1"># Evita divisão por zero</span>
+        <span class="n">residual_d</span> <span class="o">=</span> <span class="n">d</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">detection_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">times_of_origin</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># Gradiente espacial</span>
+        <span class="n">dL_dd</span> <span class="o">=</span> <span class="n">residual_d</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma_d</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">grad_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dL_dd</span> <span class="o">*</span> <span class="p">(</span><span class="n">diff_pos</span> <span class="o">/</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">grad_pos</span></div>
+
+
+
+<div class="viewcode-block" id="grad_cartesiano_para_esferico">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.grad_cartesiano_para_esferico">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">grad_cartesiano_para_esferico</span><span class="p">(</span><span class="n">coordinates</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">grad_xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                  <span class="n">R</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_EARTH_RADIUS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts the likelihood gradient from Cartesian to spherical coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coordinates: np.ndarray</span>
+<span class="sd">        coordinates ([lat, long, alt]) with angles in degrees</span>
+<span class="sd">    grad_xyz : np.ndarray</span>
+<span class="sd">        Gradient in Cartesian system (shape (3,))</span>
+<span class="sd">    R : float</span>
+<span class="sd">        Mean radius of the Earth (default: 6371000 m)</span>
+
+<span class="sd">    Return</span>
+<span class="sd">    -------</span>
+<span class="sd">    grad_esf : np.ndarray</span>
+<span class="sd">        Gradient in spherical system (dφ, dλ, dh), shape (3,)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rad_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">rad_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">coordinates</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">cos_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad_lat</span><span class="p">)</span>
+    <span class="n">sin_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad_lat</span><span class="p">)</span>
+    <span class="n">cos_lambda</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">rad_lon</span><span class="p">)</span>
+    <span class="n">sin_lambda</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">rad_lon</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">R</span> <span class="o">+</span> <span class="n">coordinates</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c1"># Matriz jacobiana transposta</span>
+    <span class="n">J_T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin_phi</span> <span class="o">*</span> <span class="n">cos_lambda</span><span class="p">,</span> <span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">sin_phi</span> <span class="o">*</span> <span class="n">sin_lambda</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span> <span class="n">cos_phi</span><span class="p">],</span>
+        <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="o">*</span> <span class="n">cos_phi</span> <span class="o">*</span> <span class="n">sin_lambda</span><span class="p">,</span>  <span class="n">r</span> <span class="o">*</span> <span class="n">cos_phi</span> <span class="o">*</span> <span class="n">cos_lambda</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">cos_phi</span> <span class="o">*</span> <span class="n">cos_lambda</span><span class="p">,</span>       <span class="n">cos_phi</span> <span class="o">*</span> <span class="n">sin_lambda</span><span class="p">,</span>    <span class="n">sin_phi</span><span class="p">]</span>
+    <span class="p">])</span>
+
+    <span class="c1"># Gradiente em coordenadas esféricas (radianos para lat/lon, metros para alt)</span>
+    <span class="n">grad_esf_rad</span> <span class="o">=</span> <span class="n">J_T</span> <span class="o">@</span> <span class="n">grad_xyz</span>
+
+    <span class="c1"># Conversão de radianos para graus nas duas primeiras componentes</span>
+    <span class="n">grad_esf_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">grad_esf_rad</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">grad_esf_rad</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="n">grad_esf_rad</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># altitude permanece em metros</span>
+    <span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">grad_esf_deg</span></div>
+
+
+<div class="viewcode-block" id="raw_amend_positions">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.raw_amend_positions">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">raw_amend_positions</span><span class="p">(</span><span class="n">events_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">detectors_pos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">times_of_origin</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">detection_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                        <span class="n">sigma_d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_D</span><span class="p">,</span>
+                        <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
+                        <span class="n">R</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_EARTH_RADIUS</span><span class="p">,</span>
+                        <span class="n">learning_rate</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Amends events positions towards more promissing regions</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_pos : np.ndarray</span>
+<span class="sd">        Estimated event positions (N, 3)</span>
+<span class="sd">    detectors_pos : np.ndarray</span>
+<span class="sd">        Detector positions (N, 3)</span>
+<span class="sd">    times_of_origin : np.ndarray</span>
+<span class="sd">        Estimated times of origin (N,)</span>
+<span class="sd">    detection_times : np.ndarray</span>
+<span class="sd">        Observed times of arrival (N,)</span>
+<span class="sd">    sigma_d : float</span>
+<span class="sd">        Spatial uncertainty</span>
+<span class="sd">    c : float</span>
+<span class="sd">        Propagation speed</span>
+<span class="sd">    R: np.float64</span>
+<span class="sd">        Average Earth Radius</span>
+<span class="sd">    learning_rate: np.float64</span>
+<span class="sd">        learning rate to avoid overflows</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amended_positions : np.ndarray</span>
+<span class="sd">        amended positions towards more promissing regions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+  
+    <span class="n">cart_events</span> <span class="o">=</span> <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span><span class="p">(</span><span class="n">events_pos</span><span class="p">)</span>
+    <span class="n">cart_detectors</span> <span class="o">=</span> <span class="n">coordenadas_esfericas_para_cartesianas_batelada</span><span class="p">(</span><span class="n">detectors_pos</span><span class="p">)</span>
+
+    <span class="n">grads</span> <span class="o">=</span> <span class="n">grad_verossimilanca_cartesiana</span><span class="p">(</span><span class="n">cart_events</span><span class="p">,</span>
+                                           <span class="n">cart_detectors</span><span class="p">,</span>
+                                           <span class="n">times_of_origin</span><span class="p">,</span>
+                                           <span class="n">detection_times</span><span class="p">,</span>
+                                           <span class="n">sigma_d</span><span class="p">,</span> 
+                                           <span class="n">c</span><span class="p">)</span>
+
+    <span class="n">new_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">events_pos</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">events_pos</span><span class="p">)):</span>
+        <span class="n">spherical_grad</span> <span class="o">=</span> <span class="n">grad_cartesiano_para_esferico</span><span class="p">(</span><span class="n">events_pos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">grads</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">R</span><span class="p">)</span>
+        <span class="n">updated</span> <span class="o">=</span> <span class="n">events_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">spherical_grad</span>
+
+        <span class="c1"># Proteções</span>
+        <span class="n">updated</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">numba_clip</span><span class="p">(</span><span class="n">updated</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>    <span class="c1"># latitude</span>
+        <span class="n">updated</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">updated</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">%</span> <span class="mf">360.0</span> <span class="o">-</span> <span class="mf">180.0</span> <span class="c1"># longitude normalizada</span>
+        <span class="n">updated</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">numba_clip</span><span class="p">(</span><span class="n">updated</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">R</span><span class="p">,</span> <span class="n">R</span> <span class="o">+</span> <span class="mi">3000</span><span class="p">)</span>
+        <span class="n">new_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated</span>
+
+    <span class="k">return</span> <span class="n">new_pos</span></div>
 
 </pre></div>
 

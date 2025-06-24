@@ -51,14 +51,45 @@ from numba import jit
 from GeoLightning.Utils.Constants import SIGMA_T, \
     EPSILON_T, \
     CLUSTER_MIN_PTS, \
-    AVG_LIGHT_SPEED
+    AVG_LIGHT_SPEED, \
+    AVG_EARTH_RADIUS
 from GeoLightning.Utils.Utils import computa_tempos_de_origem, \
     coordenadas_esfericas_para_cartesianas_batelada
-from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
-from GeoLightning.Stela.Entropy import calcular_entropia_local
+from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca, \
+    raw_amend_positions
 from GeoLightning.Stela.Common import calcula_residuos_temporais, \
-    calcula_centroides_temporais
-from sklearn.cluster import DBSCAN
+    calcula_centroides_temporais, \
+    calcula_distancias_ao_centroide, \
+    calcular_centroides_espaciais
+from sklearn.cluster import DBSCAN, OPTICS
+
+def gera_novas_solucoes(solucoes: np.ndarray,
+                        labels: np.ndarray,
+                        centroides) -> np.ndarray:
+    """
+    Fill an array with centroids solutions
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+    centroides : np.ndarray
+        Array of centroids for each clusters
+    Returns
+    -------
+    novas_solucoes: np.ndarray
+        Array containing new centroids solutions to each 
+    """
+    if np.any(labels == -1):
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
+    novas_solucoes = np.empty_like(solucoes)
+
+    for i in range(len(solucoes)):
+        novas_solucoes[i] = centroides[c_labels[i]]
+    return novas_solucoes
 
 
 def stela(solucoes: np.ndarray,
@@ -138,25 +169,24 @@ def stela(solucoes: np.ndarray,
                         metric="euclidean").fit(solucoes_cartesianas)
     clusters_espaciais = clustering.labels_
 
-    # centróides
-
-    centroides, _ = calcula_centroides_temporais(tempos_de_origem,
-                                                  clusters_espaciais)
-
+    """centroides_temporais, _ = calcula_centroides_temporais(tempos_de_origem,
+                                                        clusters_espaciais)
+    
     tempos_medios = calcula_residuos_temporais(tempos_de_origem,
                                                clusters_espaciais,
-                                               centroides)
+                                               centroides_temporais)"""
+
+    centroides_espaciais, _ = calcular_centroides_espaciais(solucoes,
+                                                            clusters_espaciais)
+
+    distancias = calcula_distancias_ao_centroide(solucoes,
+                                                 clusters_espaciais,
+                                                 centroides_espaciais,
+                                                 sistema_cartesiano)
     
-    # vetor de resíduos temporais
 
-    verossimilhanca = 0.0
-
-    if len(tempos_de_origem[clusters_espaciais == -1]) > 0:
-        print(tempos_de_origem[clusters_espaciais == -1])
-        verossimilhanca = 1e20 * calcular_entropia_local(tempos_de_origem[clusters_espaciais == -1])
-    
-
-    verossimilhanca += funcao_log_verossimilhanca(tempos_medios, sigma_t)
+    verossimilhanca = funcao_log_verossimilhanca(
+        distancias, c * sigma_t) #\
 
     # tudo pronto, retornando
     return (clusters_espaciais,
@@ -172,7 +202,7 @@ if __name__ == "__main__":
                                                   generate_events)
     from time import perf_counter
 
-    num_events = [2, 5, 10, 15, 20, 25,
+    num_events = [1, 2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000,
                   5000, 10000, 20000]
 
@@ -215,13 +245,14 @@ if __name__ == "__main__":
                                   sistema_cartesiano=False)
 
         end_st = perf_counter()
-        print(clusters_espaciais)
         print(
             f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st} Segundos")
+        print(verossimilhanca)
         len_clusterizados = len(
             np.unique(clusters_espaciais[clusters_espaciais >= 0]))
         len_reais = len(event_positions)
         try:
             assert len_clusterizados == len_reais
+            assert spatial_clusters == clusters_espaciais
         except:
             print(f"Clusterizados: {len_clusterizados}, Reais: {len_reais}")

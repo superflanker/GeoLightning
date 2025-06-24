@@ -1,8 +1,38 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Remapeamento das soluções candidatas
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+Candidate Solutions Remapping
+=============================
+
+Remapping of Candidate Solutions
+
+Summary
+-------
+This module provides utility functions for remapping candidate solutions 
+after clustering, aiming to reduce the search space for meta-heuristic 
+optimization by filtering out converged or duplicate solutions.
+
+These functions are used in the post-processing stage of spatio-temporal 
+clustering to refine and prepare inputs for the optimization phase.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- Remapping of candidate solutions using updated cluster labels.
+- Construction of uniqueness masks to define solution bounds.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
 """
+
 import numpy as np
 from numba import jit
 
@@ -10,48 +40,67 @@ from numba import jit
 @jit(nopython=True, cache=True, fastmath=True)
 def remapeia_solucoes(solucoes: np.ndarray,
                       labels: np.ndarray,
-                      centroides: np.ndarray) -> tuple:
+                      centroides: np.ndarray) -> np.ndarray:
     """
-        repameia soluções candidatas - retirando as soluções que
-        indicam convergência prévia, reduzindo o espaço de busca
-        Args:
-            solucões (np.ndarray): vetor de soluções candidatas
-            labels: (np.ndarray): os novos labels da estrutura 
-                representada por soluções
-            centroides (np.ndarray): as soluções únicas existentes 
-                no espaço de busca
-        Returns:
-            tuple =>
-                novas_soluções (np.ndarray): as soluções com redução 
-                    no espaço de busca
-                solucoes_unicas (np.ndarray): vetor indicativo
-                    de soluções unicas existentes
+    Remaps candidate solutions by filtering out converged ones 
+    and reducing the search space.
+
+    This function builds a new array of solutions by preserving only 
+    the centroids of clusters and optionally including non-converged 
+    solutions marked as noise (-1).
+
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of shape (N, D) with all candidate solutions.
+    labels : np.ndarray
+        Cluster labels for each solution (-1 indicates noise or non-converged).
+    centroides : np.ndarray
+        Array of centroids (unique solutions after clustering).
+
+    Returns
+    -------
+    np.ndarray
+        New array of remapped solutions with reduced dimensionality, 
+        combining valid centroids and noise points.
     """
     solucoes_nao_unicas = solucoes[labels == -1]
     if solucoes_nao_unicas.shape[0] != 0:
-        centroides = np.concatenate((centroides, solucoes_nao_unicas))
-
-    if centroides.shape[0] != solucoes.shape[0]:
+        new_centroides = np.concatenate((centroides, solucoes_nao_unicas))
+    else:
+        new_centroides = centroides.copy()
+    if new_centroides.shape[0] != solucoes.shape[0]:
         left_solucoes = np.zeros((solucoes.shape[0] -
-                                  centroides.shape[0],
-                                  centroides.shape[1]),
+                                  new_centroides.shape[0],
+                                  new_centroides.shape[1]),
                                  dtype=centroides.dtype)
-        novas_solucoes = np.concatenate((centroides,
+        novas_solucoes = np.concatenate((new_centroides,
                                          left_solucoes))
     else:
-        novas_solucoes = centroides.copy()
+        novas_solucoes = new_centroides.copy()
     return novas_solucoes
 
 
 @jit(nopython=True, cache=True, fastmath=True)
 def remapeia_solucoes_unicas(clusters: np.ndarray) -> np.ndarray:
     """
-        Remapeamento intermediário para a construção de limites
-        Args:
-            clusters (np.ndarray): clusters ativos
-        Returns:
-            solucoes_unicas (np.ndarray): os clusters unicos seguidos das
-            soluções não conergentes marcadas com -1
+    Constructs a binary uniqueness mask to define active clusters 
+    and prepare search boundaries.
+
+    This function creates an array marking valid clusters with 1 
+    and padding the remaining positions with -1 for compatibility 
+    with bounding box computation.
+
+    Parameters
+    ----------
+    clusters : np.ndarray
+        Array of active cluster labels for each solution.
+
+    Returns
+    -------
+    np.ndarray
+        A remapped array of size equal to the original, where unique clusters 
+        are marked with 1 and unused slots are filled with -1.
     """
     n_clusters = np.max(clusters) + 1
     new_clusters = np.ones(n_clusters)

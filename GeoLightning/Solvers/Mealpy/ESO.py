@@ -78,7 +78,7 @@ class ESO(Optimizer):
         self.pop_size = self.validator.check_int(
             "pop_size", pop_size, [5, 10000])
         self.set_parameters(["epoch", "pop_size"])
-        self.is_parallelizable = False
+        self.is_parallelizable = True
         self.sort_flag = False
         self.field_resistance = 0
         self.field_intensity = 0
@@ -264,6 +264,7 @@ class ESO(Optimizer):
         if self.stagnation[idx] > 2:
             self.stagnation[idx] = 0
             pos_new = np.random.uniform(self.problem.lb, self.problem.ub)
+            pos_new = self.amend_solution(pos_new)
             target = self.problem.get_target(pos_new)
             new_agent = Agent(pos_new, target)
             return new_agent
@@ -289,6 +290,8 @@ class ESO(Optimizer):
                 else:
                     pos_new = np.random.uniform(
                         self.problem.lb, self.problem.ub)
+        
+        pos_new = self.amend_solution(pos_new)
         pos_new = np.clip(pos_new, self.problem.lb, self.problem.ub)
         target = self.problem.get_target(pos_new)
         new_agent = Agent(pos_new, target)

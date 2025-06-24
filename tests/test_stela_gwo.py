@@ -16,6 +16,8 @@ from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
 from GeoLightning.Stela.Stela import stela
 from mealpy import FloatVar
+from time import perf_counter
+
 
 def test_stela_gwo():
 
@@ -28,7 +30,7 @@ def test_stela_gwo():
     max_alt = 1
     min_time = 10000
     max_time = min_time + 72 * 3600
-    num_events = 2000
+    num_events = 1
 
     event_positions, event_times = generate_events(num_events,
                                                    min_lat,
@@ -72,9 +74,15 @@ def test_stela_gwo():
                            epsilon_t=EPSILON_T,
                            sistema_cartesiano=False)
     
+    start_st = perf_counter()
     
-    model = StelaGWO(epoch=100, pop_size=10)
+    model = StelaGWO(epoch=1000, 
+                     pop_size=10)
     agent = model.solve(problem)
+
+    end_st = perf_counter()
+    print(f"Tempo gasto: {end_st - start_st:.06f}")
+
     best_solution = agent.solution
     best_fitness = agent.target
     best_solution = np.array(best_solution).reshape(-1,3)
@@ -91,4 +99,5 @@ def test_stela_gwo():
         np.unique(clusters_espaciais[clusters_espaciais >= 0]))
     len_reais = len(event_positions)
     assert len_clusterizados == len_reais
-    
+if __name__ == "__main__":
+    test_stela_gwo()

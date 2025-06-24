@@ -53,15 +53,19 @@ def calcula_centroides_temporais(tempos: np.ndarray,
         detectores : np.ndarray
             Array with the number of detectors associated with each cluster.
     """
-    n_clusters = np.max(labels) + 1
+    n_clusters = np.int32(np.max(labels) + 1)
+    if np.any(labels == -1):
+        n_clusters += 1
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
     medias = np.zeros(n_clusters, dtype=np.float64)
     detectores = np.zeros(n_clusters, dtype=np.int32)
 
     for i in range(len(tempos)):
-        lbl = labels[i]
-        if lbl >= 0:
-            medias[lbl] += tempos[i]
-            detectores[lbl] += 1
+        lbl = c_labels[i]
+        medias[lbl] += tempos[i]
+        detectores[lbl] += 1
 
     for k in range(n_clusters):
         if detectores[k] > 0:
@@ -92,13 +96,13 @@ def calcula_residuos_temporais(tempos: np.ndarray,
         relative to its cluster centroid. 
 
     """
-    residuos_de_tempo = np.zeros(len(np.argwhere(labels >= 0)), dtype=np.float64)
-    d_idx = 0
+    if np.any(labels == -1):
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
+    residuos_de_tempo = np.empty(len(tempos), dtype=np.float64)
     for i in range(labels.shape[0]):
-        if labels[i] == -1:
-            continue
-        residuos_de_tempo[d_idx] = np.abs(tempos[i] - centroides[labels[i]])
-        d_idx += 1
+        residuos_de_tempo[i] = np.abs(tempos[i] - centroides[c_labels[i]])
 
     return residuos_de_tempo
 
@@ -124,16 +128,22 @@ def calcular_centroides_espaciais(solucoes: np.ndarray,
     medias : np.ndarray
         Array of temporal centroids (mean origin times) for each cluster.
     """
+
     n_clusters = np.int32(np.max(labels) + 1)
+    if np.any(labels == -1):
+        n_clusters += 1
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
+
     medias = np.zeros((n_clusters, solucoes.shape[1]))
     detectores = np.zeros(n_clusters, dtype=np.int32)
 
     for i in range(labels.shape[0]):
-        lbl = labels[i]
-        if lbl >= 0:
-            for j in range(solucoes.shape[1]):
-                medias[lbl, j] += solucoes[lbl, j]
-            detectores[lbl] += 1
+        lbl = c_labels[i]
+        for j in range(solucoes.shape[1]):
+            medias[lbl, j] += solucoes[lbl, j]
+        detectores[lbl] += 1
 
     for k in range(n_clusters):
         if detectores[k] > 0:
@@ -163,7 +173,7 @@ def calcula_distancias_ao_centroide(solucoes: np.ndarray,
     labels : np.ndarray
         Array of cluster labels assigned to each solution point.
     centroides : np.ndarray
-        Array of centroids for each cluster.    s
+        Array of centroids for each clusters
     sistema_cartesiano : bool
         Indicates whether the coordinate system is Cartesian (True) 
         or geographic (False)
@@ -174,14 +184,15 @@ def calcula_distancias_ao_centroide(solucoes: np.ndarray,
         Array containing the distance differences (ΔD) for each solution point 
         relative to its cluster centroid.
     """
-    distancias = np.zeros(len(np.argwhere(labels >= 0)))
-    d_idx = 0
+    distancias = np.zeros(len(solucoes))
+    if np.any(labels == -1):
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
+
     for i in range(labels.shape[0]):
-        if labels[i] == -1:
-            continue
-        distancias[d_idx] = computa_distancia(solucoes[labels[i]],
-                                              centroides[labels[i]],
-                                              sistema_cartesiano)
-        d_idx += 1
+        distancias[i] = computa_distancia(solucoes[i],
+                                          centroides[c_labels[i]],
+                                          sistema_cartesiano)
 
     return distancias

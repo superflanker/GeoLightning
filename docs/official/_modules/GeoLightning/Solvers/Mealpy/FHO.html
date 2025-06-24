@@ -153,6 +153,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_preys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hawks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_parameters</span><span class="p">([</span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="s2">&quot;pop_size&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sort_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_parallelizable</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="FHO.initialize_variables">
 <a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.FHO.FHO.initialize_variables">[docs]</a>
@@ -347,8 +348,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_preys_outside_territory</span><span class="p">(</span><span class="n">new_preys</span><span class="p">,</span> <span class="n">territories</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">preys</span> <span class="o">=</span> <span class="n">new_preys</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hawks</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">preys</span>
-        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_best</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_global_best_agent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hawks</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">preys</span></div>
 </div>
 
 </pre></div>

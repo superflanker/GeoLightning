@@ -44,8 +44,7 @@ from GeoLightning.Utils.Constants import SIGMA_D, SIGMA_T
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def rmse(estimadas: np.ndarray,
-         reais: np.ndarray) -> np.float64:
+def rmse(deltas: np.ndarray) -> np.float64:
     """
     Calculates the root mean square error (RMSE) between estimated and real values.
 
@@ -53,8 +52,8 @@ def rmse(estimadas: np.ndarray,
 
     Parameters
     ----------
-    estimated : np.ndarray
-        Vector of estimated positions
+    deltas : np.ndarray
+        Vector of measurement deltas
     real : np.ndarray
         Vector of real positions
 
@@ -63,12 +62,11 @@ def rmse(estimadas: np.ndarray,
     np.float64
         Value of the root mean square error (RMSE) between the given vectors.
     """
-    return np.sqrt(np.mean((estimadas - reais) ** 2))
+    return np.sqrt(np.mean((deltas) ** 2))
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def mae(estimados: np.ndarray,
-        reais: np.ndarray) -> np.float64:
+def mae(deltas: np.ndarray) -> np.float64:
     """
     Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.
 
@@ -76,22 +74,19 @@ def mae(estimados: np.ndarray,
 
     Parameters
     ----------
-    estimated : np.ndarray
+    deltas : np.ndarray
         Vector of estimated values, representing the model predictions.
-    actual : np.ndarray
-        Vector of actual values, representing the reference or true values.
 
     Returns
     -------
     np.float64
         Value of the mean absolute error (MAE) between the given vectors.
     """
-    return np.mean(np.abs(estimados - reais))
+    return np.mean(np.abs(deltas))
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def average_mean_squared_error(estimados: np.ndarray,
-                               reais: np.ndarray) -> np.float64:
+def average_mean_squared_error(deltas: np.ndarray) -> np.float64:
     """
     Calculates the mean squared error (AMSE) between estimated values ​​and real values.
 
@@ -99,22 +94,19 @@ def average_mean_squared_error(estimados: np.ndarray,
 
     Parameters
     ----------
-    estimated : np.ndarray
-        Vector of estimated values, usually from predictions of a model.
-    real : np.ndarray
-        Vector of real values, considered as reference or ground truth.
+    deltas : np.ndarray
+        Vector of measurement deltas
 
     Returns
     -------
     np.float64
         Value of the mean squared error (AMSE) between the provided vectors.
     """
-    return np.mean((estimados - reais) ** 2)
+    return np.mean((deltas) ** 2)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def mean_location_error(estimados: np.ndarray,
-                        reais: np.ndarray) -> np.float64:
+def mean_location_error(deltas: np.ndarray) -> np.float64:
     """
     Calculates the mean localization error (MLE) between the estimated values ​​and the real values.
 
@@ -122,10 +114,8 @@ def mean_location_error(estimados: np.ndarray,
 
     Parameters
     ----------
-    estimated : np.ndarray
-        Vector of estimated positions
-    real : np.ndarray
-        Vector of real reference positions, with the same dimension as `estimated`.
+    deltas : np.ndarray
+        Vector of measurement deltas
 
     Returns
     -------
@@ -133,7 +123,7 @@ def mean_location_error(estimados: np.ndarray,
         Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.
     """
 
-    return np.mean(estimados - reais)
+    return np.mean(deltas)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -251,10 +241,10 @@ def calcular_crlb_espacial(sigma_d: float = SIGMA_D,
     Returns
     -------
     np.ndarray
-        CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.
+        CRLB matrix of dimension (1,1) representing the CRLB in the versor of distance.
     """
 
-    return (sigma_d ** 2 / N) * np.eye(3)
+    return (sigma_d ** 2 / N) * np.eye(1)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -299,8 +289,7 @@ def calcular_crlb_rmse(crlb: np.ndarray) -> float:
     float
         RMSE value computed from the CRLB matrix.
     """
-    return np.sqrt(np.trace(crlb @ crlb)) / crlb.shape[0]
-
+    return np.sqrt(crlb[0] ** 2)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -321,5 +310,4 @@ def calcular_mean_crlb(crlb: np.ndarray) -> float:
     float
         Mean value of the variances in the CRLB matrix.
     """
-    return np.trace(crlb) / crlb.shape[0]
-
+    return crlb[0]

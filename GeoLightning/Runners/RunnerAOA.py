@@ -48,36 +48,25 @@ Dependencies
 Returns
 -------
 tuple
-    A tuple containing the following performance indicators:
 
-    centroides_espaciais : np.ndarray
+    sol_centroides_espaciais : np.ndarray
         Array of estimated spatial centroids for each event cluster.
-    centroides_temporais : np.ndarray
+    sol_centroides_temporais : np.ndarray
         Array of estimated origin times (temporal centroids) per cluster.
-    detectores : np.ndarray
+    sol_detectores : np.ndarray
         Indices of sensors used to estimate temporal centroids.
-    best_fitness : float
+    sol_best_fitness : float
         Value of the fitness function at the best solution found by the optimizer.
-    erro_relativo_best_fitness : float
-        Relative error between the best fitness and the reference value.
-    rmse_espacial : float
-        Root Mean Square Error between estimated and true spatial locations.
-    amse_espacial : float
-        Average Mean Squared Error between estimated and true spatial locations.
-    mle_espacial : float
-        Mean Location Error between estimated and true positions.
-    prmse_espacial : float
-        Pseudo-RMSE normalized by 6 times the spatial noise standard deviation.
-    acuracia_associacao_atual : float
-        Percentage of correct associations between estimated and true cluster labels.
-    tempo_execucao : float
-        Total runtime of the optimization process (in seconds).
-    crlb_temporal : float
-        Cramér-Rao Lower Bound for the origin time estimation.
-    rmse_crlb : float
-        RMSE corresponding to the spatial CRLB.
-    mean_crlb : float
-        Mean spatial CRLB across all sensors.
+    sol_reference : float
+        Value of the fitness function with deltas equal to zero.
+    delta_d: np.ndarray
+        distance differences between real and estimated positions
+    delta_t: np.ndarray
+        time differentes between reak and estimated times of origins
+    execution_time: np.float64
+        total execution time
+    associacoes_corretas: np.ndarray
+        the correct  clustering association index
 """
 
 import numpy as np
@@ -86,20 +75,19 @@ from GeoLightning.Solvers.StelaAOA import StelaAOA
 from GeoLightning.Stela.Stela import stela
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
 from GeoLightning.Stela.Common import calcular_centroides_espaciais, \
-    calcula_distancias_ao_centroide, \
-    calcula_residuos_temporais, \
     calcula_centroides_temporais
+from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca
 from GeoLightning.Simulator.Metrics import *
 from GeoLightning.Simulator.Simulator import *
 from GeoLightning.Utils.Constants import *
+from GeoLightning.Utils.Utils import computa_distancia_batelada
 from mealpy import FloatVar
 from time import perf_counter
 
 
-def runner_aoa(event_positions: np.ndarray,
+def runner_AOA(event_positions: np.ndarray,
                event_times: np.ndarray,
-               n_event_positions: np.ndarray,
-               n_event_times: np.ndarray,
+               spatial_clusters: np.ndarray,
                detections: np.ndarray,
                detection_times: np.ndarray,
                sensors: np.ndarray,
@@ -108,9 +96,14 @@ def runner_aoa(event_positions: np.ndarray,
                min_pts: np.int32 = CLUSTER_MIN_PTS,
                sigma_t: np.float64 = SIGMA_T,
                sigma_d: np.float64 = SIGMA_D,
-               epsilon_t: np.float64 = EPSILON_D,
+               epsilon_t: np.float64 = EPSILON_T,
                c: np.float64 = AVG_LIGHT_SPEED,
                sistema_cartesiano: bool = False) -> tuple:
+
+    start_st = perf_counter()
+    # Fase 1: clusterização
+
+    execution_time = 0.0
 
     # limites
 
@@ -129,7 +122,6 @@ def runner_aoa(event_positions: np.ndarray,
 
     bounds = FloatVar(ub=ub, lb=lb)
 
-    start_st = perf_counter()
     problem = StelaProblem(bounds,
                            minmax="min",
                            pontos_de_chegada=detections,
@@ -139,12 +131,16 @@ def runner_aoa(event_positions: np.ndarray,
                            epsilon_t=epsilon_t,
                            sistema_cartesiano=sistema_cartesiano,
                            c=c)
-    model = StelaAOA(epoch=100, pop_size=10)
+    model = StelaAOA(epoch=10,
+                     pop_size=10,
+                     alpha=3,
+                     miu=0.5,
+                     moa_min=0.1,
+                     moa_max=0.5)
     agent = model.solve(problem)
-    end_st = perf_counter()
 
     best_solution = agent.solution
-    best_fitness = agent.target
+    best_fitness = agent.target.fitness
     best_solution = np.array(best_solution).reshape(-1, 3)
 
     # recomputando a clusterização estimada - índice de associação aplicado ao algoritmo
@@ -158,110 +154,106 @@ def runner_aoa(event_positions: np.ndarray,
                 min_pts=min_pts,
                 c=c)
 
-    # recomputando a associação real
-    (clusters_espaciais_reais,
-     f_referencia) = stela(solucoes=n_event_positions,
-                           tempos_de_chegada=detection_times,
-                           pontos_de_deteccao=detections,
-                           sistema_cartesiano=sistema_cartesiano,
-                           epsilon_t=epsilon_t,
-                           min_pts=min_pts,
-                           c=c)
+    associacoes_corretas = (clusters_espaciais == spatial_clusters)
+    corretos = associacoes_corretas[associacoes_corretas == True]
+    print(
+        f"Média de Eventos Clusterizados Corretamente: {100 * len(corretos)/len(spatial_clusters):.04f} % ")
 
-    len_clusterizados = len(
-        np.unique(clusters_espaciais[clusters_espaciais >= 0]))
-    len_reais = len(event_positions)
+    # Fase 2 - Refinamento da Solução
+
+    max_clusters = np.max(clusters_espaciais) + 1
+
+    sol_centroides_espaciais = np.empty(
+        (max_clusters, event_positions.shape[1]))
+
+    sol_centroides_temporais = np.empty(max_clusters)
+
+    sol_detectores = np.empty(max_clusters)
+
+    sol_best_fitness = 0.0
+
+    sol_reference = 0.0
+
+    for i in range(max_clusters):
+
+        current_detections = np.array(detections[clusters_espaciais == i])
+
+        current_detection_times = np.array(
+            detection_times[clusters_espaciais == i])
+
+        lb, ub = gera_limites_iniciais(current_detections,
+                                       min_lat,
+                                       max_lat,
+                                       min_lon,
+                                       max_lon,
+                                       min_alt,
+                                       max_alt)
+
+        bounds = FloatVar(ub=ub, lb=lb)
+
+        problem = StelaProblem(bounds,
+                               minmax="min",
+                               pontos_de_chegada=current_detections,
+                               tempos_de_chegada=current_detection_times,
+                               min_pts=min_pts,
+                               sigma_t=sigma_t,
+                               epsilon_t=epsilon_t,
+                               sistema_cartesiano=sistema_cartesiano,
+                               c=c)
+        model = StelaAOA(epoch=10,
+                         pop_size=10,
+                         alpha=3,
+                         miu=0.5,
+                         moa_min=0.1,
+                         moa_max=0.5,
+                         verbose=False)
+        agent = model.solve(problem)
+
+        best_solution = agent.solution
+        best_fitness = agent.target.fitness
+        best_solution = np.array(best_solution).reshape(-1, 3)
+
+        centroides_espaciais, detectores = calcular_centroides_espaciais(best_solution,
+                                                                         np.zeros(len(best_solution), dtype=np.int64))
+
+        tempos_de_origem = computa_tempos_de_origem(best_solution,
+                                                    current_detection_times,
+                                                    current_detections,
+                                                    sistema_cartesiano)
+
+        (centroides_temporais,
+         detectores) = calcula_centroides_temporais(tempos_de_origem,
+                                                    np.zeros(len(best_solution), dtype=np.int64))
+
+        # não preciso ter medo pois é um cluster somente
+        sol_centroides_espaciais[i] = centroides_espaciais[0]
+        # não preciso ter medo pois é um cluster somente
+        sol_centroides_temporais[i] = centroides_temporais[0]
+        sol_detectores[i] = detectores[0]
+
+        # valores para calcular o erro relativo em relação ao valor de referência
+        sol_best_fitness += best_fitness
+        sol_reference += maxima_log_verossimilhanca(sol_detectores[i], sigma_d)
 
     # medições
 
-    # distâncias médias à solução
-    centroides_espaciais = calcular_centroides_espaciais(best_solution,
-                                                         clusters_espaciais)
-
-    delta_d_real = calcula_distancias_ao_centroide(n_event_times,
-                                                   clusters_espaciais,
-                                                   event_positions,
-                                                   sistema_cartesiano)
-
-    delta_d_estimado = calcula_distancias_ao_centroide(best_solution,
-                                                       clusters_espaciais,
-                                                       centroides_espaciais,
-                                                       sistema_cartesiano)
-
     # tempos de origem à solução dada pela meta-heurística
 
-    tempos_de_origem = computa_tempos_de_origem(best_solution,
-                                                detection_times,
-                                                detections,
-                                                sistema_cartesiano)
+    delta_d = computa_distancia_batelada(sol_centroides_espaciais,
+                                         event_positions)
 
-    (centroides_temporais,
-     detectores) = calcula_centroides_temporais(tempos_de_origem,
-                                                clusters_espaciais)
+    delta_t = event_times - sol_centroides_temporais
 
-    delta_t_real = calcula_residuos_temporais(tempos_de_origem,
-                                              clusters_espaciais,
-                                              event_times)
+    end_st = perf_counter()
 
-    delta_t_estimado = calcula_residuos_temporais(n_event_times,
-                                                  clusters_espaciais,
-                                                  event_times)
+    execution_time = end_st - start_st
 
-    # medidas de distância e tempo
-
-    rmse_espacial = rmse(delta_d_estimado, delta_d_real)
-
-    mae_temporal = mae(delta_t_estimado, delta_t_real)
-
-    amse_espacial = average_mean_squared_error(delta_d_estimado,
-                                               delta_d_real)
-
-    mle_espacial = mean_location_error(delta_d_estimado,
-                                       delta_d_real)
-
-    prmse_espacial = calcula_prmse(rmse_espacial,
-                                   6.0 * SIGMA_D)
-
-    # acurácia de associação
-
-    acuracia_associacao_atual = acuracia_associacao(clusters_espaciais_reais,
-                                                    clusters_espaciais)
-
-    # tempo de execução
-    tempo_execucao = end_st - start_st
-
-    # porcentagem da função fitness com o valor de referência
-
-    erro_relativo_best_fitness = erro_relativo_funcao_ajuste(best_fitness,
-                                                             f_referencia)
-
-    # crlb temporal
-
-    crlb_temporal = calcular_crlb_temporal(sigma_t)
-
-    # crlb espacial
-
-    crlb_espacial = calcular_crlb_espacial(sigma_d, len(detections))
-
-    # rmse crlb espacial
-
-    rmse_crlb = calcular_crlb_rmse(crlb_espacial)
-
-    # mean crlb 
-
-    mean_crlb = calcular_mean_crlb(crlb_espacial)
-
-    return (centroides_espaciais,
-            centroides_temporais,
-            detectores,
-            best_fitness,
-            erro_relativo_best_fitness,
-            rmse_espacial,
-            amse_espacial,
-            mle_espacial,
-            prmse_espacial,
-            acuracia_associacao_atual,
-            tempo_execucao, 
-            crlb_temporal,
-            rmse_crlb,
-            mean_crlb)
+    return (sol_centroides_espaciais,
+            sol_centroides_temporais,
+            sol_detectores,
+            sol_best_fitness,
+            sol_reference,
+            delta_d,
+            delta_t,
+            execution_time,
+            associacoes_corretas)

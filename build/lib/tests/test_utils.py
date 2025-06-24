@@ -47,7 +47,7 @@ class TestUtils(unittest.TestCase):
         self.ponto_esferico_rad_2 = np.array([self.lat_rad_2, self.lon_rad_2, self.alt_2], dtype=np.float64)
 
         # Dados para computa_tempos_de_origem
-        self.solucoes_ex = np.array([[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]], dtype=np.float64)
+        self.solucoes_ex = np.array([[0.0, 0.0, 0.0], [10.0, 10.0, 10.0],[0.0, 0.0, 0.0], [10.0, 10.0, 10.0]], dtype=np.float64)
         self.clusters_espaciais_ex = np.array([0, 1, 0, 1], dtype=np.int32) # Detectores 0 e 2 associados à solução 0, 1 e 3 à solução 1
         self.tempos_de_chegada_ex = np.array([5.0, 5.0, 6.0, 6.0], dtype=np.float64)
         self.pontos_de_deteccao_ex = np.array([[0.0, 0.0, 0.0], [10.0, 10.0, 10.0], [1.0, 0.0, 0.0], [11.0, 10.0, 10.0]], dtype=np.float64)
@@ -147,7 +147,6 @@ class TestUtils(unittest.TestCase):
         # Detector 3: associado a solução 1 (10,10,10). Ponto detecção (11,10,10). Dist = 1. Tempo_origem = 6 - 1/c
 
         tempos_origem = computa_tempos_de_origem(self.solucoes_ex,
-                                                 self.clusters_espaciais_ex,
                                                  self.tempos_de_chegada_ex,
                                                  self.pontos_de_deteccao_ex,
                                                  True) # Cartesiano
@@ -168,9 +167,8 @@ class TestUtils(unittest.TestCase):
         empty_tempos_chegada = np.array([], dtype=np.float64)
         empty_pontos_deteccao = np.array([], dtype=np.float64).reshape(0, 3)
 
-        tempos_origem = computa_tempos_de_origem(empty_solucoes, empty_clusters,
-                                                 empty_tempos_chegada, empty_pontos_deteccao, True)
+        tempos_origem = computa_tempos_de_origem(empty_solucoes,
+                                                 empty_tempos_chegada, 
+                                                 empty_pontos_deteccao, 
+                                                 True)
         self.assertEqual(len(tempos_origem), 0)
-
-if __name__ == '__main__':
-    unittest.main(argv=['first-arg-is-ignored'], exit=False)

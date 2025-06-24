@@ -106,9 +106,12 @@ class StelaProblem(Problem):
         self.epsilon_t = epsilon_t
         self.min_pts = min_pts
         self.avg_speed = c
-
-        super().__init__(bounds, minmax, solution_encoding="float", **kwargs)
-            
+        self.verbose = False
+        super().__init__(bounds, minmax, **kwargs)
+    
+    def __getitem__(self, key):
+        return getattr(self, key)
+    
     def evaluate(self, solution):
         """
         Evaluates a solution using the defined objective function.
@@ -124,6 +127,7 @@ class StelaProblem(Problem):
             A list with one element containing the objective function value.
         """
         return [self.obj_func(solution)]
+    
 
     def obj_func(self, solution):
         """
@@ -150,7 +154,7 @@ class StelaProblem(Problem):
         solucoes = np.array(solution.reshape(-1, 3))
 
         # Executa o algoritmo STELA
-        (clusters_espaciais,
+        (_,
          verossimilhanca) = stela(solucoes,
                                   self.tempos_de_chegada,
                                   self.pontos_de_chegada,
@@ -161,5 +165,7 @@ class StelaProblem(Problem):
                                   self.avg_speed)
 
         # Retorna a verossimilhança como valor de fitness (negativa para problema
-        # de maximização)
+        # de maximização)    
+        if self.minmax == "min":
+            return -verossimilhanca
         return verossimilhanca

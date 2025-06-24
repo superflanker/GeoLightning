@@ -1,27 +1,65 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Cálculo da Entropia de Shannon
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+Shannon Entropy
+===============
+
+Shannon Entropy Calculation
+
+Summary
+-------
+This module provides a function to compute the local Shannon entropy 
+of a time-of-arrival vector. The entropy value reflects the temporal 
+dispersion of the arrivals and can be used as a regularization or 
+penalty term in likelihood-based optimization procedures.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- Local entropy computation based on histogram binning.
+- Numerical stabilization using epsilon for log(0) avoidance.
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
 """
+
 
 import numpy as np
 from numba import jit
 
 @jit(nopython=True, cache=True, fastmath=True)
 def calcular_entropia_local(tempos: np.ndarray, 
-                            n_bins: int = 10, 
-                            epsilon: float = 1e-12) -> float:
+                            n_bins: np.int32 = 10, 
+                            epsilon: np.float64 = 1e-12) -> np.float64:
     """
-    Calcula a entropia local de um vetor de tempos de chegada, como medida
-    da dispersão temporal. Usado como penalidade para verossimilhança.
+    Computes the local Shannon entropy of a vector of arrival times.
 
-    Args:
-        tempos (np.ndarray): vetor 1D de tempos de chegada (em segundos)
-        n_bins (int): número de bins para discretização do histograma
-        epsilon (float): pequeno valor para evitar log(0)
+    This function estimates the entropy of a 1D time series by discretizing
+    it into a histogram and evaluating the distribution of counts. The entropy
+    reflects the temporal spread of detections and is useful as a penalty term
+    in likelihood optimization.
 
-    Returns:
-        float: valor da entropia de Shannon
+    Parameters
+    ----------
+    tempos : np.ndarray
+        1D array of time-of-arrival values (in seconds).
+    n_bins : int, optional
+        Number of histogram bins for discretization. Default is 10.
+    epsilon : float, optional
+        Small numerical constant added to avoid log(0). Default is 1e-12.
+
+    Returns
+    -------
+    float
+        The estimated Shannon entropy of the arrival time distribution.
     """
     n = len(tempos)
     if n <= 1:

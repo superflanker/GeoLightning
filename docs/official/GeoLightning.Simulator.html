@@ -159,15 +159,12 @@ Federal University of Paraná (UFPR), Brazil.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.average_mean_squared_error">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">average_mean_squared_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#average_mean_squared_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.average_mean_squared_error" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">average_mean_squared_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#average_mean_squared_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.average_mean_squared_error" title="Link to this definition"></a></dt>
 <dd><p>Calculates the mean squared error (AMSE) between estimated values ​​and real values.</p>
 <p>AMSE (Average Mean Squared Error) is a metric that quantifies the average of the squares of the differences between estimated values ​​and real values, penalizing larger errors with greater severity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated values, usually from predictions of a model.</p></li>
-<li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real values, considered as reference or ground truth.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>deltas</strong> (<em>np.ndarray</em>) – Vector of measurement deltas</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Value of the mean squared error (AMSE) between the provided vectors.</p>
@@ -212,7 +209,7 @@ Federal University of Paraná (UFPR), Brazil.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.</p>
+<dd class="field-even"><p>CRLB matrix of dimension (1,1) representing the CRLB in the versor of distance.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -305,15 +302,12 @@ the estimation of each parameter under the CRLB model.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.mae">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mae" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mae" title="Link to this definition"></a></dt>
 <dd><p>Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.</p>
 <p>MAE is a widely used metric in the evaluation of prediction models, providing a direct measure of the average magnitude of the errors, without considering their direction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated values, representing the model predictions.</p></li>
-<li><p><strong>actual</strong> (<em>np.ndarray</em>) – Vector of actual values, representing the reference or true values.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>deltas</strong> (<em>np.ndarray</em>) – Vector of estimated values, representing the model predictions.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Value of the mean absolute error (MAE) between the given vectors.</p>
@@ -326,15 +320,12 @@ the estimation of each parameter under the CRLB model.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.mean_location_error">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mean_location_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimados</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mean_location_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mean_location_error" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">mean_location_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#mean_location_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.mean_location_error" title="Link to this definition"></a></dt>
 <dd><p>Calculates the mean localization error (MLE) between the estimated values ​​and the real values.</p>
 <p>The MLE (Mean Localization Error) is defined as the average of the Euclidean distances between pairs of estimated and real positions, and is widely used in geolocation problems to quantify spatial accuracy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated positions</p></li>
-<li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real reference positions, with the same dimension as <cite>estimated</cite>.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>deltas</strong> (<em>np.ndarray</em>) – Vector of measurement deltas</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.</p>
@@ -347,13 +338,13 @@ the estimation of each parameter under the CRLB model.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.rmse">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimadas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.rmse" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.rmse" title="Link to this definition"></a></dt>
 <dd><p>Calculates the root mean square error (RMSE) between estimated and real values.</p>
 <p>A fundamental parameter for evaluating the accuracy of event location algorithms, the RMSE provides a measure of the average discrepancy between the estimated and real position vectors, and is particularly useful in quantifying spatial accuracy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>estimated</strong> (<em>np.ndarray</em>) – Vector of estimated positions</p></li>
+<li><p><strong>deltas</strong> (<em>np.ndarray</em>) – Vector of measurement deltas</p></li>
 <li><p><strong>real</strong> (<em>np.ndarray</em>) – Vector of real positions</p></li>
 </ul>
 </dd>

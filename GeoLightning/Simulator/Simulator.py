@@ -215,7 +215,7 @@ def generate_events(num_events: int,
     """
 
     # event_times = np.array(sorted(event_times))
-
+    np.random.seed(42)
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
@@ -259,6 +259,7 @@ def generate_detections(event_positions: np.ndarray,
         spatial_clusters : np.ndarray
             Cluster IDs identifying to which event each detection belongs.
     """
+    np.random.seed(42)
     detections = []
     detection_times = []
     n_event_positions = []
@@ -284,7 +285,7 @@ def generate_detections(event_positions: np.ndarray,
                                 min=-6 * jitter_std,
                                 max=6 * jitter_std)
                 t_detect = event_time + \
-                    event_distances[j] / AVG_LIGHT_SPEED + noise
+                    event_distances[j] / AVG_LIGHT_SPEED  + noise
                 if sensor_detection(event_distances[j]):
                     t_detections.append(sensor_positions[j])
                     t_detection_times.append(t_detect)

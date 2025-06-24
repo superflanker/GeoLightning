@@ -1,8 +1,45 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Simulador de sensores e Eventos - Geolocalização de eventos atmosféricos
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+Network and Event Simulator
+===========================
+
+Sensor and Event Simulator – Atmospheric Event Geolocation
+
+Summary
+-------
+This module implements the simulation of sensor detections and event generation for atmospheric discharge localization experiments.
+It is used to evaluate the performance of geolocation algorithms under varying spatial and temporal configurations.
+
+The simulator includes:
+- Emission of impulsive events at known positions and times;
+- Probabilistic detection by sensors based on propagation distance;
+- Addition of Gaussian noise in detection times;
+- Derivation of Time-of-Arrival (TOA) information for multilateration.
+
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- Sensor-event interaction model
+- Distance and TOA calculations
+- Time jitter simulation (σₜ)
+- TOA-based emission time estimation
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+- GeoLightning.Simulator.SensorModel
 """
+
 
 import numpy as np
 from numba import jit
@@ -21,19 +58,31 @@ def get_random_sensors(num_sensors: np.int32,
                        min_alt: np.float64,
                        max_alt: np.float64) -> np.ndarray:
     """
-    Gera a localização geográfica dos sensores.
+    Generates random geographic coordinates for a given number of sensors.
 
-    Args:
-        num_sensors (np.int32): número de sensores
-        min_lat (np.float64): latitude mínima
-        max_lat (np.float64): latitude máxima
-        min_lon (np.float64): longitude mínima
-        max_lon (np.float64): longitude máxima
-        min_alt (np.float64): altitude mínima
-        max_alt (np.float64): altitude máxima
-    Returns:
-        np.ndarray: Lista de sensores [(lat, lon, alt)].
+    Parameters
+    ----------
+    num_sensors : np.int32
+        Number of sensors.
+    min_lat : np.float64
+        Minimum latitude.
+    max_lat : np.float64
+        Maximum latitude.
+    min_lon : np.float64
+        Minimum longitude.
+    max_lon : np.float64
+        Maximum longitude.
+    min_alt : np.float64
+        Minimum altitude.
+    max_alt : np.float64
+        Maximum altitude.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (num_sensors, 3) with sensor positions as (lat, lon, alt).
     """
+    np.random.seed(42)
     lats = np.random.uniform(min_lat, max_lat, num_sensors)
     lons = np.random.uniform(min_lon, max_lon, num_sensors)
     alts = np.random.uniform(min_alt, max_alt, num_sensors)
@@ -49,12 +98,12 @@ def get_random_sensors(num_sensors: np.int32,
 @jit(nopython=True, cache=True, fastmath=True)
 def get_sensors() -> np.ndarray:
     """
-    Gera a localização geográfica dos sensores - disposição estática.
+    Returns a static array of sensor positions (lat, lon, alt).
 
-    Args:
-        None
-    Returns:
-        np.ndarray: Lista de sensores [(lat, lon, alt)].
+    Returns
+    -------
+    np.ndarray
+        Array of shape (7, 3) with fixed sensor coordinates.
     """
     sensors = np.array([[-24.5, -51.0,  935.0],
                         [-23.77771914, -51.0,  935.0],
@@ -70,15 +119,19 @@ def get_sensors() -> np.ndarray:
 def get_lightning_limits(sensores_latlon: np.ndarray,
                          margem_metros: float = 5000.0) -> tuple:
     """
-    Calcula os limites geográficos (min_lat, min_lon, max_lat, max_lon) que cercam a constelação de sensores,
-    com uma margem adicional especificada em metros.
+    Computes geographic bounding box around sensor constellation with an additional margin.
 
-    Args:
-        sensores_latlon (np.ndarray): matriz (N,2) com colunas [latitude, longitude] em graus
-        margem_metros (float): margem adicional em metros ao redor do retângulo mínimo
+    Parameters
+    ----------
+    sensores_latlon : np.ndarray
+        Array of shape (N, 2) with latitude and longitude in degrees.
+    margem_metros : float, optional
+        Margin in meters around the bounding box (default is 5000.0).
 
-    Returns:
-        tuple: (min_lat, min_lon, max_lat, max_lon) com a margem aplicada
+    Returns
+    -------
+    tuple
+        (min_lat, max_lat, min_lon, max_lon) with margin applied.
     """
     latitudes = sensores_latlon[:, 0]
     longitudes = sensores_latlon[:, 1]
@@ -112,30 +165,43 @@ def generate_events(num_events: int,
                     sigma_t: float = SIGMA_T,
                     max_attempts: int = 10000) -> tuple:
     """
-    Gera eventos com localização geográfica e tempo, garantindo
-    espaçamento mínimo de 6 * sigma_t entre os tempos.
+    Generates atmospheric events with spatial and temporal attributes,
+    ensuring a minimum temporal spacing of 6 * sigma_t.
 
-    Args:
-        num_events (int): Número de eventos a serem gerados.
-        min_lat (float): latitude mínima
-        max_lat (float): latitude máxima
-        min_lon (float): longitude mínima
-        max_lon (float): longitude máxima
-        min_alt (float): altitude mínima
-        max_alt (float): altitude máxima
-        min_time (float): tempo mínimo
-        max_time (float): tempo máximo
-        sigma_t (float): desvio padrão das incertezas temporais
-        max_attempts (int): número máximo de tentativas para geração
+    Parameters
+    ----------
+    num_events : int
+        Number of events to generate.
+    min_lat : float
+        Minimum latitude.
+    max_lat : float
+        Maximum latitude.
+    min_lon : float
+        Minimum longitude.
+    max_lon : float
+        Maximum longitude.
+    min_alt : float
+        Minimum altitude.
+    max_alt : float
+        Maximum altitude.
+    min_time : float
+        Minimum timestamp.
+    max_time : float
+        Maximum timestamp.
+    sigma_t : float, optional
+        Temporal standard deviation (default is SIGMA_T).
+    max_attempts : int, optional
+        Maximum number of attempts to generate valid timestamps (default is 10000).
 
-    Returns:
-        tuple =>
-            event_positions (np.ndarray): posições dos eventos (lat, lon, alt)
-            event_times (np.ndarray): tempos dos eventos
+    Returns
+    -------
+    tuple of np.ndarray
+        event_positions : (N, 3) array of (lat, lon, alt)
+        event_times : (N,) array of timestamps
     """
 
     min_dt = 6.0 * sigma_t
-    event_times = []
+    """event_times = []
 
     attempts = 0
     while len(event_times) < num_events and attempts < max_attempts:
@@ -145,14 +211,15 @@ def generate_events(num_events: int,
         attempts += 1
 
     if len(event_times) < num_events:
-        raise RuntimeError("Não foi possível gerar eventos com espaçamento temporal mínimo dentro do número de tentativas.")
+        raise RuntimeError("Unable to generate events with minimum time spacing within the number of attempts.")
+    """
 
-    event_times = np.array(sorted(event_times))
-
+    # event_times = np.array(sorted(event_times))
+    np.random.seed(42)
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-
+    event_times = np.linspace(min_time, max_time, num_events)
     event_positions = np.stack((lats, lons, alts), axis=1)
 
     return event_positions, event_times
@@ -163,24 +230,36 @@ def generate_detections(event_positions: np.ndarray,
                         sensor_positions: np.ndarray,
                         jitter_std: np.float64 = SIGMA_T) -> tuple:
     """
-    Gera as detecções dado um grupo de sensores
-    Args:
-        event_positions (np.ndarray): as posições dos eventos
-        event_times (np.ndarray): os tempos dos eventos
-        sensor_positions (np.ndarray): as posições dos sensores
-    Returns: 
-        tuple:
-            detections (np.ndarray): o sensor associado à 
-                detecção do evento
-            detection_times (np.ndarray): os tempos associados 
-                à detecção do evento
-            n_event_positions (np.ndarray): versão expandida 
-                de event_positions (verificação  e teste)
-            n_event_times (np.ndarray): versão expandida 
-                de event_times (verificação e teste)
-            distances (np.ndarray): as distâncias calculadas
-                (verificação e testes)
+    Simulates detections from a sensor network based on lightning events.
+
+    Parameters
+    ----------
+    event_positions : np.ndarray
+        Array of event coordinates with shape (N, 3).
+    event_times : np.ndarray
+        Array of event timestamps with shape (N,).
+    sensor_positions : np.ndarray
+        Array of sensor coordinates with shape (M, 3).
+    jitter_std : float, optional
+        Standard deviation of temporal noise added to detection times (default is SIGMA_T).
+
+    Returns
+    -------
+    tuple
+        detections : np.ndarray
+            Array of sensor positions that detected events.
+        detection_times : np.ndarray
+            Corresponding detection timestamps.
+        n_event_positions : np.ndarray
+            Event positions repeated for each detection (for traceability).
+        n_event_times : np.ndarray
+            Event times repeated for each detection (for traceability).
+        distances : np.ndarray
+            Propagation distances between each detection pair.
+        spatial_clusters : np.ndarray
+            Cluster IDs identifying to which event each detection belongs.
     """
+    np.random.seed(42)
     detections = []
     detection_times = []
     n_event_positions = []
@@ -191,36 +270,38 @@ def generate_detections(event_positions: np.ndarray,
     cluster_id = 0
 
     for i in range(event_positions.shape[0]):
-        event_position = event_positions[i]
-        event_time = event_times[i]
-        event_distances = computa_distancias(event_position, sensor_positions)
-        t_detections = []
-        t_detection_times = []
-        t_n_event_positions = []
-        t_n_event_times = []
-        t_distances = []
-        t_spatial_clusters = []
-        for j in range(sensor_positions.shape[0]):
-            noise = np.clip(np.random.normal(0.0, jitter_std),
-                            min=-6 * jitter_std,
-                            max=6 * jitter_std)
-            t_detect = event_time + \
-                event_distances[j] / AVG_LIGHT_SPEED # + noise
-            if sensor_detection(event_distances[j]):
-                t_detections.append(sensor_positions[j])
-                t_detection_times.append(t_detect)
-                t_n_event_positions.append(event_position)
-                t_n_event_times.append(event_time)
-                t_distances.append(event_distances[j])
-                t_spatial_clusters.append(cluster_id)
-        if len(t_detections) >= 3:
-            cluster_id += 1
-            detections += t_detections
-            detection_times += t_detection_times
-            n_event_positions += t_n_event_positions
-            n_event_times += t_n_event_times
-            distances += t_distances
-            spatial_clusters += t_spatial_clusters
+        while True:
+            event_position = event_positions[i]
+            event_time = event_times[i]
+            event_distances = computa_distancias(event_position, sensor_positions)
+            t_detections = []
+            t_detection_times = []
+            t_n_event_positions = []
+            t_n_event_times = []
+            t_distances = []
+            t_spatial_clusters = []
+            for j in range(sensor_positions.shape[0]):
+                noise = np.clip(np.random.normal(0.0, jitter_std),
+                                min=-6 * jitter_std,
+                                max=6 * jitter_std)
+                t_detect = event_time + \
+                    event_distances[j] / AVG_LIGHT_SPEED  + noise
+                if sensor_detection(event_distances[j]):
+                    t_detections.append(sensor_positions[j])
+                    t_detection_times.append(t_detect)
+                    t_n_event_positions.append(event_position)
+                    t_n_event_times.append(event_time)
+                    t_distances.append(event_distances[j])
+                    t_spatial_clusters.append(cluster_id)
+            if len(t_detections) >= 3:
+                cluster_id += 1
+                detections += t_detections
+                detection_times += t_detection_times
+                n_event_positions += t_n_event_positions
+                n_event_times += t_n_event_times
+                distances += t_distances
+                spatial_clusters += t_spatial_clusters
+                break
 
     return (np.array(detections),
             np.array(detection_times),

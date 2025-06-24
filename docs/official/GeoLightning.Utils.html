@@ -373,6 +373,35 @@ Euclidean spatial models.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Utils.Utils.computa_distancia_batelada">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Utils.Utils.</span></span><span class="sig-name descname"><span class="pre">computa_distancia_batelada</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Utils/Utils.html#computa_distancia_batelada"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Utils.Utils.computa_distancia_batelada" title="Link to this definition"></a></dt>
+<dd><p>Computes the distance between two points, depending on the coordinate system - batch version.</p>
+<p>This function selects either spherical or Cartesian distance calculation based
+on the <cite>sistema_cartesiano</cite> flag, enabling compatibility with both geodetic and
+Euclidean spatial models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>np.ndarray</em>) – Coordinate vectors of the event (either [lat, lon, alt] in degrees/meters or [x, y, z] in meters).</p></li>
+<li><p><strong>s</strong> (<em>np.ndarray</em>) – Coordinate vectors of the station or detector (same format as <cite>a</cite>).</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated distance between the two points <cite>a</cite> and <cite>s</cite>, in meters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For spherical coordinates, this function assumes latitude and longitude in degrees and altitude in meters.</p></li>
+<li><p>For Cartesian coordinates, standard Euclidean geometry is used.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Utils.Utils.computa_distancias">
 <span class="sig-prename descclassname"><span class="pre">GeoLightning.Utils.Utils.</span></span><span class="sig-name descname"><span class="pre">computa_distancias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destinos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Utils/Utils.html#computa_distancias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Utils.Utils.computa_distancias" title="Link to this definition"></a></dt>
 <dd><p>Computes the distances between a single origin point and multiple destination points.</p>

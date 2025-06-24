@@ -21,32 +21,28 @@ from GeoLightning.Simulator.Metrics import (
 )
 
 def test_rmse():
-    reais = np.random.rand(10)
-    estimadas = np.random.rand(10)
-    resultado = rmse(estimadas, reais)
-    esperado = np.sqrt(np.mean((estimadas - reais) ** 2))
+    delta = np.random.rand(10)
+    resultado = rmse(delta)
+    esperado = np.sqrt(np.mean((delta) ** 2))
     assert np.isclose(resultado, esperado)
 
 def test_mae():
-    reais = np.random.rand(10)
-    estimados = np.random.rand(10)
-    resultado = mae(estimados, reais)
-    esperado = np.mean(np.abs(estimados - reais))
+    delta = np.random.rand(10)
+    resultado = mae(delta)
+    esperado = np.mean(np.abs(delta))
     assert np.isclose(resultado, esperado)
 
 def test_average_mean_squared_error():
     
-    reais = np.random.rand(10)
-    estimadas = np.random.rand(10)
-    resultado = average_mean_squared_error(estimadas, reais)
-    esperado = np.mean((estimadas - reais) ** 2)
+    delta = np.random.rand(10)
+    resultado = average_mean_squared_error(delta)
+    esperado = np.mean(delta ** 2)
     assert np.isclose(resultado, esperado)
 
 def test_mean_location_error():
-    reais = np.random.rand(10)
-    estimados = np.random.rand(10)
-    resultado = mean_location_error(estimados, reais)
-    esperado = np.mean(estimados - reais)
+    delta = np.random.rand(10)
+    resultado = mean_location_error(delta)
+    esperado = np.mean(delta)
     assert np.isclose(resultado, esperado)
 
 def test_calcula_prmse():
@@ -68,7 +64,7 @@ def test_tempo_execucao():
 
 def test_crlb_espacial():
     crlb = calcular_crlb_espacial(sigma_d=1.0, N=4)
-    esperado = (1.0 ** 2 / 4.0) * np.eye(3)
+    esperado = (1.0 ** 2 / 4.0) * np.eye(1)
     assert np.allclose(crlb, esperado)
 
 def test_crlb_temporal():
@@ -77,13 +73,28 @@ def test_crlb_temporal():
     assert np.allclose(crlb, esperado)
 
 def test_crlb_rmse():
-    crlb = np.diag([1.0, 1.0, 1.0])
+    crlb = np.diag([1.0])
     resultado = calcular_crlb_rmse(crlb)
-    esperado = np.sqrt(np.trace(crlb @ crlb)) / 3.0
+    esperado = np.sqrt(np.trace(crlb))
     assert np.isclose(resultado, esperado)
 
 def test_mean_crlb():
-    crlb = np.diag([1.0, 2.0, 3.0])
+    crlb = np.diag([1.0])
     resultado = calcular_mean_crlb(crlb)
-    esperado = (1 + 2 + 3) / 3
+    esperado = 1
     assert np.isclose(resultado, esperado)
+
+if __name__ == "__main__":
+    test_rmse()
+    test_mae()
+    test_average_mean_squared_error()
+    test_mean_location_error()
+    test_calcula_prmse()
+    test_acuracia_associacao()
+    test_erro_relativo_funcao_ajuste()
+    test_tempo_execucao()
+    test_crlb_espacial()
+    test_crlb_temporal()
+    test_crlb_temporal()
+    test_crlb_rmse()
+    test_mean_crlb()

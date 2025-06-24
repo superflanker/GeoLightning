@@ -47,6 +47,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">GeoLightning.Solvers package</a></li>
@@ -163,10 +164,14 @@
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.g_best"><code class="docutils literal notranslate"><span class="pre">LSA.g_best</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.is_parallelizable"><code class="docutils literal notranslate"><span class="pre">LSA.is_parallelizable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.sort_flag"><code class="docutils literal notranslate"><span class="pre">LSA.sort_flag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_diversity"><code class="docutils literal notranslate"><span class="pre">LSA.compute_diversity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu"><code class="docutils literal notranslate"><span class="pre">LSA.compute_mu()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_sigma"><code class="docutils literal notranslate"><span class="pre">LSA.compute_sigma()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.evolve"><code class="docutils literal notranslate"><span class="pre">LSA.evolve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.force_diversity"><code class="docutils literal notranslate"><span class="pre">LSA.force_diversity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.get_global_best"><code class="docutils literal notranslate"><span class="pre">LSA.get_global_best()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.lead_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.lead_projectile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.opposition_position"><code class="docutils literal notranslate"><span class="pre">LSA.opposition_position()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.space_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.space_projectile()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.transition_projectile"><code class="docutils literal notranslate"><span class="pre">LSA.transition_projectile()</span></code></a></li>
 </ul>
@@ -244,6 +249,40 @@ internal logic.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaAOA.StelaAOA.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaAOA.html#StelaAOA.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaAOA.StelaAOA.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaAOA.StelaAOA.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaAOA.html#StelaAOA.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaAOA.StelaAOA.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaAOA.StelaAOA.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaAOA.html#StelaAOA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaAOA.StelaAOA.evolve" title="Link to this definition"></a></dt>
 <dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
@@ -310,6 +349,40 @@ solution found so far.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaESO.StelaESO.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaESO.html#StelaESO.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaESO.StelaESO.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaESO.StelaESO.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaESO.html#StelaESO.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaESO.StelaESO.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaESO.StelaESO.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaESO.html#StelaESO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaESO.StelaESO.evolve" title="Link to this definition"></a></dt>
 <dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
@@ -375,6 +448,40 @@ solution found so far.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaFHO.StelaFHO.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaFHO.html#StelaFHO.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaFHO.StelaFHO.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaFHO.StelaFHO.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaFHO.html#StelaFHO.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaFHO.StelaFHO.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaFHO.StelaFHO.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaFHO.html#StelaFHO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaFHO.StelaFHO.evolve" title="Link to this definition"></a></dt>
@@ -444,6 +551,40 @@ geolocation problems formalized via the <cite>StelaProblem</cite> class.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGA.StelaGA.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGA.html#StelaGA.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGA.StelaGA.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGA.StelaGA.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGA.html#StelaGA.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGA.StelaGA.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGA.StelaGA.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGA.html#StelaGA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGA.StelaGA.evolve" title="Link to this definition"></a></dt>
 <dd><p>Executes one iteration of the algorithm with adaptive search space refinement.</p>
@@ -511,6 +652,40 @@ lightning geolocation with spatial and temporal constraints.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGWO.StelaGWO.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGWO.html#StelaGWO.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGWO.StelaGWO.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGWO.StelaGWO.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGWO.html#StelaGWO.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGWO.StelaGWO.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaGWO.StelaGWO.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaGWO.html#StelaGWO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaGWO.StelaGWO.evolve" title="Link to this definition"></a></dt>
@@ -580,6 +755,40 @@ at each iteration based on the current best solution found.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaLSA.StelaLSA.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaLSA.html#StelaLSA.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaLSA.StelaLSA.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaLSA.StelaLSA.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaLSA.html#StelaLSA.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaLSA.StelaLSA.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaLSA.StelaLSA.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaLSA.html#StelaLSA.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaLSA.StelaLSA.evolve" title="Link to this definition"></a></dt>
@@ -651,6 +860,40 @@ refined based on the current best solution using the
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaPSO.StelaPSO.amend_solution">
+<span class="sig-name descname"><span class="pre">amend_solution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaPSO.html#StelaPSO.amend_solution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaPSO.StelaPSO.amend_solution" title="Link to this definition"></a></dt>
+<dd><p>Clamp each dimension of the solution vector to lie within its allowed bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – The candidate solution vector to be amended.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The amended solution vector with values within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.StelaPSO.StelaPSO.correct_position">
+<span class="sig-name descname"><span class="pre">correct_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaPSO.html#StelaPSO.correct_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaPSO.StelaPSO.correct_position" title="Link to this definition"></a></dt>
+<dd><p>Clamp the position vector to the feasible domain using bound limits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>position</strong> (<em>np.ndarray</em>) – Candidate solution vector to correct.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corrected position vector within bounds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaPSO.StelaPSO.evolve">
 <span class="sig-name descname"><span class="pre">evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaPSO.html#StelaPSO.evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaPSO.StelaPSO.evolve" title="Link to this definition"></a></dt>

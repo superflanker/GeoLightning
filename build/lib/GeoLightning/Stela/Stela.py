@@ -1,234 +1,258 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada  
-    Algoritmo STELA - Spatio-Temporal Event Likelihood Assignment  
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+STELA Core algorithm
+====================
 
-    Este módulo implementa o algoritmo STELA, responsável por realizar a 
-    associação espaço-temporal entre detecções multissensoriais e eventos 
-    físicos simulados, como descargas atmosféricas ou fontes acústicas impulsivas.  
+Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm
 
-    O algoritmo combina estratégias de clusterização espacial e temporal, 
-    além de calcular uma função de verossimilhança baseada na consistência 
-    entre o tempo de chegada dos sinais e a posição estimada dos eventos.  
+Summary
+-------
+This module implements the STELA algorithm, designed for spatio-temporal association 
+of multisensory detections with simulated physical events, such as lightning strikes 
+or impulsive acoustic sources.
 
-    O STELA é projetado para refinar soluções iniciais de multilateração, 
-    ajustar os limites de busca para meta-heurísticas e identificar agrupamentos 
-    plausíveis de detecções que correspondam a eventos reais.
+The algorithm integrates spatial and temporal clustering with a likelihood function 
+based on the consistency between the time-of-arrival (TOA) of signals and the estimated 
+event positions. It refines candidate solutions from multilateration, adjusts 
+search boundaries for meta-heuristics, and identifies plausible groupings 
+of detections that correspond to real-world events.
 
-    Este pipeline é compatível com metodologias de localização baseadas 
-    em TOA (Time-of-Arrival), sendo aplicável a contextos como sensoriamento geofísico, 
-    radiofrequência, acústica submarina e astronomia transiente.
+This pipeline is compatible with TOA-based localization methods and applicable 
+to geophysical sensing, radio frequency, underwater acoustics, and transient astronomy.
 
+Author
+------
+Augusto Mathias Adams <augusto.adams@ufpr.br>
+
+Contents
+--------
+- STELA Algorithm (main routine)
+- Temporal clustering
+- Spatial clustering and likelihood estimation
+- Search bounds generation
+
+Notes
+-----
+This module is part of the activities of the discipline 
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
+
+Dependencies
+------------
+- numpy
+- numba
+- GeoLightning.Utils.Constants
+- GeoLightning.Utils.Utils
+- GeoLightning.Stela.LogLikelihood
+- GEoLightning.Stela.Entropy
+- GeoLightning.Stela.Common
 """
-
 
 import numpy as np
 from numba import jit
-from GeoLightning.Utils.Constants import SIGMA_D, \
-    EPSILON_D, \
+from GeoLightning.Utils.Constants import SIGMA_T, \
     EPSILON_T, \
-    LIMIT_D, \
     CLUSTER_MIN_PTS, \
-    MAX_DISTANCE
-from GeoLightning.Utils.Utils import computa_tempos_de_origem
-from GeoLightning.Stela.Deprecated.TemporalClustering import clusterizacao_temporal_stela
-from GeoLightning.Stela.Deprecated.SpatialClustering import clusterizacao_espacial_stela
-from GeoLightning.Stela.Bounds import gera_limites
+    AVG_LIGHT_SPEED, \
+    AVG_EARTH_RADIUS
+from GeoLightning.Utils.Utils import computa_tempos_de_origem, \
+    coordenadas_esfericas_para_cartesianas_batelada
+from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca, \
+    raw_amend_positions
+from GeoLightning.Stela.Common import calcula_residuos_temporais, \
+    calcula_centroides_temporais, \
+    calcula_distancias_ao_centroide, \
+    calcular_centroides_espaciais
+from sklearn.cluster import DBSCAN, OPTICS
+
+def gera_novas_solucoes(solucoes: np.ndarray,
+                        labels: np.ndarray,
+                        centroides) -> np.ndarray:
+    """
+    Fill an array with centroids solutions
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of estimated solutions.
+    labels : np.ndarray
+        Array of cluster labels assigned to each solution point.
+    centroides : np.ndarray
+        Array of centroids for each clusters
+    Returns
+    -------
+    novas_solucoes: np.ndarray
+        Array containing new centroids solutions to each 
+    """
+    if np.any(labels == -1):
+        c_labels = labels + 1
+    else:
+        c_labels = labels.copy()
+    novas_solucoes = np.empty_like(solucoes)
+
+    for i in range(len(solucoes)):
+        novas_solucoes[i] = centroides[c_labels[i]]
+    return novas_solucoes
 
 
-@jit(nopython=True, cache=True, fastmath=True)
 def stela(solucoes: np.ndarray,
           tempos_de_chegada: np.ndarray,
           pontos_de_deteccao: np.ndarray,
-          clusters_espaciais: np.ndarray,
           sistema_cartesiano: bool = False,
-          sigma_d: np.float64 = SIGMA_D,
+          sigma_t: np.float64 = SIGMA_T,
           epsilon_t: np.float64 = EPSILON_T,
-          epsilon_d: np.float64 = EPSILON_D,
-          limit_d: np.float64 = LIMIT_D,
-          max_d: np.float64 = MAX_DISTANCE,
-          min_pts: np.int32 = CLUSTER_MIN_PTS) -> tuple:
+          min_pts: np.int32 = CLUSTER_MIN_PTS,
+          c: np.float64 = AVG_LIGHT_SPEED) -> tuple:
     """
-        Algoritmo STELA - Spatio-Temporal Event Likelihood Assignment.
+    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm.
 
-        Esta função executa a fase de associação e filtragem de eventos com base 
-        na consistência espaço-temporal entre as detecções multissensoriais 
-        e as soluções candidatas geradas por multilateração.
+    This function performs the core association and filtering step based on 
+    the spatio-temporal consistency between multisensory detections and 
+    multilateration-generated candidate event positions.
 
-        O algoritmo aplica clusterização temporal para inferir tempos de origem 
-        estimados, seguida de uma nova clusterização espacial com base na 
-        compatibilidade das detecções, otimizando uma função de log-verossimilhança.
+    It applies temporal clustering to infer origin times, followed by a spatial 
+    clustering step with compatibility checks, optimizing a log-likelihood function.
 
-        Parâmetros:
-            solucoes (np.ndarray): Array de forma (N, 3), contendo as posições 
-                candidatas dos eventos em coordenadas geográficas ou cartesianas.
-            tempos_de_chegada (np.ndarray): Array de forma (M,), contendo os 
-                tempos absolutos de chegada dos sinais em cada sensor.
-            pontos_de_deteccao (np.ndarray): Array de forma (M, 3), com as posições 
-                dos sensores (em mesmas coordenadas que `solucoes`).
-            clusters_espaciais (np.ndarray): Array (N,), contendo o identificador 
-                de cluster espacial de cada solução candidata.
-            sistema_cartesiano (bool): Indica se os dados estão em coordenadas 
-                cartesianas (True) ou geográficas (False). Padrão: False.
-            sigma_d (float): Desvio padrão espacial (usado na verossimilhança).
-            epsilon_t (float): Tolerância temporal para a clusterização temporal.
-            epsilon_d (float): Tolerância espacial para a clusterização espacial.
-            limit_d (float): Raio máximo para o cálculo dos limites de busca 
-                (bounding box) das meta-heurísticas.
-            max_d (float): Distância máxima permitida entre eventos e sensores.
-            min_pts (int): Número mínimo de pontos para formar um cluster (DBSCAN).
+    Parameters
+    ----------
+    solucoes : np.ndarray
+        Array of shape (N, 3) with candidate event positions in geographic 
+        or Cartesian coordinates.
+    tempos_de_chegada : np.ndarray
+        Array of shape (M,) with absolute signal arrival times at the sensors.
+    pontos_de_deteccao : np.ndarray
+        Array of shape (M, 3) with sensor positions, using the same coordinate system 
+        as `solucoes`.
+    sistema_cartesiano : bool, optional
+        Indicates whether the coordinates are Cartesian (True) or geographic (False). Default is False.
+    sigma_t : float, optional
+        Temporal standard deviation (used in likelihood computation).
+    epsilon_t : float, optional
+        Temporal tolerance for temporal clustering.
+        Spatial tolerance for spatial clustering.
+    min_pts : int, optional
+        Minimum number of points to form a valid cluster (DBSCAN requirement).
 
-        Retorna:
-            tuple:
-                lb (np.ndarray): Vetor com os limites inferiores para otimização.
-                ub (np.ndarray): Vetor com os limites superiores para otimização.
-                centroides (np.ndarray): Coordenadas médias dos eventos detectados.
-                detectores (np.ndarray): Índices dos sensores associados.
-                clusters_espaciais (np.ndarray): Rótulos atualizados dos clusters.
-                novas_solucoes (np.ndarray): Soluções refinadas espacialmente.
-                verossimilhanca (float): Valor agregado da verossimilhança.
+    Returns
+    -------
+    tuple
+        clusters_espaciais : np.ndarray
+            Updated spatial cluster labels.
+        verossimilhanca : float
+            Total log-likelihood value of the solution.
 
-        Observações:
-            - A função é otimizada com Numba para alto desempenho.
-            - O modelo é compatível com cenários de múltiplos eventos e sensores.
-            - Pode ser utilizado como fase de pré-processamento para otimizações 
-            com algoritmos genéticos, swarm intelligence e outros métodos globais.
+    Notes
+    -----
+    - Optimized with Numba for high-performance execution.
+    - Compatible with multiple events and multisensor contexts.
+    - Suitable for pre-processing before global optimization with genetic algorithms,
+      swarm intelligence, and other meta-heuristics.
     """
 
-    # primeiro passo - clusters temporais
+    # primeiro passo - clusters espaço-temporais
     tempos_de_origem = computa_tempos_de_origem(solucoes,
-                                                clusters_espaciais,
                                                 tempos_de_chegada,
                                                 pontos_de_deteccao,
                                                 sistema_cartesiano)
 
-    clusters_temporais = clusterizacao_temporal_stela(tempos_de_origem,
-                                                      epsilon_t,
-                                                      min_pts)
+    # segundo passo - se o sistemas de coordenadas for esférico, converter para cartesiano
+    # e "transformar" em tempo
+    if sistema_cartesiano:
+        solucoes_cartesianas = solucoes.copy()/c
+    else:
+        solucoes_cartesianas = coordenadas_esfericas_para_cartesianas_batelada(
+            solucoes) / c
 
-    verossimilhanca = 0.0
-    # segundo passo - clusterização espacial e cálculo da função de fitness
-    # adicionado: calculamos o remapeamento espacial aqui também
+    # antes de aglutinar tudo - vou fazer um empilhamento de tempos
+    solucoes_cartesianas = np.hstack((solucoes_cartesianas,
+                                     tempos_de_origem.reshape(-1, 1)))
 
-    (centroides,
-     detectores,
-     solucoes_unicas,
-     clusters_espaciais,
-     novas_solucoes,
-     loglikelihood) = clusterizacao_espacial_stela(solucoes,
-                                                   clusters_temporais,
-                                                   tempos_de_origem,
-                                                   epsilon_d,
-                                                   sigma_d,
-                                                   min_pts,
-                                                   sistema_cartesiano)
+    clustering = DBSCAN(eps=epsilon_t,
+                        min_samples=min_pts,
+                        metric="euclidean").fit(solucoes_cartesianas)
+    clusters_espaciais = clustering.labels_
 
-    verossimilhanca += loglikelihood
+    """centroides_temporais, _ = calcula_centroides_temporais(tempos_de_origem,
+                                                        clusters_espaciais)
+    
+    tempos_medios = calcula_residuos_temporais(tempos_de_origem,
+                                               clusters_espaciais,
+                                               centroides_temporais)"""
 
-    # calculando os limites para o algoritmo meta-heurístico
+    centroides_espaciais, _ = calcular_centroides_espaciais(solucoes,
+                                                            clusters_espaciais)
 
-    lb, ub = gera_limites(novas_solucoes,
-                          solucoes_unicas,
-                          limit_d,
-                          max_d,
-                          sistema_cartesiano)
+    distancias = calcula_distancias_ao_centroide(solucoes,
+                                                 clusters_espaciais,
+                                                 centroides_espaciais,
+                                                 sistema_cartesiano)
+    
+
+    verossimilhanca = funcao_log_verossimilhanca(
+        distancias, c * sigma_t) #\
 
     # tudo pronto, retornando
-    return (lb,
-            ub,
-            centroides,
-            detectores,
-            clusters_espaciais,
-            novas_solucoes,
+    return (clusters_espaciais,
             verossimilhanca)
 
 
 if __name__ == "__main__":
 
-    num_events = [2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000,
-                  2000, 3000, 4000, 5000, 6000,
-                  7000, 8000, 9000, 10000]
-
+    from GeoLightning.Simulator.Simulator import (get_sensors,
+                                                  get_random_sensors,
+                                                  get_lightning_limits,
+                                                  generate_detections,
+                                                  generate_events)
     from time import perf_counter
 
+    num_events = [1, 2, 5, 10, 15, 20, 25,
+                  30, 100, 500, 800, 1000,
+                  5000, 10000, 20000]
+
     for i in range(len(num_events)):
-        print("Events: {:d}".format(num_events[i]))
-        file_detections = "../../data/static_constellation_detections_{:06d}.npy".format(
-            num_events[i])
+        # recuperando o grupo de sensores
+        sensors = get_sensors()
+        min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
-        file_detections_times = "../../data/static_constelation_detection_times_{:06d}.npy".format(
-            num_events[i])
+        # gerando os eventos
+        min_alt = 935.0
+        max_alt = 935.0
+        min_time = 10000
+        max_time = min_time + 72 * 3600
 
-        file_event_positions = "../../data/static_constelation_event_positions_{:06d}.npy".format(
-            num_events[i])
+        event_positions, event_times = generate_events(num_events[i],
+                                                       min_lat,
+                                                       max_lat,
+                                                       min_lon,
+                                                       max_lon,
+                                                       min_alt,
+                                                       max_alt,
+                                                       min_time,
+                                                       max_time)
 
-        file_event_times = "../../data/static_constelation_event_times_{:06d}.npy".format(
-            num_events[i])
-
-        file_n_event_positions = "../../data/static_constelation_n_event_positions_{:06d}.npy".format(
-            num_events[i])
-
-        file_n_event_times = "../../data/static_constelation_n_event_times_{:06d}.npy".format(
-            num_events[i])
-
-        file_distances = "../../data/static_constelation_distances_{:06d}.npy".format(
-            num_events[i])
-
-        file_spatial_clusters = "../../data/static_constelation_spatial_clusters_{:06d}.npy".format(
-            num_events[i])
-
-        event_positions = np.load(file_event_positions)
-        event_times = np.load(file_event_times)
-        pontos_de_deteccao = np.load(file_detections)
-        tempos_de_chegada = np.load(file_detections_times)
-        solucoes = np.load(file_n_event_positions)
-        # spatial_clusters = np.load(file_spatial_clusters)
-        spatial_clusters = np.cumsum(
-            np.ones(len(solucoes), dtype=np.int32)) - 1
+        # gerando as detecções
+        (detections,
+         detection_times,
+         n_event_positions,
+         n_event_times,
+         distances,
+         spatial_clusters) = generate_detections(event_positions,
+                                                 event_times,
+                                                 sensors)
         start_st = perf_counter()
 
-        (lb,
-         ub,
-         centroides,
-         detectores,
-         clusters_espaciais,
-         novas_solucoes,
-         verossimilhanca) = stela(solucoes,
-                                  tempos_de_chegada,
-                                  pontos_de_deteccao,
-                                  spatial_clusters,
-                                  sistema_cartesiano=False)
-        end_st = perf_counter()
-
-        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
-
-        print(verossimilhanca)
-        print(clusters_espaciais)
-        print(lb)
-        print(ub)
-
-        # a repetição deve ser com um conjunto bem menor de soluções
-
-        start_st = perf_counter()
-
-        (lb,
-         ub,
-         centroides,
-         detectores,
-         clusters_espaciais,
-         novas_solucoes,
-         verossimilhanca) = stela(solucoes,
-                                  tempos_de_chegada,
-                                  pontos_de_deteccao,
-                                  spatial_clusters,
+        (clusters_espaciais,
+         verossimilhanca) = stela(n_event_positions,
+                                  detection_times,
+                                  detections,
                                   sistema_cartesiano=False)
 
         end_st = perf_counter()
-
-        print(f"Elapsed time: {end_st - start_st:.6f} seconds")
-
+        print(
+            f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st} Segundos")
         print(verossimilhanca)
-        print(clusters_espaciais)
-        print(lb)
-        print(ub)
+        len_clusterizados = len(
+            np.unique(clusters_espaciais[clusters_espaciais >= 0]))
+        len_reais = len(event_positions)
+        try:
+            assert len_clusterizados == len_reais
+            assert spatial_clusters == clusters_espaciais
+        except:
+            print(f"Clusterizados: {len_clusterizados}, Reais: {len_reais}")

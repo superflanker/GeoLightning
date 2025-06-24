@@ -121,8 +121,7 @@
 <div class="viewcode-block" id="rmse">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.rmse">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">estimadas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-         <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rmse</span><span class="p">(</span><span class="n">deltas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the root mean square error (RMSE) between estimated and real values.</span>
 
@@ -130,8 +129,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    estimated : np.ndarray</span>
-<span class="sd">        Vector of estimated positions</span>
+<span class="sd">    deltas : np.ndarray</span>
+<span class="sd">        Vector of measurement deltas</span>
 <span class="sd">    real : np.ndarray</span>
 <span class="sd">        Vector of real positions</span>
 
@@ -140,15 +139,14 @@
 <span class="sd">    np.float64</span>
 <span class="sd">        Value of the root mean square error (RMSE) between the given vectors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">estimadas</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">deltas</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="mae">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.mae">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mae</span><span class="p">(</span><span class="n">deltas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the mean absolute error (MAE) between the estimated values ​​and the true values.</span>
 
@@ -156,25 +154,22 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    estimated : np.ndarray</span>
+<span class="sd">    deltas : np.ndarray</span>
 <span class="sd">        Vector of estimated values, representing the model predictions.</span>
-<span class="sd">    actual : np.ndarray</span>
-<span class="sd">        Vector of actual values, representing the reference or true values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        Value of the mean absolute error (MAE) between the given vectors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">deltas</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="average_mean_squared_error">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.average_mean_squared_error">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">average_mean_squared_error</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                               <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">average_mean_squared_error</span><span class="p">(</span><span class="n">deltas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the mean squared error (AMSE) between estimated values ​​and real values.</span>
 
@@ -182,25 +177,22 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    estimated : np.ndarray</span>
-<span class="sd">        Vector of estimated values, usually from predictions of a model.</span>
-<span class="sd">    real : np.ndarray</span>
-<span class="sd">        Vector of real values, considered as reference or ground truth.</span>
+<span class="sd">    deltas : np.ndarray</span>
+<span class="sd">        Vector of measurement deltas</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.float64</span>
 <span class="sd">        Value of the mean squared error (AMSE) between the provided vectors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">deltas</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="mean_location_error">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Metrics.mean_location_error">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">mean_location_error</span><span class="p">(</span><span class="n">estimados</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                        <span class="n">reais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mean_location_error</span><span class="p">(</span><span class="n">deltas</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the mean localization error (MLE) between the estimated values ​​and the real values.</span>
 
@@ -208,10 +200,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    estimated : np.ndarray</span>
-<span class="sd">        Vector of estimated positions</span>
-<span class="sd">    real : np.ndarray</span>
-<span class="sd">        Vector of real reference positions, with the same dimension as `estimated`.</span>
+<span class="sd">    deltas : np.ndarray</span>
+<span class="sd">        Vector of measurement deltas</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -219,7 +209,7 @@
 <span class="sd">        Value of the mean localization error (MLE), expressed in the same unit as the given spatial coordinates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">estimados</span> <span class="o">-</span> <span class="n">reais</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">deltas</span><span class="p">)</span></div>
 
 
 
@@ -352,10 +342,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    np.ndarray</span>
-<span class="sd">        CRLB matrix of dimension (3, 3), corresponding to the [x, y, z] components of the position.</span>
+<span class="sd">        CRLB matrix of dimension (1,1) representing the CRLB in the versor of distance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="p">(</span><span class="n">sigma_d</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="p">(</span><span class="n">sigma_d</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
@@ -406,8 +396,7 @@
 <span class="sd">    float</span>
 <span class="sd">        RMSE value computed from the CRLB matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">crlb</span> <span class="o">@</span> <span class="n">crlb</span><span class="p">))</span> <span class="o">/</span> <span class="n">crlb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">crlb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
 
@@ -431,8 +420,7 @@
 <span class="sd">    float</span>
 <span class="sd">        Mean value of the variances in the CRLB matrix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">crlb</span><span class="p">)</span> <span class="o">/</span> <span class="n">crlb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
+    <span class="k">return</span> <span class="n">crlb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 </pre></div>
 

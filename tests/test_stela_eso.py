@@ -16,6 +16,7 @@ from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
 from GeoLightning.Stela.Stela import stela
 from mealpy import FloatVar
+from time import perf_counter
 
 def test_stela_eso():
 
@@ -28,7 +29,7 @@ def test_stela_eso():
     max_alt = 935
     min_time = 10000
     max_time = min_time + 72 * 3600
-    num_events = 2000
+    num_events = 1
 
     event_positions, event_times = generate_events(num_events,
                                                    min_lat,
@@ -71,11 +72,17 @@ def test_stela_eso():
                            SIGMA_T=SIGMA_T,
                            epsilon_t=EPSILON_T,
                            sistema_cartesiano=False)
-    
-    model = StelaESO(epoch=100, pop_size=10)
+    start_st = perf_counter()
+
+    model = StelaESO(epoch=10, 
+                     pop_size=10)
     agent = model.solve(problem)
+    
+    end_st = perf_counter()
+    print(f"Tempo gasto: {end_st - start_st:.06f}")    
+    
     best_solution = agent.solution
-    best_fitness = agent.target
+    best_fitness = agent.target.fitness
     best_solution = np.array(best_solution).reshape(-1,3)
         # recomputando a clusterização - índice de associação aplicado ao algoritmo
     (clusters_espaciais, 
@@ -91,4 +98,5 @@ def test_stela_eso():
     len_reais = len(event_positions)
     print(len_reais, len_clusterizados)
     assert len_clusterizados == len_reais
-   
+if __name__ == "__main__":
+    test_stela_eso()

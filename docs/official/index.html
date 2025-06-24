@@ -130,6 +130,7 @@
 <h3>📁 Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GeoLightning/
 ├── GeoLightning/
+│   ├── HyperParameters/       # Parameter Tuning Utility
 │   ├── Runners/               # Convenience Wrappers for Mealpy Solvers
 │   ├── Simulator/             # Sensor modeling and synthetic data
 │   ├── Solvers/               # STELA wrappers and metaheuristics
@@ -150,9 +151,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaProblem</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaProblem</span>
 
 <span class="c1"># Define bounds, arrival points and times...</span>
-<span class="n">problem</span> <span class="o">=</span> <span class="n">StelaProblem</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">arrival_points</span><span class="p">,</span> <span class="n">arrival_times</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">StelaPSO</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">best_solution</span><span class="p">,</span> <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">StelaProblem</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">arrival_points</span><span class="p">,</span> <span class="n">arrival_times</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">StelaPSO</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">best_solution</span><span class="p">,</span> <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -190,11 +191,32 @@
 <li class="toctree-l1"><a class="reference internal" href="modules.html">GeoLightning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="GeoLightning.HyperParameters.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="GeoLightning.HyperParameters.html#module-GeoLightning.HyperParameters.Tuning">GeoLightning.HyperParameters.Tuning module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#hyperparameter-tunning">HyperParameter Tunning</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#summary">Summary</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#author">Author</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id1">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#dependencies">Dependencies</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#GeoLightning.HyperParameters.Tuning.tuneit"><code class="docutils literal notranslate"><span class="pre">tuneit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="GeoLightning.HyperParameters.html#module-GeoLightning.HyperParameters">Module contents</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id2">HyperParameter Tunning</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id3">Summary</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id4">Author</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id5">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.HyperParameters.html#id6">Dependencies</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Runners.html#submodules">Submodules</a></li>
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Runners.html#module-GeoLightning.Runners.RunnerAOA">GeoLightning.Runners.RunnerAOA module</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Runners.html#stelaaoa-runner-wrapper">StelaAOA Runner Wrapper</a></li>
-<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Runners.html#GeoLightning.Runners.RunnerAOA.runner_aoa"><code class="docutils literal notranslate"><span class="pre">runner_aoa()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Runners.html#GeoLightning.Runners.RunnerAOA.runner_AOA"><code class="docutils literal notranslate"><span class="pre">runner_AOA()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Runners.html#module-GeoLightning.Runners.RunnerESO">GeoLightning.Runners.RunnerESO module</a><ul>
@@ -366,19 +388,25 @@
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Stela.html#module-GeoLightning.Stela.LogLikelihood">GeoLightning.Stela.LogLikelihood module</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#log-likelihood">Log-Likelihood</a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.funcao_log_verossimilhanca"><code class="docutils literal notranslate"><span class="pre">funcao_log_verossimilhanca()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.grad_cartesiano_para_esferico"><code class="docutils literal notranslate"><span class="pre">grad_cartesiano_para_esferico()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.grad_verossimilanca_cartesiana"><code class="docutils literal notranslate"><span class="pre">grad_verossimilanca_cartesiana()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.maxima_log_verossimilhanca"><code class="docutils literal notranslate"><span class="pre">maxima_log_verossimilhanca()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.numba_clip"><code class="docutils literal notranslate"><span class="pre">numba_clip()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.LogLikelihood.raw_amend_positions"><code class="docutils literal notranslate"><span class="pre">raw_amend_positions()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Stela.html#module-GeoLightning.Stela.Stela">GeoLightning.Stela.Stela module</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#stela-core-algorithm">STELA Core algorithm</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.Stela.gera_novas_solucoes"><code class="docutils literal notranslate"><span class="pre">gera_novas_solucoes()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#GeoLightning.Stela.Stela.stela"><code class="docutils literal notranslate"><span class="pre">stela()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Stela.html#module-GeoLightning.Stela">Module contents</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#stela-core-module">STELA Core Module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id19">Summary</a></li>
-<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id20">Author</a></li>
-<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id21">Submodules</a></li>
-<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id22">Dependencies</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id20">Summary</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id21">Author</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id22">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Stela.html#id23">Dependencies</a></li>
 </ul>
 </li>
 </ul>
@@ -407,6 +435,7 @@
 <li class="toctree-l5"><a class="reference internal" href="GeoLightning.Utils.html#module-GeoLightning.Utils.Utils">GeoLightning.Utils.Utils module</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#utilities">Utilities</a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_distancia"><code class="docutils literal notranslate"><span class="pre">computa_distancia()</span></code></a></li>
+<li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_distancia_batelada"><code class="docutils literal notranslate"><span class="pre">computa_distancia_batelada()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_distancias"><code class="docutils literal notranslate"><span class="pre">computa_distancias()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_tempos_de_origem"><code class="docutils literal notranslate"><span class="pre">computa_tempos_de_origem()</span></code></a></li>
 <li class="toctree-l6"><a class="reference internal" href="GeoLightning.Utils.html#GeoLightning.Utils.Utils.coordenadas_cartesianas_para_esfericas"><code class="docutils literal notranslate"><span class="pre">coordenadas_cartesianas_para_esfericas()</span></code></a></li>

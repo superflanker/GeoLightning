@@ -37,6 +37,7 @@ Dependencies
 import numpy as np
 from mealpy.math_based.AOA import OriginalAOA
 from GeoLightning.Solvers.StelaProblem import StelaProblem
+from GeoLightning.Stela.Stela import stela
 
 
 class StelaAOA(OriginalAOA):
@@ -69,5 +70,40 @@ class StelaAOA(OriginalAOA):
             The current epoch number.
         """
         if not isinstance(self.problem, StelaProblem):
-            raise TypeError("The associated problem must be an instance of StelaProblem.")
+            raise TypeError(
+                "The associated problem must be an instance of StelaProblem.")
         super().evolve(epoch)
+
+    def amend_solution(self, position: np.ndarray) -> np.ndarray:
+        """
+        Clamp each dimension of the solution vector to lie within its allowed bounds.
+
+        Parameters
+        ----------
+        position : np.ndarray
+            The candidate solution vector to be amended.
+
+        Returns
+        -------
+        np.ndarray
+            The amended solution vector with values within bounds.
+        """
+        lower_bounds = self.problem.lb
+        upper_bounds = self.problem.ub
+        return np.clip(position, lower_bounds, upper_bounds)
+
+    def correct_position(self, position: np.ndarray) -> np.ndarray:
+        """
+        Clamp the position vector to the feasible domain using bound limits.
+
+        Parameters
+        ----------
+        position : np.ndarray
+            Candidate solution vector to correct.
+
+        Returns
+        -------
+        np.ndarray
+            Corrected position vector within bounds.
+        """
+        return self.amend_position(position)

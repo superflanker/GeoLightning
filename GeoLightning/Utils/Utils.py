@@ -337,6 +337,46 @@ def computa_distancia(a: np.ndarray,
 
 
 @jit(nopython=True, cache=True, fastmath=True)
+def computa_distancia_batelada(a: np.ndarray,
+                               s: np.ndarray,
+                               sistema_cartesiano: bool = False) -> np.ndarray:
+    """
+    Computes the distance between two points, depending on the coordinate system - batch version.
+
+    This function selects either spherical or Cartesian distance calculation based
+    on the `sistema_cartesiano` flag, enabling compatibility with both geodetic and 
+    Euclidean spatial models.
+
+    Parameters
+    ----------
+    a : np.ndarray
+        Coordinate vectors of the event (either [lat, lon, alt] in degrees/meters or [x, y, z] in meters).
+    s : np.ndarray
+        Coordinate vectors of the station or detector (same format as `a`).
+    sistema_cartesiano : bool, optional
+        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).
+
+    Returns
+    -------
+    np.ndarray
+        Estimated distance between the two points `a` and `s`, in meters.
+
+    Notes
+    -----
+    - For spherical coordinates, this function assumes latitude and longitude in degrees and altitude in meters.
+    - For Cartesian coordinates, standard Euclidean geometry is used.
+    """
+    distancias = np.empty(len(a))
+
+    for i in range(len(a)):
+        distancias[i] = computa_distancia(a[i],
+                                          s[i],
+                                          sistema_cartesiano)
+
+    return distancias
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def computa_distancias(origem: np.ndarray,
                        destinos: np.ndarray,
                        sistema_cartesiano: bool = False) -> np.ndarray:

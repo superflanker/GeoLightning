@@ -112,6 +112,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mealpy.swarm_based.GWO</span><span class="w"> </span><span class="kn">import</span> <span class="n">OriginalGWO</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaProblem</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaProblem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela</span>
 
 
 <div class="viewcode-block" id="StelaGWO">
@@ -148,8 +149,49 @@
 <span class="sd">            The current epoch number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="n">StelaProblem</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The associated problem must be an instance of StelaProblem.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;The associated problem must be an instance of StelaProblem.&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StelaGWO.amend_solution">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaGWO.StelaGWO.amend_solution">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amend_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clamp each dimension of the solution vector to lie within its allowed bounds.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        position : np.ndarray</span>
+<span class="sd">            The candidate solution vector to be amended.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            The amended solution vector with values within bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lower_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">lb</span>
+        <span class="n">upper_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">ub</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">lower_bounds</span><span class="p">,</span> <span class="n">upper_bounds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StelaGWO.correct_position">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaGWO.StelaGWO.correct_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correct_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clamp the position vector to the feasible domain using bound limits.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        position : np.ndarray</span>
+<span class="sd">            Candidate solution vector to correct.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Corrected position vector within bounds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">amend_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

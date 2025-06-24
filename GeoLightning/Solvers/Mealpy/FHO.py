@@ -76,6 +76,7 @@ class FHO(Optimizer):
         self.n_preys = self.pop_size - self.n_hawks
         self.set_parameters(["epoch", "pop_size"])
         self.sort_flag = False
+        self.is_parallelizable = True
 
     def initialize_variables(self):
         self.hawks = []
@@ -251,4 +252,3 @@ class FHO(Optimizer):
 
         self.preys = new_preys
         self.pop = self.hawks + self.preys
-        _, self.g_best = self.update_global_best_agent(self.pop)
