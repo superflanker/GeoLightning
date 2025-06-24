@@ -10,7 +10,7 @@ setup(
     long_description=open("README.md").read(
     ) if os.path.exists("README.md") else "",
     long_description_content_type="text/markdown",
-    url="https://github.com/superflankerCTBA/geolightning",
+    url="https://github.com/superflanker/GeoLightning",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
