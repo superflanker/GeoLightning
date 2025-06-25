@@ -71,15 +71,13 @@ tuple
 import numpy as np
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Solvers.StelaESO import StelaESO
-from GeoLightning.Stela.Stela import stela
+from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
-from GeoLightning.Stela.Common import calcular_centroides_espaciais, \
-    calcula_centroides_temporais
 from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca
 from GeoLightning.Simulator.Metrics import *
 from GeoLightning.Simulator.Simulator import *
 from GeoLightning.Utils.Constants import *
-from GeoLightning.Utils.Utils import computa_distancia_batelada
+from GeoLightning.Utils.Utils import computa_distancia_batelada, computa_distancias
 from mealpy import FloatVar
 from time import perf_counter
 
@@ -129,11 +127,18 @@ def runner_ESO(event_positions: np.ndarray,
                            sigma_t=sigma_t,
                            epsilon_t=epsilon_t,
                            sistema_cartesiano=sistema_cartesiano,
-                           c=c)
-    
+                           c=c,
+                           phase=1)
+    problem_dict = {
+        "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
+        "bounds": FloatVar(ub=ub, lb=lb),
+        "minmax": "min",
+        "n_dims": len(lb),
+        "log_to": None
+    }
     model = StelaESO(epoch=10,
                      pop_size=10)
-    agent = model.solve(problem)
+    agent = model.solve(problem_dict)
 
     best_solution = agent.solution
     best_fitness = agent.target.fitness
@@ -142,13 +147,13 @@ def runner_ESO(event_positions: np.ndarray,
     # recomputando a clusterização estimada - índice de associação aplicado ao algoritmo
 
     (clusters_espaciais,
-     _) = stela(solucoes=best_solution,
-                tempos_de_chegada=detection_times,
-                pontos_de_deteccao=detections,
-                sistema_cartesiano=sistema_cartesiano,
-                epsilon_t=epsilon_t,
-                min_pts=min_pts,
-                c=c)
+     _) = stela_phase_one(solucoes=best_solution,
+                          tempos_de_chegada=detection_times,
+                          pontos_de_deteccao=detections,
+                          sistema_cartesiano=sistema_cartesiano,
+                          epsilon_t=epsilon_t,
+                          min_pts=min_pts,
+                          c=c)
 
     associacoes_corretas = (clusters_espaciais == spatial_clusters)
     corretos = associacoes_corretas[associacoes_corretas == True]
@@ -177,15 +182,10 @@ def runner_ESO(event_positions: np.ndarray,
         current_detection_times = np.array(
             detection_times[clusters_espaciais == i])
 
-        lb, ub = gera_limites_iniciais(current_detections,
-                                       min_lat,
-                                       max_lat,
-                                       min_lon,
-                                       max_lon,
-                                       min_alt,
-                                       max_alt)
+        detectores = len(current_detection_times)
 
-        bounds = FloatVar(ub=ub, lb=lb)
+        bounds = FloatVar(lb=[min_lat, min_lon, min_alt],
+                          ub=[max_lat, max_lon, max_alt])
 
         problem = StelaProblem(bounds,
                                minmax="min",
@@ -195,36 +195,41 @@ def runner_ESO(event_positions: np.ndarray,
                                sigma_t=sigma_t,
                                epsilon_t=epsilon_t,
                                sistema_cartesiano=sistema_cartesiano,
-                               c=c)
-        model = StelaESO(epoch=10,
-                         pop_size=10)
-        agent = model.solve(problem)
+                               c=c,
+                               phase=2)
+        problem_dict = {
+            "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
+            "bounds": bounds,
+            "minmax": "min",
+            "n_dims": 3,
+            "log_to": None
+        }
+
+        model = StelaESO(epoch=50,
+                         pop_size=25)
+        agent = model.solve(problem_dict)
 
         best_solution = agent.solution
         best_fitness = agent.target.fitness
-        best_solution = np.array(best_solution).reshape(-1, 3)
 
-        centroides_espaciais, detectores = calcular_centroides_espaciais(best_solution,
-                                                                         np.zeros(len(best_solution), dtype=np.int64))
+        o_distancias = computa_distancias(best_solution,
+                                          current_detections,
+                                          sistema_cartesiano)
 
-        tempos_de_origem = computa_tempos_de_origem(best_solution,
-                                                    current_detection_times,
-                                                    current_detections,
-                                                    sistema_cartesiano)
+        tempos_de_origem = current_detection_times - o_distancias/AVG_LIGHT_SPEED
 
-        (centroides_temporais,
-         detectores) = calcula_centroides_temporais(tempos_de_origem,
-                                                    np.zeros(len(best_solution), dtype=np.int64))
+        centroide_temporal = np.mean(tempos_de_origem)
 
         # não preciso ter medo pois é um cluster somente
-        sol_centroides_espaciais[i] = centroides_espaciais[0]
+        sol_centroides_espaciais[i] = best_solution
         # não preciso ter medo pois é um cluster somente
-        sol_centroides_temporais[i] = centroides_temporais[0]
-        sol_detectores[i] = detectores[0]
+        sol_centroides_temporais[i] = centroide_temporal
+        sol_detectores[i] = detectores
 
         # valores para calcular o erro relativo em relação ao valor de referência
-        sol_best_fitness += best_fitness
-        sol_reference += maxima_log_verossimilhanca(sol_detectores[i], sigma_d)
+        sol_best_fitness += np.abs(best_fitness)
+        sol_reference -= (maxima_log_verossimilhanca(sol_detectores[i], sigma_d) 
+                    + maxima_log_verossimilhanca(sol_detectores[i], sigma_t))
 
     # medições
 
@@ -232,7 +237,7 @@ def runner_ESO(event_positions: np.ndarray,
 
     delta_d = computa_distancia_batelada(sol_centroides_espaciais,
                                          event_positions)
-
+    
     delta_t = event_times - sol_centroides_temporais
 
     end_st = perf_counter()

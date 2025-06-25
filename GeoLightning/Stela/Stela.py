@@ -25,7 +25,7 @@ Augusto Mathias Adams <augusto.adams@ufpr.br>
 
 Contents
 --------
-- STELA Algorithm (main routine)
+- STELA Algorithm (main routine - phase one and two)
 - Temporal clustering
 - Spatial clustering and likelihood estimation
 - Search bounds generation
@@ -42,7 +42,6 @@ Dependencies
 - GeoLightning.Utils.Constants
 - GeoLightning.Utils.Utils
 - GeoLightning.Stela.LogLikelihood
-- GEoLightning.Stela.Entropy
 - GeoLightning.Stela.Common
 """
 
@@ -53,15 +52,14 @@ from GeoLightning.Utils.Constants import SIGMA_T, \
     CLUSTER_MIN_PTS, \
     AVG_LIGHT_SPEED, \
     AVG_EARTH_RADIUS
-from GeoLightning.Utils.Utils import computa_tempos_de_origem, \
-    coordenadas_esfericas_para_cartesianas_batelada
-from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca, \
-    raw_amend_positions
-from GeoLightning.Stela.Common import calcula_residuos_temporais, \
-    calcula_centroides_temporais, \
-    calcula_distancias_ao_centroide, \
+from GeoLightning.Utils.Utils import  coordenadas_esfericas_para_cartesianas_batelada, \
+    computa_distancias, \
+        computa_distancia_batelada
+from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
+from GeoLightning.Stela.Common import calcula_distancias_ao_centroide, \
     calcular_centroides_espaciais
 from sklearn.cluster import DBSCAN, OPTICS
+
 
 def gera_novas_solucoes(solucoes: np.ndarray,
                         labels: np.ndarray,
@@ -92,16 +90,16 @@ def gera_novas_solucoes(solucoes: np.ndarray,
     return novas_solucoes
 
 
-def stela(solucoes: np.ndarray,
-          tempos_de_chegada: np.ndarray,
-          pontos_de_deteccao: np.ndarray,
-          sistema_cartesiano: bool = False,
-          sigma_t: np.float64 = SIGMA_T,
-          epsilon_t: np.float64 = EPSILON_T,
-          min_pts: np.int32 = CLUSTER_MIN_PTS,
-          c: np.float64 = AVG_LIGHT_SPEED) -> tuple:
+def stela_phase_one(solucoes: np.ndarray,
+                    tempos_de_chegada: np.ndarray,
+                    pontos_de_deteccao: np.ndarray,
+                    sistema_cartesiano: bool = False,
+                    sigma_t: np.float64 = SIGMA_T,
+                    epsilon_t: np.float64 = EPSILON_T,
+                    min_pts: np.int32 = CLUSTER_MIN_PTS,
+                    c: np.float64 = AVG_LIGHT_SPEED) -> tuple:
     """
-    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm.
+    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Clustering Phase.
 
     This function performs the core association and filtering step based on 
     the spatio-temporal consistency between multisensory detections and 
@@ -125,10 +123,11 @@ def stela(solucoes: np.ndarray,
     sigma_t : float, optional
         Temporal standard deviation (used in likelihood computation).
     epsilon_t : float, optional
-        Temporal tolerance for temporal clustering.
-        Spatial tolerance for spatial clustering.
+        Temporal tolerance for spatio-temporal clustering.
     min_pts : int, optional
         Minimum number of points to form a valid cluster (DBSCAN requirement).
+    c: np.float64
+        wave propagation velocity (default is speed of lught in vacuum)
 
     Returns
     -------
@@ -147,10 +146,12 @@ def stela(solucoes: np.ndarray,
     """
 
     # primeiro passo - clusters espaço-temporais
-    tempos_de_origem = computa_tempos_de_origem(solucoes,
-                                                tempos_de_chegada,
-                                                pontos_de_deteccao,
-                                                sistema_cartesiano)
+
+    o_distancias = computa_distancia_batelada(solucoes,
+                                              pontos_de_deteccao,
+                                              sistema_cartesiano)
+    
+    tempos_de_origem = tempos_de_chegada - o_distancias/AVG_LIGHT_SPEED
 
     # segundo passo - se o sistemas de coordenadas for esférico, converter para cartesiano
     # e "transformar" em tempo
@@ -169,13 +170,6 @@ def stela(solucoes: np.ndarray,
                         metric="euclidean").fit(solucoes_cartesianas)
     clusters_espaciais = clustering.labels_
 
-    """centroides_temporais, _ = calcula_centroides_temporais(tempos_de_origem,
-                                                        clusters_espaciais)
-    
-    tempos_medios = calcula_residuos_temporais(tempos_de_origem,
-                                               clusters_espaciais,
-                                               centroides_temporais)"""
-
     centroides_espaciais, _ = calcular_centroides_espaciais(solucoes,
                                                             clusters_espaciais)
 
@@ -183,14 +177,73 @@ def stela(solucoes: np.ndarray,
                                                  clusters_espaciais,
                                                  centroides_espaciais,
                                                  sistema_cartesiano)
-    
 
     verossimilhanca = funcao_log_verossimilhanca(
-        distancias, c * sigma_t) #\
+        distancias, c * sigma_t)  # \
 
     # tudo pronto, retornando
     return (clusters_espaciais,
             verossimilhanca)
+
+
+def stela_phase_two(solucao: np.ndarray,
+                    tempos_de_chegada: np.ndarray,
+                    pontos_de_deteccao: np.ndarray,
+                    sistema_cartesiano: bool = False,
+                    sigma_t: np.float64 = SIGMA_T,
+                    c: np.float64 = AVG_LIGHT_SPEED) -> np.float64:
+    """
+    Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Refinement Phase.
+
+    This function performs the position index for a candidate event position.
+
+    Parameters
+    ----------
+    solucao : np.ndarray
+        Array of shape (N, 3) with candidate event positions in geographic 
+        or Cartesian coordinates.
+    tempos_de_chegada : np.ndarray
+        Array of shape (M,) with absolute signal arrival times at the sensors.
+    pontos_de_deteccao : np.ndarray
+        Array of shape (M, 3) with sensor positions, using the same coordinate system 
+        as `solucoes`.
+    sistema_cartesiano : bool, optional
+        Indicates whether the coordinates are Cartesian (True) or geographic (False). Default is False.
+    sigma_t : float, optional
+        Temporal standard deviation (used in likelihood computation).
+
+    Returns
+    -------
+    verossimilhanca : float
+        Total log-likelihood value of the solution.
+
+    Notes
+    -----
+    - Optimized with Numba for high-performance execution.
+    - Compatible with multiple events and multisensor contexts.
+    - Suitable for pre-processing before global optimization with genetic algorithms,
+      swarm intelligence, and other meta-heuristics.
+
+    """
+
+    o_distancias = computa_distancias(solucao,
+                                      pontos_de_deteccao,
+                                      sistema_cartesiano)
+
+    tempos_de_origem = tempos_de_chegada - o_distancias/AVG_LIGHT_SPEED
+
+    # média dos tempos
+    tempo_de_origem= np.mean(tempos_de_origem)
+
+    # distancias a partir do ponto de origem
+    distancias = c * (tempos_de_origem - tempo_de_origem)
+    
+    # verossimilhança
+    verossimilhanca = funcao_log_verossimilhanca(distancias, c * sigma_t) 
+    + funcao_log_verossimilhanca(tempos_de_origem - tempo_de_origem, sigma_t)
+
+    # tudo pronto, retornando
+    return verossimilhanca
 
 
 if __name__ == "__main__":
@@ -239,10 +292,10 @@ if __name__ == "__main__":
         start_st = perf_counter()
 
         (clusters_espaciais,
-         verossimilhanca) = stela(n_event_positions,
-                                  detection_times,
-                                  detections,
-                                  sistema_cartesiano=False)
+         verossimilhanca) = stela_phase_one(n_event_positions,
+                                            detection_times,
+                                            detections,
+                                            sistema_cartesiano=False)
 
         end_st = perf_counter()
         print(

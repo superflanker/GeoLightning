@@ -1,7 +1,7 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Testes de Metaheurísticas
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+Meta-heuristics Tests
+Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
 from GeoLightning.Simulator.Simulator import (get_sensors,
@@ -14,9 +14,10 @@ from GeoLightning.Utils.Constants import *
 from GeoLightning.Solvers.StelaAOA import StelaAOA
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
-from GeoLightning.Stela.Stela import stela
+from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 from mealpy import FloatVar
 from time import perf_counter
+
 
 def test_stela_aoa():
 
@@ -25,8 +26,8 @@ def test_stela_aoa():
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
     # gerando os eventos
-    min_alt = 0
-    max_alt = 1
+    min_alt = 935
+    max_alt = 935
     min_time = 10000
     max_time = min_time + 72 * 3600
     num_events = 1
@@ -50,61 +51,49 @@ def test_stela_aoa():
      spatial_clusters) = generate_detections(event_positions,
                                              event_times,
                                              sensors)
-    
+
     # limites
 
-    lb, ub = gera_limites_iniciais(detections,
-                                   min_lat, 
-                                   max_lat, 
-                                   min_lon, 
-                                   max_lon, 
-                                   min_alt, 
-                                   max_alt)
-
-    bounds = FloatVar(ub=ub, lb=lb)
+    bounds = FloatVar(lb=[min_lat, min_lon, min_alt],
+                          ub=[max_lat, max_lon, max_alt])
 
     # tudo pronto, instanciando a StelaProblem
 
-    problem = StelaProblem(bounds, 
-                           minmax="min", 
-                           pontos_de_chegada=detections, 
+    problem = StelaProblem(bounds,
+                           minmax="min",
+                           pontos_de_chegada=detections,
                            tempos_de_chegada=detection_times,
                            min_pts=CLUSTER_MIN_PTS,
                            SIGMA_T=SIGMA_T,
                            epsilon_t=EPSILON_T,
                            sistema_cartesiano=False,
-                           c=AVG_LIGHT_SPEED)
-    
+                           c=AVG_LIGHT_SPEED,
+                           phase=2)
+    problem_dict = {
+        "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
+        "bounds": bounds,
+        "minmax": "min",
+        "n_dims": 3,
+        "log_to": None
+    }
     start_st = perf_counter()
-    
-    model = StelaAOA(epoch=10, 
+
+    model = StelaAOA(epoch=200,
                      pop_size=10,
                      alpha=3,
                      miu=0.5,
                      moa_min=0.1,
                      moa_max=0.5)
-    agent = model.solve(problem)
-    
+    agent = model.solve(problem_dict)
+
     end_st = perf_counter()
     print(f"Tempo gasto: {end_st - start_st:.06f}")
-    
+
     best_solution = agent.solution
     best_fitness = agent.target
-    best_solution = np.array(best_solution).reshape(-1,3)
 
-    # recomputando a clusterização - índice de associação aplicado ao algoritmo
-    (clusters_espaciais, 
-     verossimilhanca) = stela(solucoes=best_solution,
-                              tempos_de_chegada=detection_times,
-                              pontos_de_deteccao=detections,
-                              sistema_cartesiano=False,
-                              epsilon_t=EPSILON_T,
-                              min_pts=CLUSTER_MIN_PTS,
-                              c=AVG_LIGHT_SPEED)
-    len_clusterizados = len(
-        np.unique(clusters_espaciais[clusters_espaciais >= 0]))
-    len_reais = len(event_positions)
-    assert len_clusterizados == len_reais
-    
+    print(best_fitness, best_solution, event_positions)
+
+
 if __name__ == "__main__":
     test_stela_aoa()

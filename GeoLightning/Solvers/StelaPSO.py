@@ -12,10 +12,6 @@ designed to operate directly on instances of the `StelaProblem` class, which
 models the spatio-temporal localization of events detected by distributed sensors, 
 such as atmospheric lightning.
 
-Before each evolutionary iteration, the search space is adaptively refined 
-based on the current best solution using the `restart_search_space()` method 
-from the `StelaProblem` class.
-
 Author
 ------
 Augusto Mathias Adams <augusto.adams@ufpr.br>
@@ -39,8 +35,6 @@ Dependencies
 
 import numpy as np
 from mealpy.swarm_based.PSO import OriginalPSO
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaPSO(OriginalPSO):
@@ -71,9 +65,9 @@ class StelaPSO(OriginalPSO):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

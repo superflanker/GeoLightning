@@ -146,7 +146,7 @@
 <span class="sd">        A dictionary with the following keys:</span>
 <span class="sd">        - &#39;best_score&#39; (float): Best fitness score obtained across all trials.</span>
 <span class="sd">        - &#39;best_params&#39; (dict): Dictionary of the best hyperparameter combination found.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    - The synthetic scenario includes one lightning event and generates arrival times for a sensor network.</span>
@@ -192,31 +192,25 @@
 
     <span class="c1"># limites</span>
 
-    <span class="n">lb</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="n">gera_limites_iniciais</span><span class="p">(</span><span class="n">detections</span><span class="p">,</span>
-                                   <span class="n">min_lat</span><span class="p">,</span>
-                                   <span class="n">max_lat</span><span class="p">,</span>
-                                   <span class="n">min_lon</span><span class="p">,</span>
-                                   <span class="n">max_lon</span><span class="p">,</span>
-                                   <span class="n">min_alt</span><span class="p">,</span>
-                                   <span class="n">max_alt</span><span class="p">)</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">lb</span><span class="o">=</span><span class="p">[</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">min_alt</span><span class="p">],</span>
+                      <span class="n">ub</span><span class="o">=</span><span class="p">[</span><span class="n">max_lat</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">])</span>
 
-    <span class="n">bounds</span> <span class="o">=</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">lb</span><span class="p">)</span>
-
-    <span class="c1"># tudo pronto, instanciando a StelaProblem</span>
     <span class="n">problem</span> <span class="o">=</span> <span class="n">StelaProblem</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span>
                            <span class="n">minmax</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
                            <span class="n">pontos_de_chegada</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span>
                            <span class="n">tempos_de_chegada</span><span class="o">=</span><span class="n">detection_times</span><span class="p">,</span>
                            <span class="n">min_pts</span><span class="o">=</span><span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
-                           <span class="n">SIGMA_T</span><span class="o">=</span><span class="n">SIGMA_T</span><span class="p">,</span>
+                           <span class="n">sigma_t</span><span class="o">=</span><span class="n">SIGMA_T</span><span class="p">,</span>
                            <span class="n">epsilon_t</span><span class="o">=</span><span class="n">EPSILON_T</span><span class="p">,</span>
-                           <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    
+                           <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">c</span><span class="o">=</span><span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
+                           <span class="n">phase</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">problem_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;obj_func&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">evaluate</span><span class="p">,</span>  <span class="c1"># o próprio objeto como função objetivo</span>
-        <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">lb</span><span class="p">),</span>
+        <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">bounds</span><span class="p">,</span>
         <span class="s2">&quot;minmax&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">lb</span><span class="p">),</span>
+        <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s2">&quot;log_to&quot;</span><span class="p">:</span> <span class="s2">&quot;console&quot;</span>
     <span class="p">}</span>
     <span class="c1"># semente randomica fixa</span>
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
@@ -236,7 +230,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">best_score</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">tuner</span><span class="o">.</span><span class="n">best_params</span><span class="p">)</span>
-    
+
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;best_score&quot;</span><span class="p">:</span> <span class="n">tuner</span><span class="o">.</span><span class="n">best_score</span><span class="p">,</span>
             <span class="s2">&quot;best_params&quot;</span><span class="p">:</span> <span class="n">tuner</span><span class="o">.</span><span class="n">best_params</span><span class="p">}</span></div>
 

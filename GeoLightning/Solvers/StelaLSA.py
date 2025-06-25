@@ -38,18 +38,13 @@ Dependencies
 
 import numpy as np
 from GeoLightning.Solvers.Mealpy.LSA import LSA
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaLSA(LSA):
     """
     Specialized class extending MEALPY's LSA optimizer to work with 
     `StelaProblem` instances for spatio-temporal event localization.
-
-    This wrapper integrates dynamic refinement of the search space 
-    at each iteration based on the current best solution found.
-
+    
     Parameters
     ----------
     epoch : int, optional
@@ -69,9 +64,9 @@ class StelaLSA(LSA):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

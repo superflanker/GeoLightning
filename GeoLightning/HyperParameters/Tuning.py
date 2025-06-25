@@ -69,7 +69,7 @@ def tuneit(model: Optimizer,
         A dictionary with the following keys:
         - 'best_score' (float): Best fitness score obtained across all trials.
         - 'best_params' (dict): Dictionary of the best hyperparameter combination found.
-    
+
     Notes
     -----
     - The synthetic scenario includes one lightning event and generates arrival times for a sensor network.
@@ -115,31 +115,25 @@ def tuneit(model: Optimizer,
 
     # limites
 
-    lb, ub = gera_limites_iniciais(detections,
-                                   min_lat,
-                                   max_lat,
-                                   min_lon,
-                                   max_lon,
-                                   min_alt,
-                                   max_alt)
+    bounds = FloatVar(lb=[min_lat, min_lon, min_alt],
+                      ub=[max_lat, max_lon, max_alt])
 
-    bounds = FloatVar(ub=ub, lb=lb)
-
-    # tudo pronto, instanciando a StelaProblem
     problem = StelaProblem(bounds,
                            minmax="min",
                            pontos_de_chegada=detections,
                            tempos_de_chegada=detection_times,
                            min_pts=CLUSTER_MIN_PTS,
-                           SIGMA_T=SIGMA_T,
+                           sigma_t=SIGMA_T,
                            epsilon_t=EPSILON_T,
-                           sistema_cartesiano=False)
-    
+                           sistema_cartesiano=True,
+                           c=AVG_LIGHT_SPEED,
+                           phase=2)
     problem_dict = {
         "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
-        "bounds": FloatVar(ub=ub, lb=lb),
+        "bounds": bounds,
         "minmax": "min",
-        "n_dims": len(lb),
+        "n_dims": 3,
+        "log_to": "console"
     }
     # semente randomica fixa
     np.random.seed(42)
@@ -159,6 +153,6 @@ def tuneit(model: Optimizer,
     print(tuner.best_score)
 
     print(tuner.best_params)
-    
+
     return {"best_score": tuner.best_score,
             "best_params": tuner.best_params}

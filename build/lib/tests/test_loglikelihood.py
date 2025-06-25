@@ -1,7 +1,7 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Testes de Verossimilhança
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+Log-liketihood Tests
+Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
 from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca

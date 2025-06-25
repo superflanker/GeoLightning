@@ -203,9 +203,6 @@
 <h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
 <p>This module defines a wrapper class that extends the Arithmetic Optimization Algorithm (AOA)
 from the MEALPY framework to directly operate on instances of the <cite>StelaProblem</cite> class.</p>
-<p>The optimization process dynamically refines the search space boundaries based on
-the best solution found so far, integrating a feedback loop via the
-<cite>restart_search_space()</cite> method of the problem.</p>
 </section>
 <section id="author">
 <h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
@@ -305,8 +302,6 @@ internal logic.</p>
 <h4>Summary<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
 <p>This module defines a wrapper class that extends the Electrical Storm Optimization (ESO)
 algorithm from the MEALPY framework to work directly with instances of the <cite>StelaProblem</cite> class.</p>
-<p>The optimization process includes adaptive search space refinement using the
-<cite>restart_search_space()</cite> method from the STELA geolocation problem formulation.</p>
 </section>
 <section id="id2">
 <h4>Author<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
@@ -539,8 +534,6 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGA</span></code></p>
 <p>Customized Genetic Algorithm (GA) that integrates STELA’s adaptive search
 space refinement mechanism for lightning event localization.</p>
-<p>This class inherits from MEALPY’s BaseGA and is modified to work with
-geolocation problems formalized via the <cite>StelaProblem</cite> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -640,9 +633,6 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OriginalGWO</span></code></p>
 <p>Customized Grey Wolf Optimizer (GWO) integrated with STELA’s
 adaptive geolocation problem formulation.</p>
-<p>This class extends MEALPY’s original GWO to operate on dynamic
-search spaces defined by the <cite>StelaProblem</cite> class, which handles
-lightning geolocation with spatial and temporal constraints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -744,8 +734,6 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 <dd><p>Bases: <a class="reference internal" href="GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA" title="GeoLightning.Solvers.Mealpy.LSA.LSA"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSA</span></code></a></p>
 <p>Specialized class extending MEALPY’s LSA optimizer to work with
 <cite>StelaProblem</cite> instances for spatio-temporal event localization.</p>
-<p>This wrapper integrates dynamic refinement of the search space
-at each iteration based on the current best solution found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -815,9 +803,6 @@ Particle Swarm Optimization (PSO) algorithm from the MEALPY library. It is
 designed to operate directly on instances of the <cite>StelaProblem</cite> class, which
 models the spatio-temporal localization of events detected by distributed sensors,
 such as atmospheric lightning.</p>
-<p>Before each evolutionary iteration, the search space is adaptively refined
-based on the current best solution using the <cite>restart_search_space()</cite> method
-from the <cite>StelaProblem</cite> class.</p>
 </section>
 <section id="id22">
 <h4>Author<a class="headerlink" href="#id22" title="Link to this heading"></a></h4>
@@ -952,7 +937,7 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaProblem.StelaProblem">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaProblem.</span></span><span class="sig-name descname"><span class="pre">StelaProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaProblem.html#StelaProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaProblem.StelaProblem" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GeoLightning.Solvers.StelaProblem.</span></span><span class="sig-name descname"><span class="pre">StelaProblem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/StelaProblem.html#StelaProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.StelaProblem.StelaProblem" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Problem</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.StelaProblem.StelaProblem.evaluate">

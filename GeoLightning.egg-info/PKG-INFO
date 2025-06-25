@@ -2,7 +2,7 @@ Metadata-Version: 2.4
 Name: GeoLightning
 Version: 0.1.0
 Summary: Sistema de geolocalização de descargas atmosféricas utilizando algoritmos genéticos
-Home-page: https://github.com/superflankerCTBA/geolightning
+Home-page: https://github.com/superflanker/GeoLightning
 Author: Augusto Mathias Adams
 Author-email: augusto.adams@ufpr.br
 Classifier: Programming Language :: Python :: 3

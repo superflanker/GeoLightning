@@ -9,10 +9,6 @@ Summary
 This module defines a wrapper class that extends the Arithmetic Optimization Algorithm (AOA)
 from the MEALPY framework to directly operate on instances of the `StelaProblem` class.
 
-The optimization process dynamically refines the search space boundaries based on 
-the best solution found so far, integrating a feedback loop via the 
-`restart_search_space()` method of the problem.
-
 Author
 ------
 Augusto Mathias Adams <augusto.adams@ufpr.br>
@@ -36,8 +32,6 @@ Dependencies
 
 import numpy as np
 from mealpy.math_based.AOA import OriginalAOA
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaAOA(OriginalAOA):
@@ -69,9 +63,9 @@ class StelaAOA(OriginalAOA):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

@@ -5,7 +5,10 @@ from GeoLightning.Utils.Constants import *
 
 # recuperando o grupo de sensores
 sensors = get_sensors()
-min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
+(min_lat, 
+ max_lat, 
+ min_lon, 
+ max_lon) = get_lightning_limits(sensors)
 
 # gerando os eventos
 min_alt = 0

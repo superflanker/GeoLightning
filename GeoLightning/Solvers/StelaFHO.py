@@ -34,8 +34,6 @@ Dependencies
 
 import numpy as np
 from GeoLightning.Solvers.Mealpy.FHO import FHO
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaFHO(FHO):
@@ -67,9 +65,9 @@ class StelaFHO(FHO):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

@@ -113,8 +113,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.Mealpy.LSA</span><span class="w"> </span><span class="kn">import</span> <span class="n">LSA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaProblem</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaProblem</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela</span>
 
 
 <div class="viewcode-block" id="StelaLSA">
@@ -123,10 +121,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specialized class extending MEALPY&#39;s LSA optimizer to work with </span>
 <span class="sd">    `StelaProblem` instances for spatio-temporal event localization.</span>
-
-<span class="sd">    This wrapper integrates dynamic refinement of the search space </span>
-<span class="sd">    at each iteration based on the current best solution found.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    epoch : int, optional</span>
@@ -148,9 +143,9 @@
 <span class="sd">        epoch : int</span>
 <span class="sd">            The current epoch number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="n">StelaProblem</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;The associated problem must be an instance of StelaProblem.&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;if not isinstance(self.problem, StelaProblem):</span>
+<span class="sd">            raise TypeError(</span>
+<span class="sd">                &quot;The associated problem must be an instance of StelaProblem.&quot;)&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span></div>
 
 

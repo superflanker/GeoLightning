@@ -42,7 +42,7 @@ Dependencies
 
 import numpy as np
 from mealpy import FloatVar, Problem
-from GeoLightning.Stela.Stela import stela
+from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 from GeoLightning.Utils.Constants import SIGMA_T, \
     EPSILON_T, \
     CLUSTER_MIN_PTS, \
@@ -60,6 +60,7 @@ class StelaProblem(Problem):
                  epsilon_t: np.float64 = EPSILON_T,
                  min_pts: np.int32 = CLUSTER_MIN_PTS,
                  c: np.float64 = AVG_LIGHT_SPEED,
+                 phase: np.int32 = 1,
                  **kwargs):
         """
         Initialize an instance of the STELA problem for use with MEALPY 
@@ -106,12 +107,12 @@ class StelaProblem(Problem):
         self.epsilon_t = epsilon_t
         self.min_pts = min_pts
         self.avg_speed = c
-        self.verbose = False
+        self.alg_phase = phase
         super().__init__(bounds, minmax, **kwargs)
-    
+
     def __getitem__(self, key):
         return getattr(self, key)
-    
+
     def evaluate(self, solution):
         """
         Evaluates a solution using the defined objective function.
@@ -127,7 +128,6 @@ class StelaProblem(Problem):
             A list with one element containing the objective function value.
         """
         return [self.obj_func(solution)]
-    
 
     def obj_func(self, solution):
         """
@@ -151,21 +151,31 @@ class StelaProblem(Problem):
         # Converte o vetor linear para o formato (M, 3)
         # solucoes = self.decode_solution(solution)
 
-        solucoes = np.array(solution.reshape(-1, 3))
+        if self.alg_phase == 1:
+            
+            solucoes = np.array(solution.reshape(-1, 3))
 
-        # Executa o algoritmo STELA
-        (_,
-         verossimilhanca) = stela(solucoes,
-                                  self.tempos_de_chegada,
-                                  self.pontos_de_chegada,
-                                  self.sistema_cartesiano,
-                                  self.sigma_t,
-                                  self.epsilon_t,
-                                  self.min_pts,
-                                  self.avg_speed)
+            # Executa o algoritmo STELA
+            (_,
+             verossimilhanca) = stela_phase_one(solucoes,
+                                                self.tempos_de_chegada,
+                                                self.pontos_de_chegada,
+                                                self.sistema_cartesiano,
+                                                self.sigma_t,
+                                                self.epsilon_t,
+                                                self.min_pts,
+                                                self.avg_speed)
+        else:
+
+            verossimilhanca = stela_phase_two(solution,
+                                              self.tempos_de_chegada,
+                                              self.pontos_de_chegada,
+                                              self.sistema_cartesiano,
+                                              self.sigma_t,
+                                              self.avg_speed)
 
         # Retorna a verossimilhança como valor de fitness (negativa para problema
-        # de maximização)    
+        # de maximização)
         if self.minmax == "min":
             return -verossimilhanca
         return verossimilhanca

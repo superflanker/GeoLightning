@@ -9,9 +9,6 @@ Summary
 This module defines a wrapper class that extends the Electrical Storm Optimization (ESO)
 algorithm from the MEALPY framework to work directly with instances of the `StelaProblem` class.
 
-The optimization process includes adaptive search space refinement using the
-`restart_search_space()` method from the STELA geolocation problem formulation.
-
 Author
 ------
 Augusto Mathias Adams <augusto.adams@ufpr.br>
@@ -34,8 +31,6 @@ Dependencies
 
 import numpy as np
 from GeoLightning.Solvers.Mealpy.ESO import ESO
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaESO(ESO):
@@ -67,9 +62,9 @@ class StelaESO(ESO):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

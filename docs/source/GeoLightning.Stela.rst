@@ -20,22 +20,6 @@ GeoLightning.Stela.Common module
    :undoc-members:
    :show-inheritance:
 
-GeoLightning.Stela.Dimensions module
-------------------------------------
-
-.. automodule:: GeoLightning.Stela.Dimensions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-GeoLightning.Stela.Entropy module
----------------------------------
-
-.. automodule:: GeoLightning.Stela.Entropy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 GeoLightning.Stela.LogLikelihood module
 ---------------------------------------
 

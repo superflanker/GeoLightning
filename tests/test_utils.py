@@ -1,8 +1,9 @@
 """
-    EELT 7019 - Inteligência Artificial Aplicada
-    Testes do Pacote Utils
-    Autor: Augusto Mathias Adams <augusto.adams@ufpr.br>
+EELT 7019 - Applied Artificial Intelligence
+Utils Tests
+Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
+
 import unittest
 import numpy as np
 from GeoLightning.Utils.Utils import (

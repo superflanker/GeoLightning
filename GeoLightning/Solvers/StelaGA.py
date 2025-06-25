@@ -37,8 +37,6 @@ Dependencies
 
 import numpy as np
 from mealpy.evolutionary_based.GA import BaseGA
-from GeoLightning.Solvers.StelaProblem import StelaProblem
-from GeoLightning.Stela.Stela import stela
 
 
 class StelaGA(BaseGA):
@@ -46,9 +44,6 @@ class StelaGA(BaseGA):
     """
     Customized Genetic Algorithm (GA) that integrates STELA's adaptive search
     space refinement mechanism for lightning event localization.
-
-    This class inherits from MEALPY's BaseGA and is modified to work with
-    geolocation problems formalized via the `StelaProblem` class.
 
     Parameters
     ----------
@@ -69,9 +64,9 @@ class StelaGA(BaseGA):
         epoch : int
             The current epoch number.
         """
-        if not isinstance(self.problem, StelaProblem):
+        """if not isinstance(self.problem, StelaProblem):
             raise TypeError(
-                "The associated problem must be an instance of StelaProblem.")
+                "The associated problem must be an instance of StelaProblem.")"""
         super().evolve(epoch)
 
     def amend_solution(self, position: np.ndarray) -> np.ndarray:

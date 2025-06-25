@@ -117,7 +117,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mealpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatVar</span><span class="p">,</span> <span class="n">Problem</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela_phase_one</span><span class="p">,</span> <span class="n">stela_phase_two</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SIGMA_T</span><span class="p">,</span> \
     <span class="n">EPSILON_T</span><span class="p">,</span> \
     <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span> \
@@ -137,6 +137,7 @@
                  <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
                  <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
                  <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
+                 <span class="n">phase</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an instance of the STELA problem for use with MEALPY </span>
@@ -183,12 +184,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span> <span class="o">=</span> <span class="n">epsilon_t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span> <span class="o">=</span> <span class="n">min_pts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span> <span class="o">=</span> <span class="n">c</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alg_phase</span> <span class="o">=</span> <span class="n">phase</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-    
+
 <div class="viewcode-block" id="StelaProblem.evaluate">
 <a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
@@ -207,7 +208,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_func</span><span class="p">(</span><span class="n">solution</span><span class="p">)]</span></div>
 
-    
 
 <div class="viewcode-block" id="StelaProblem.obj_func">
 <a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.obj_func">[docs]</a>
@@ -233,21 +233,31 @@
         <span class="c1"># Converte o vetor linear para o formato (M, 3)</span>
         <span class="c1"># solucoes = self.decode_solution(solution)</span>
 
-        <span class="n">solucoes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alg_phase</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            
+            <span class="n">solucoes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 
-        <span class="c1"># Executa o algoritmo STELA</span>
-        <span class="p">(</span><span class="n">_</span><span class="p">,</span>
-         <span class="n">verossimilhanca</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
+            <span class="c1"># Executa o algoritmo STELA</span>
+            <span class="p">(</span><span class="n">_</span><span class="p">,</span>
+             <span class="n">verossimilhanca</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela_phase_one</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">stela_phase_two</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
 
         <span class="c1"># Retorna a verossimilhança como valor de fitness (negativa para problema</span>
-        <span class="c1"># de maximização)    </span>
+        <span class="c1"># de maximização)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="n">verossimilhanca</span>
         <span class="k">return</span> <span class="n">verossimilhanca</span></div>
