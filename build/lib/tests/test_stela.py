@@ -4,7 +4,7 @@ STELA Tests
 Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
-from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two_phase_one, stela_phase_two
+from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 
 from GeoLightning.Simulator.Simulator import (get_sensors,
                                               get_random_sensors,

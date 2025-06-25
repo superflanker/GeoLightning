@@ -117,7 +117,7 @@ def get_sensors() -> np.ndarray:
 
 @jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_limits(sensores_latlon: np.ndarray,
-                         margem_metros: float = -40000.0) -> tuple:
+                         margem_metros: float = -20000.0) -> tuple:
     """
     Computes geographic bounding box around sensor constellation with an additional margin.
 

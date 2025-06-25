@@ -11,13 +11,7 @@ Augusto Mathias Adams <augusto.adams@ufpr.br>
 Summary
 -------
 This module defines and computes dynamic spatial bounds for meta-heuristic algorithms
-used in the geolocation of atmospheric events. It provides an optimized routine for 
-generating localized search limits around clustered points, based on spatial and 
-cartesian coordinate systems.
-
-The bounding regions are adaptive: tight around unique solutions and wider for 
-ambiguous (non-unique) detections. The formulation respects physical constraints 
-and enables integration with global optimization strategies.
+used in the geolocation of atmospheric events.
 
 Notes
 -----

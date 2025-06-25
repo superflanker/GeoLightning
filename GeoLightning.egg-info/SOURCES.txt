@@ -33,7 +33,6 @@ GeoLightning/Stela/Common.py
 GeoLightning/Stela/LogLikelihood.py
 GeoLightning/Stela/Stela.py
 GeoLightning/Stela/__init__.py
-GeoLightning/Utils/Bearing.py
 GeoLightning/Utils/Constants.py
 GeoLightning/Utils/Utils.py
 GeoLightning/Utils/__init__.py

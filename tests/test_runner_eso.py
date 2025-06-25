@@ -6,7 +6,6 @@ Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 import numpy as np
 import os
 from GeoLightning.Simulator.Simulator import (get_sensors,
-                                              get_random_sensors,
                                               get_lightning_limits,
                                               generate_detections,
                                               generate_events)
@@ -15,11 +14,7 @@ from GeoLightning.Simulator.Metrics import (rmse,
                                             average_mean_squared_error,
                                             mean_location_error,
                                             calcula_prmse,
-                                            erro_relativo_funcao_ajuste,
-                                            calcular_crlb_espacial,
-                                            calcular_crlb_temporal,
-                                            calcular_crlb_rmse,
-                                            calcular_mean_crlb)
+                                            erro_relativo_funcao_ajuste)
 from GeoLightning.Utils.Constants import *
 from GeoLightning.Runners.RunnerESO import runner_ESO
 
@@ -39,9 +34,13 @@ def test_runner_ESO(fake_test=False):
     min_alt = 935
     max_alt = 935
     min_time = 10000
-    max_time = min_time + 72 * 3600
+    max_time = min_time + 5000 * (50000 * SIGMA_T)
 
     paper_data = list()
+
+    deltas_d = list()
+
+    deltas_t = list()
 
     # dados default
 
@@ -51,28 +50,14 @@ def test_runner_ESO(fake_test=False):
 
     # define se estou rodando na mão o script
     if fake_test:
-        num_events = [10000]
+
+        num_events = [5000]
 
         desired_sigma_t = [SIGMA_T,
-                           10 * SIGMA_T,
-                           20 * SIGMA_T,
-                           30 * SIGMA_T,
-                           40 * SIGMA_T,
-                           50 * SIGMA_T,
-                           60 * SIGMA_T,
-                           70 * SIGMA_T,
-                           80 * SIGMA_T,
-                           90 * SIGMA_T,
-                           100 * SIGMA_T,
-                           200 * SIGMA_T,
-                           300 * SIGMA_T,
-                           400 * SIGMA_T,
-                           500 * SIGMA_T,
-                           600 * SIGMA_T,
-                           700 * SIGMA_T,
-                           800 * SIGMA_T,
-                           900 * SIGMA_T,
-                           1000 * SIGMA_T]
+                           2 * SIGMA_T,
+                           3 * SIGMA_T,
+                           4 * SIGMA_T,
+                           5 * SIGMA_T]
 
     for i in range(len(desired_sigma_t)):
 
@@ -99,7 +84,8 @@ def test_runner_ESO(fake_test=False):
              distances,
              spatial_clusters) = generate_detections(event_positions,
                                                      event_times,
-                                                     sensors)
+                                                     sensors,
+                                                     jitter_std=sigma_t)
 
             # tudo pronto, rodando o runner
 
@@ -125,9 +111,7 @@ def test_runner_ESO(fake_test=False):
                                                 EPSILON_T,
                                                 AVG_LIGHT_SPEED,
                                                 False)
-            print(delta_d)
-            print(event_times)
-            print(sol_centroides_temporais)
+
             assert len(sol_centroides_temporais) == len(event_positions)
 
             assert len(sol_centroides_espaciais) == len(event_times)
@@ -143,7 +127,7 @@ def test_runner_ESO(fake_test=False):
                 crlb_temporal_medio = crlb_temporal
                 rmse_temporal = rmse(delta_t)
                 prmse_temporal = calcula_prmse(
-                    rmse_temporal, AVG_LIGHT_SPEED * sigma_t)
+                    rmse_temporal, sigma_t)
                 mae_temporal = mae(delta_t)
                 mle_temporal = np.abs(mean_location_error(delta_t))
                 amse_temporal = average_mean_squared_error(delta_t)
@@ -181,63 +165,54 @@ def test_runner_ESO(fake_test=False):
                 # adicionando no paper
 
                 paper_data.append([sigma_t/SIGMA_T,
-                                   float(crlb_espacial_medio),
-                                   float(crlb_espacial_rmse),
-                                   float(rmse_espacial),
-                                   float(prmse_espacial),
-                                   float(mae_espacial),
-                                   float(mle_espacial),
-                                   float(amse_espacial),
-                                   float(crlb_temporal_medio),
-                                   float(crlb_temporal_rmse),
-                                   float(rmse_temporal),
-                                   float(prmse_temporal),
-                                   float(mae_temporal),
-                                   float(mle_temporal),
-                                   float(amse_temporal),
-                                   float(relative_error),
-                                   float(correct_association_index)
-                                   ])
+                                   crlb_espacial_rmse,
+                                   rmse_espacial,
+                                   mle_espacial,
+                                   amse_espacial,
+                                   crlb_temporal_rmse,
+                                   rmse_temporal,
+                                   mle_temporal,
+                                   amse_temporal,
+                                   correct_association_index,
+                                   execution_time])
+                
+                # armazenando os deltas encontrados
+
+                deltas_d.append(delta_d)
+
+                deltas_t.append(delta_t)
 
                 print([sigma_t/SIGMA_T,
-                       float(crlb_espacial_medio),
-                       float(crlb_espacial_rmse),
-                       float(rmse_espacial),
-                       float(prmse_espacial),
-                       float(mae_espacial),
-                       float(mle_espacial),
-                       float(amse_espacial),
-                       float(crlb_temporal_medio),
-                       float(crlb_temporal_rmse),
-                       float(rmse_temporal),
-                       float(prmse_temporal),
-                       float(mae_temporal),
-                       float(mle_temporal),
-                       float(amse_temporal),
-                       float(relative_error),
-                       float(correct_association_index)])
+                       crlb_espacial_rmse,
+                       rmse_espacial,
+                       mle_espacial,
+                       amse_espacial,
+                       crlb_temporal_rmse,
+                       rmse_temporal,
+                       mle_temporal,
+                       amse_temporal,
+                       correct_association_index,
+                       execution_time])
 
     # salvando o arquivo
     if fake_test:
         """
         Salvando o arquivo para o paper
         """
-        """
-        Salvando o arquivo para o paper
-        """
         paper_data = np.array(paper_data)
-        output_file = os.path.join(basedir, "ESO_results.csv")
-        np.savetxt(output_file,
-                   paper_data,
-                   delimiter=";",
-                   fmt="%.5f",
-                   header="SigmaT_ratio;CRLB_Spatial_Mean;CRLB_Spatial_RMSE;RMSE_Spatial;"
-                          "PRMSE_Spatial;MAE_Spatial;MLE_Spatial;AMSE_Spatial;"
-                          "CRLB_Temporal_Mean;CRLB_Temporal_RMSE;RMSE_Temporal;"
-                          "PRMSE_Temporal;MAE_Temporal;MLE_Temporal;AMSE_Temporal;"
-                          "Relative_Error;Correct_Association(%)",
-                   comments='')
+        output_file = os.path.join(basedir, "ESO_results.npy")
+        np.save(output_file, paper_data)
         print(f"\n>> Resultados salvos em: {output_file}")
+
+        deltas_d = np.array(deltas_d)
+        deltas_t = np.array(deltas_t)
+        output_file = os.path.join(basedir, "ESO_deltas_distancia.npy")
+        np.save(output_file, deltas_d)
+        print(f"\n>> Diferenças de Distância salvas em: {output_file}")
+        output_file = os.path.join(basedir, "ESO_deltas_tempos.npy")
+        np.save(output_file, deltas_t)
+        print(f"\n>> Diferenças de Tempo salvas em: {output_file}")
+
 
 
 if __name__ == "__main__":
