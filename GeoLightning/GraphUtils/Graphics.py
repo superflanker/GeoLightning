@@ -54,6 +54,8 @@ def make_histogram_graph(hist: np.ndarray,
                          bin_edges: np.ndarray,
                          quantile_0: np.float64,
                          quantile_90: np.float64,
+                         xlabel: str,
+                         ylabel: str,
                          filename: str):
     """
     Generates and saves a stylized histogram plot with smoothed interpolation 
@@ -78,6 +80,12 @@ def make_histogram_graph(hist: np.ndarray,
 
     quantile_90 : float
         Upper bound of the desired confidence interval (e.g., 0.95 for 95th percentile).
+
+    xlabel: str
+        name of x axis
+
+    ylabel: str
+        name of y axis
 
     filename : str
         Path to save the resulting figure. Saved with 600 DPI resolution.
@@ -142,11 +150,15 @@ def make_histogram_graph(hist: np.ndarray,
                      facecolor='#ababab',
                      label=r"$90\%$ Interval")
 
-    plt.xlabel("Location Error (m)")
+    # plt.xlabel("Location Error (m)")
 
-    plt.ylabel("Probability Density Function (PDF)")
+    # plt.ylabel("Probability Density Function (PDF)")
 
     #: plt.title(title)
+
+    plt.xlabel(xlabel)
+
+    plt.ylabel(ylabel)
 
     plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
 

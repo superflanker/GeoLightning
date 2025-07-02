@@ -162,7 +162,7 @@ def test_clustering_stela(fake_test=False):
         plt.ylabel(r'Separation Efficiency (\%)')
         plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
         plt.tight_layout()
-        filename = os.path.join(basedir, "clustering_efficiency.png")
+        filename = os.path.join(basedir, "images/clustering_efficiency.png")
         plt.savefig(filename, dpi=600) # é pro IEEE, certo?
 
 

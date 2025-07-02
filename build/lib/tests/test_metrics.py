@@ -12,11 +12,7 @@ from GeoLightning.Simulator.Metrics import (
     calcula_prmse,
     acuracia_associacao,
     erro_relativo_funcao_ajuste,
-    tempo_execucao,
-    calcular_crlb_espacial,
-    calcular_crlb_temporal,
-    calcular_crlb_rmse,
-    calcular_mean_crlb
+    tempo_execucao
 )
 
 def test_rmse():
@@ -61,27 +57,6 @@ def test_erro_relativo_funcao_ajuste():
 def test_tempo_execucao():
     assert np.isclose(tempo_execucao(2.0, 5.0), 3.0)
 
-def test_crlb_espacial():
-    crlb = calcular_crlb_espacial(sigma_d=1.0, N=4)
-    esperado = (1.0 ** 2 / 4.0) * np.eye(1)
-    assert np.allclose(crlb, esperado)
-
-def test_crlb_temporal():
-    crlb = calcular_crlb_temporal(sigma_t=0.5, N=4)
-    esperado = (0.5 ** 2 / 4.0) * np.eye(1)
-    assert np.allclose(crlb, esperado)
-
-def test_crlb_rmse():
-    crlb = np.diag([1.0])
-    resultado = calcular_crlb_rmse(crlb)
-    esperado = np.sqrt(np.trace(crlb))
-    assert np.isclose(resultado, esperado)
-
-def test_mean_crlb():
-    crlb = np.diag([1.0])
-    resultado = calcular_mean_crlb(crlb)
-    esperado = 1
-    assert np.isclose(resultado, esperado)
 
 if __name__ == "__main__":
     test_rmse()
@@ -92,8 +67,3 @@ if __name__ == "__main__":
     test_acuracia_associacao()
     test_erro_relativo_funcao_ajuste()
     test_tempo_execucao()
-    test_crlb_espacial()
-    test_crlb_temporal()
-    test_crlb_temporal()
-    test_crlb_rmse()
-    test_mean_crlb()
