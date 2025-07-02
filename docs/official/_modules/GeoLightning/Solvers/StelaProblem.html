@@ -132,12 +132,13 @@
                  <span class="n">minmax</span><span class="p">,</span>
                  <span class="n">pontos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                  <span class="n">tempos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">sensor_tt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">sensor_indexes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                  <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
                  <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
                  <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
                  <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
-                 <span class="n">phase</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an instance of the STELA problem for use with MEALPY </span>
@@ -154,6 +155,11 @@
 <span class="sd">            Array of shape (N, 3) with sensor positions [latitude, longitude, altitude].</span>
 <span class="sd">        tempos_de_chegada : np.ndarray</span>
 <span class="sd">            Arrival times of signals at each sensor (shape: N,).</span>
+<span class="sd">        sensor_tt: np.ndarray</span>
+<span class="sd">            Association matrix with time-to-travel in light speed of the distances</span>
+<span class="sd">            between sensors</span>
+<span class="sd">        sensor_indexes: np.ndarray</span>
+<span class="sd">            Array of sensor IDs associated with times (informed by sensor)</span>
 <span class="sd">        sistema_cartesiano : bool, optional</span>
 <span class="sd">            If True, uses Cartesian coordinates; otherwise, geodetic coordinates.</span>
 <span class="sd">        sigma_t: float, optional</span>
@@ -179,12 +185,14 @@
         <span class="c1"># parâmetros passados</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span> <span class="o">=</span> <span class="n">pontos_de_chegada</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span> <span class="o">=</span> <span class="n">tempos_de_chegada</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_tt</span> <span class="o">=</span> <span class="n">sensor_tt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sensor_indexes</span> <span class="o">=</span> <span class="n">sensor_indexes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_clusters</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span> <span class="o">=</span> <span class="n">sistema_cartesiano</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span> <span class="o">=</span> <span class="n">sigma_t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span> <span class="o">=</span> <span class="n">epsilon_t</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span> <span class="o">=</span> <span class="n">min_pts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span> <span class="o">=</span> <span class="n">c</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alg_phase</span> <span class="o">=</span> <span class="n">phase</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="n">minmax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -209,6 +217,27 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">obj_func</span><span class="p">(</span><span class="n">solution</span><span class="p">)]</span></div>
 
 
+<div class="viewcode-block" id="StelaProblem.cluster_it">
+<a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.cluster_it">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cluster_it</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cluster the detections, preparing for phase 2 of algorithm (This is the phase one)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_clusters</span> <span class="o">=</span> <span class="n">stela_phase_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_indexes</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">sensor_tt</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="StelaProblem.obj_func">
 <a class="viewcode-back" href="../../../GeoLightning.Solvers.html#GeoLightning.Solvers.StelaProblem.StelaProblem.obj_func">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">obj_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
@@ -230,32 +259,21 @@
 <span class="sd">            The objective value (likelihood). Returns the negative value if</span>
 <span class="sd">            the problem is a maximization task.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Converte o vetor linear para o formato (M, 3)</span>
-        <span class="c1"># solucoes = self.decode_solution(solution)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alg_phase</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_clusters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             
             <span class="n">solucoes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">solution</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 
-            <span class="c1"># Executa o algoritmo STELA</span>
-            <span class="p">(</span><span class="n">_</span><span class="p">,</span>
-             <span class="n">verossimilhanca</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela_phase_one</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">epsilon_t</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">min_pts</span><span class="p">,</span>
-                                                <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">stela_phase_two</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span>
+            <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">stela_phase_two</span><span class="p">(</span><span class="n">solucoes</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">spatial_clusters</span><span class="p">,</span>
                                               <span class="bp">self</span><span class="o">.</span><span class="n">tempos_de_chegada</span><span class="p">,</span>
                                               <span class="bp">self</span><span class="o">.</span><span class="n">pontos_de_chegada</span><span class="p">,</span>
                                               <span class="bp">self</span><span class="o">.</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
                                               <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
                                               <span class="bp">self</span><span class="o">.</span><span class="n">avg_speed</span><span class="p">)</span>
 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="c1"># Retorna a verossimilhança como valor de fitness (negativa para problema</span>
         <span class="c1"># de maximização)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minmax</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>

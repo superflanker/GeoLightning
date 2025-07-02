@@ -422,6 +422,7 @@ def computa_distancias(origem: np.ndarray,
 
 @jit(nopython=True, cache=True, fastmath=True)
 def computa_tempos_de_origem(solucoes: np.ndarray,
+                             clusters_espaciais: np.ndarray,
                              tempos_de_chegada: np.ndarray,
                              pontos_de_deteccao: np.ndarray,
                              sistema_cartesiano: bool = False) -> np.ndarray:
@@ -435,7 +436,9 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     Parameters
     ----------
     solucoes : np.ndarray
-        Array of shape (N, 3) containing the spatial coordinates of candidate event locations..
+        Array of shape (N, 3) containing the spatial coordinates of candidate event locations.
+    clusters_espaciais : np.ndarray
+        Array of shape (M,) mapping each arrival time and sensor position to a candidate solution (M ≤ N).
     tempos_de_chegada : np.ndarray
         Array of shape (M,) with the absolute arrival times of signals at the sensors.
     pontos_de_deteccao : np.ndarray
@@ -456,16 +459,19 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
     - Optimized using Numba for high-performance numerical computation.
     """
 
-    N = len(solucoes)
-    distancias = np.zeros(N, dtype=np.float64)
+    M = len(clusters_espaciais)
+    distancias = np.zeros(M, dtype=np.float64)
+    clusters_espaciais - clusters_espaciais.astype(np.int32)
 
-    for i in range(N):
+    for i in range(M):
         if sistema_cartesiano:
             distancias[i] = distancia_cartesiana_entre_pontos(
-                solucoes[i], pontos_de_deteccao[i])
+                solucoes[clusters_espaciais[i]],
+                  pontos_de_deteccao[i])
         else:
             distancias[i] = distancia_esferica_entre_pontos(
-                solucoes[i], pontos_de_deteccao[i])
+                solucoes[clusters_espaciais[i]], 
+                pontos_de_deteccao[i])
 
     tempos_de_origem = tempos_de_chegada - distancias / AVG_LIGHT_SPEED
 

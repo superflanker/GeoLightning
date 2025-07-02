@@ -15,7 +15,7 @@ Augusto Mathias Adams <augusto.adams@ufpr.br>
 
 Contents
 --------
-- StelaAOA class: customized AOA with adaptive search space refinement.
+- StelaAOA class: customized AOA.
 - Integration with STELA-based geolocation problems.
 
 Notes
@@ -56,7 +56,7 @@ class StelaAOA(OriginalAOA):
 
     def evolve(self, epoch):
         """
-        Executes one iteration of the algorithm with adaptive search space refinement.
+        Executes one iteration of the algorithm.
 
         Parameters
         ----------

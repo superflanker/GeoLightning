@@ -82,6 +82,15 @@ class LSA(Optimizer):
         self.diversity_threshold = kwargs.get("diversity_threshold", 1e-5)
         self.diversity_fraction = kwargs.get("diversity_fraction", 0.5)
 
+    def initialize_variables(self):
+        pop = [np.random.uniform(self.problem.lb, self.problem.ub)
+               for _ in range(self.pop_size)]
+        self.pop = []
+        for _, new_pos in enumerate(pop):
+            target = self.problem.get_target(new_pos)
+            new_agent = Agent(new_pos, target)
+            self.pop.append(new_agent)
+
     def compute_mu(self, agent):
         """
         Compute the distance (mu) from a given agent to the global best.
@@ -117,9 +126,9 @@ class LSA(Optimizer):
         float
             Standard deviation used for Gaussian sampling.
         """
-        # return mu / 2.0
+        return mu / 2.0
 
-        return mu * 0.75
+        # return mu * 0.75
 
     def transition_projectile(self):
         """
@@ -137,35 +146,6 @@ class LSA(Optimizer):
                                    self.problem.ub,
                                    self.problem.n_dims)
         return tp_new
-
-    def compute_diversity(self):
-        """
-        Computes Mean Population diversity
-
-        Returns
-        -------
-        float
-            Mean Standard Deviation of the population
-
-        """
-        all_solutions = np.array([agent.solution for agent in self.pop])
-        std_per_dim = np.std(all_solutions, axis=0)
-        return np.mean(std_per_dim)
-    
-    def force_diversity(self):
-        """
-        Reinforces population diversity restarting a fraction of the population 
-        with Transition Projectiles.
-        """
-        n_to_replace = max(1, int(self.pop_size * self.diversity_fraction))
-        indices = np.random.choice(range(self.pop_size), size=n_to_replace, replace=False)
-        for idx in indices:
-            new_pos = self.transition_projectile()
-            new_pos = self.amend_solution(new_pos)
-            new_target = self.problem.get_target(new_pos)
-            self.pop[idx] = Agent(new_pos, new_target)
-            self.no_improve_counter[idx] = 0
-
 
     def space_projectile(self, agent,  mu):
         """
@@ -186,8 +166,8 @@ class LSA(Optimizer):
         ndarray
             A new solution vector generated via exponential displacement.
         """
-        sp_offset = np.random.exponential(mu, self.problem.n_dims)
-        direction = np.random.choice([-1, 1], self.problem.n_dims)
+        sp_offset = np.random.exponential(mu, len(self.problem.lb))
+        direction = np.random.choice([-1, 1], len(self.problem.lb))
         sp_new = agent.solution + direction * sp_offset
         return sp_new
 
@@ -215,31 +195,6 @@ class LSA(Optimizer):
 
     def opposition_position(self, pos):
         return self.problem.ub + self.problem.lb - pos
-    
-    def get_global_best(self, pop, current_best):
-        """
-        Returns the best agent between the population and the current global best.
-
-        Parameters
-        ----------
-        pop : list of Agent
-            List of agents in the current population.
-        current_best : Agent
-            Best agent so far (previous g_best).
-
-        Returns
-        -------
-        Agent
-            The new global best agent.
-        """
-        if self.problem.minmax == "min":
-            best_in_pop = min(pop, key=lambda agent: agent.target.fitness)
-        else:
-            best_in_pop = max(pop, key=lambda agent: agent.target.fitness)
-        if self.compare_target(best_in_pop.target, current_best.target):
-            return best_in_pop.copy()
-        return current_best.copy()
-    
 
     def evolve(self, epoch=None):
         """
@@ -270,31 +225,9 @@ class LSA(Optimizer):
             weights = [0.3, 0.4, 0.3] if mu > 10 else [0.1, 0.2, 0.7]
             pos_new = random.choices(choices, weights=weights, k=1)[0]
 
-            # Apply forking (opposition-based movement)
-            if random.random() < 0.1:
-                pos_new = self.opposition_position(pos_new)
-
             pos_new = self.amend_solution(pos_new)
             target = self.problem.get_target(pos_new)
             new_agent = Agent(pos_new, target)
 
             if self.compare_target(new_agent.target, agent.target):
                 self.pop[idx] = new_agent.copy()
-                self.no_improve_counter[idx] = 0
-            else:
-                self.no_improve_counter[idx] += 1
-
-                # Restart agent if stagnant
-                if self.no_improve_counter[idx] > 2:
-                    self.pop[idx].solution = self.transition_projectile()
-                    self.pop[idx].target = self.problem.get_target(
-                        self.pop[idx].solution)
-                    self.no_improve_counter[idx] = 0
-        
-        # adaptive diversity
-        """diversity = self.compute_diversity()
-        if diversity < self.diversity_threshold:
-            self.force_diversity()"""
-
-        # best candidate update
-        self.g_best = self.get_global_best(self.pop, self.g_best)

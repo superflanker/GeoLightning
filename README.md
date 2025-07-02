@@ -53,9 +53,11 @@ GeoLightning relies on the following Python libraries:
 
 ## 📁 Project Structure
 
+
 ```
 GeoLightning/
 ├── GeoLightning/
+│   ├── GraphUtils/            # Plot Utilities
 │   ├── HyperParameters/       # Parameter Tuning Utility
 │   ├── Runners/               # Convenience Wrappers for Mealpy Solvers
 │   ├── Simulator/             # Sensor modeling and synthetic data
@@ -80,10 +82,10 @@ from GeoLightning.Solvers.StelaProblem import StelaProblem
 
 # Define bounds, arrival points and times...
 problem = StelaProblem(bounds, "min", arrival_points, arrival_times)
+problem.cluster_it()
 model = StelaPSO(epoch=100, pop_size=50)
 best_solution, best_fitness = model.solve(problem)
 ```
-
 ---
 
 ## 📄 Reference

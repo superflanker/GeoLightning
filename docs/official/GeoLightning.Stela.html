@@ -47,6 +47,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.GraphUtils.html">GeoLightning.GraphUtils package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
@@ -109,12 +110,7 @@
 <section id="summary">
 <h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
 <p>This module defines and computes dynamic spatial bounds for meta-heuristic algorithms
-used in the geolocation of atmospheric events. It provides an optimized routine for
-generating localized search limits around clustered points, based on spatial and
-cartesian coordinate systems.</p>
-<p>The bounding regions are adaptive: tight around unique solutions and wider for
-ambiguous (non-unique) detections. The formulation respects physical constraints
-and enables integration with global optimization strategies.</p>
+used in the geolocation of atmospheric events.</p>
 <p class="rubric">Notes</p>
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
@@ -219,24 +215,144 @@ Federal University of Paraná (UFPR).</p>
 </section>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Stela.Common.calcula_distancias_ao_centroide">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Common.</span></span><span class="sig-name descname"><span class="pre">calcula_distancias_ao_centroide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Common.html#calcula_distancias_ao_centroide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Common.calcula_distancias_ao_centroide" title="Link to this definition"></a></dt>
-<dd><p>Computes the delta D used in likelihood calculations.</p>
-<p>This function calculates the difference in distance (ΔD) between each point in
-a cluster and its corresponding centroid.</p>
+<dt class="sig sig-object py" id="GeoLightning.Stela.Common.calcular_media_clusters">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Common.</span></span><span class="sig-name descname"><span class="pre">calcular_media_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Common.html#calcular_media_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Common.calcular_media_clusters" title="Link to this definition"></a></dt>
+<dd><p>Computes the average origin time and the number of detectors for each cluster.</p>
+<p>This function calculates the temporal centroid (mean estimated origin time)
+and the count of sensor detections associated with each spatial cluster.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>solucoes</strong> (<em>np.ndarray</em>) – Array of estimated solutions.</p></li>
-<li><p><strong>labels</strong> (<em>np.ndarray</em>) – Array of cluster labels assigned to each solution point.</p></li>
-<li><p><strong>centroides</strong> (<em>np.ndarray</em>) – Array of centroids for each clusters</p></li>
-<li><p><strong>sistema_cartesiano</strong> (<em>bool</em>) – Indicates whether the coordinate system is Cartesian (True)
-or geographic (False)</p></li>
+<li><p><strong>tempos</strong> (<em>np.ndarray</em>) – 1D array containing the estimated origin times for all detections.</p></li>
+<li><p><strong>labels</strong> (<em>np.ndarray</em>) – 1D array containing the cluster labels assigned to each detection.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>distancias</strong> – Array containing the distance differences (ΔD) for each solution point
-relative to its cluster centroid.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>medias<span class="classifier">np.ndarray</span></dt><dd><p>Array of temporal centroids (mean origin times) for each cluster.</p>
+</dd>
+<dt>detectores<span class="classifier">np.ndarray</span></dt><dd><p>Array with the number of detectors associated with each cluster.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.Common.computa_residuos_temporais">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Common.</span></span><span class="sig-name descname"><span class="pre">computa_residuos_temporais</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centroides_temporais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_origem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Common.html#computa_residuos_temporais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Common.computa_residuos_temporais" title="Link to this definition"></a></dt>
+<dd><p>Computes the temporal residuals between assigned cluster centroids and
+the original event times.</p>
+<p>This function calculates, for each detection, the deviation between
+the centroid time of its associated cluster and its actual time of origin.
+These residuals can be used to evaluate temporal coherence within clusters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centroides_temporais</strong> (<em>np.ndarray</em>) – Array of temporal centroids, where each entry corresponds to the
+estimated central time of a cluster (in seconds).</p></li>
+<li><p><strong>labels</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a specific cluster.
+It must be the same length as <cite>tempos_de_origem</cite>.</p></li>
+<li><p><strong>tempos_de_origem</strong> (<em>np.ndarray</em>) – Array of original event times (in seconds), one per detection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of temporal residuals, where each value corresponds to the
+difference between the assigned centroid time and the detection’s
+original time. Has the same shape as <cite>tempos_de_origem</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Stela.DBSCAN">
+<span id="geolightning-stela-dbscan-module"></span><h2>GeoLightning.Stela.DBSCAN module<a class="headerlink" href="#module-GeoLightning.Stela.DBSCAN" title="Link to this heading"></a></h2>
+<section id="eelt-7019-applied-artificial-intelligence">
+<h3>EELT 7019 - Applied Artificial Intelligence<a class="headerlink" href="#eelt-7019-applied-artificial-intelligence" title="Link to this heading"></a></h3>
+<p>Numba-Optimized 1D DBSCAN Algorithm for Event Clustering</p>
+<section id="id4">
+<h4>Author<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>This module implements a one-dimensional version of the DBSCAN (Density-Based
+Spatial Clustering of Applications with Noise) algorithm optimized using Numba.
+It is tailored for the geolocation of atmospheric events using spatial data from
+lightning detection sensors.</p>
+<p class="rubric">Notes</p>
+<p>This code is part of the academic activities of the course
+EELT 7019 - Applied Artificial Intelligence at the Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id6">
+<h4>Dependencies<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Constants</p></li>
+<li><p>GeoLightning.Utils.Utils</p></li>
+</ul>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.DBSCAN.clustering_metric">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.DBSCAN.</span></span><span class="sig-name descname"><span class="pre">clustering_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detection_time_s1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_time_s2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/DBSCAN.html#clustering_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.DBSCAN.clustering_metric" title="Link to this definition"></a></dt>
+<dd><p>Computes the Spatio-Temporal Consistency Metric based on the TDOA
+between two detection times and the physical distance between their
+respective sensors.</p>
+<p>This metric evaluates how well the observed time difference between
+two detections matches the expected time difference implied by the
+distance between the sensors and the signal propagation speed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detection_time_s1</strong> (<em>np.float64</em>) – Detection timestamp (in seconds) from sensor s1.</p></li>
+<li><p><strong>detection_time_s2</strong> (<em>np.float64</em>) – Detection timestamp (in seconds) from sensor s2.</p></li>
+<li><p><strong>s1_index</strong> (<em>np.int32</em>) – Index of the first sensor in the sensor array.</p></li>
+<li><p><strong>s2_index</strong> (<em>np.int32</em>) – Index of the second sensor in the sensor array.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed symmetric matrix containing the pairwise distances
+between all sensor positions divided by the signal propagation
+speed (i.e., time-of-travel between sensors), in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The absolute deviation between the observed time difference and
+the expected time-of-travel between the two sensors. Lower values
+indicate higher spatio-temporal consistency and, hence, greater
+likelihood that the detections are from the same physical event.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.DBSCAN.dbscan">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.DBSCAN.</span></span><span class="sig-name descname"><span class="pre">dbscan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices_sensores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/DBSCAN.html#dbscan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.DBSCAN.dbscan" title="Link to this definition"></a></dt>
+<dd><p>Main algorithm of the 1D DBSCAN clustering.</p>
+<p>This function implements the DBSCAN algorithm for spatial clustering
+in three-dimensional space, supporting both Cartesian and geographic coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tempos</strong> (<em>np.ndarray</em>) – Array of detection times associated with each detector</p></li>
+<li><p><strong>indice_sensores</strong> (<em>np.ndarray</em>) – Array of sensor IDs associated with times</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Association matrix with time-to-travel in light speed of the distances
+between sensors</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Maximum spatial distance (epsilon) in meters for neighborhood definition.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em>) – Minimum number of points required to form a valid cluster.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>labels</strong> – Array with cluster labels assigned to each point. Noise points are labeled as -1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -245,20 +361,57 @@ relative to its cluster centroid.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Stela.Common.calcular_centroides_espaciais">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Common.</span></span><span class="sig-name descname"><span class="pre">calcular_centroides_espaciais</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Common.html#calcular_centroides_espaciais"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Common.calcular_centroides_espaciais" title="Link to this definition"></a></dt>
-<dd><p>Computes the mean location of occurrence for each cluster and the number of sensors associated.</p>
-<p>This function aggregates the origin times of events based on cluster labels and
-returns the temporal centroid (mean) for each cluster.</p>
+<dt class="sig sig-object py" id="GeoLightning.Stela.DBSCAN.expand_cluster">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.DBSCAN.</span></span><span class="sig-name descname"><span class="pre">expand_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices_sensores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitado</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vizinhos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cluster_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/DBSCAN.html#expand_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.DBSCAN.expand_cluster" title="Link to this definition"></a></dt>
+<dd><p>Expands a cluster from a core point by assigning labels to neighboring points.</p>
+<p>This function performs the cluster expansion step of the DBSCAN algorithm.
+It iteratively adds new points to the current cluster based on spatial proximity
+and density requirements. Points are only included if they meet the minimum
+density criterion.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>solucoes</strong> (<em>np.ndarray</em>) – Array of estimated solutions.</p></li>
-<li><p><strong>labels</strong> (<em>np.ndarray</em>) – Array of cluster labels assigned to each solution point.</p></li>
+<li><p><strong>tempos</strong> (<em>np.ndarray</em>) – Array of detection times associated with each detector</p></li>
+<li><p><strong>indice_sensores</strong> (<em>np.ndarray</em>) – Array of sensor IDs associated with times</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Association matrix with time-to-travel in light speed of the distances
+between sensors</p></li>
+<li><p><strong>labels</strong> (<em>np.ndarray</em>) – Array containing the cluster labels assigned to each point.</p></li>
+<li><p><strong>visitado</strong> (<em>np.ndarray</em>) – Boolean array indicating whether each point has already been visited.</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – Index of the core point from which the cluster expansion starts.</p></li>
+<li><p><strong>vizinhos</strong> (<em>np.ndarray</em>) – Array of indices of the initial neighboring points.</p></li>
+<li><p><strong>cluster_id</strong> (<em>int</em>) – Numeric identifier of the current cluster.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Maximum spatial distance (epsilon neighborhood).</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em>) – Minimum number of points required to form a valid cluster.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>medias</strong> – Array of temporal centroids (mean origin times) for each cluster.</p>
+<dd class="field-even"><p>This function modifies <cite>labels</cite> and <cite>visitado</cite> in-place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Stela.DBSCAN.region_query">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.DBSCAN.</span></span><span class="sig-name descname"><span class="pre">region_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices_sensores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/DBSCAN.html#region_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.DBSCAN.region_query" title="Link to this definition"></a></dt>
+<dd><p>Returns the temporal neighbors of a point within an epsilon window.</p>
+<p>This function searches for all indices of points whose temporal values
+lie within a maximum distance <cite>eps</cite> from the point with index <cite>i</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tempos</strong> (<em>np.ndarray</em>) – Array of detection times associated with each detector</p></li>
+<li><p><strong>indice_sensores</strong> (<em>np.ndarray</em>) – Array of sensor IDs associated with times</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Association matrix with time-to-travel in light speed of the distances
+between sensors</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – Index of the central point around which neighbors are searched.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Maximum distance (temporal window) used to define neighborhood.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing the indices of neighboring points.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -272,8 +425,8 @@ returns the temporal centroid (mean) for each cluster.</p>
 <section id="log-likelihood">
 <h3>Log-Likelihood<a class="headerlink" href="#log-likelihood" title="Link to this heading"></a></h3>
 <p>Log-Likelihood Function - Objective Function</p>
-<section id="id4">
-<h4>Summary<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<section id="id7">
+<h4>Summary<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
 <p>This module defines the computation of the log-likelihood function
 based on the Gaussian distribution, used as a fitness or objective
 function in spatio-temporal event assignment and optimization procedures.</p>
@@ -281,8 +434,8 @@ function in spatio-temporal event assignment and optimization procedures.</p>
 centered at zero with known standard deviation, commonly used in
 signal localization, parameter estimation, and inference models.</p>
 </section>
-<section id="id5">
-<h4>Author<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<section id="id8">
+<h4>Author<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
 <section id="contents">
@@ -296,8 +449,8 @@ signal localization, parameter estimation, and inference models.</p>
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id6">
-<h4>Dependencies<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<section id="id9">
+<h4>Dependencies<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
@@ -346,8 +499,8 @@ of deviations, assuming they follow a Gaussian distribution N(0, σ²).</p>
 with zero mean and standard deviation sigma.</p>
 <p>This function evaluates the sum of log-likelihoods for a number of observations,
 assuming they follow a Gaussian distribution N(0, σ²) and have a Δ = 0 each.</p>
-<section id="id7">
-<h3>Formula<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id10">
+<h3>Formula<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <p>log(ℒ) = -0.5 * log(2π * σ²) - (Δ² / (2σ²))</p>
 <dl class="field-list simple">
 <dt class="field-odd">param N<span class="colon">:</span></dt>
@@ -410,8 +563,8 @@ JIT-compiled routines where <cite>np.clip</cite> may not be supported.</p></li>
 <section id="stela-core-algorithm">
 <h3>STELA Core algorithm<a class="headerlink" href="#stela-core-algorithm" title="Link to this heading"></a></h3>
 <p>Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm</p>
-<section id="id8">
-<h4>Summary<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<section id="id11">
+<h4>Summary<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
 <p>This module implements the STELA algorithm, designed for spatio-temporal association
 of multisensory detections with simulated physical events, such as lightning strikes
 or impulsive acoustic sources.</p>
@@ -423,12 +576,12 @@ of detections that correspond to real-world events.</p>
 <p>This pipeline is compatible with TOA-based localization methods and applicable
 to geophysical sensing, radio frequency, underwater acoustics, and transient astronomy.</p>
 </section>
-<section id="id9">
-<h4>Author<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<section id="id12">
+<h4>Author<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id10">
-<h4>Contents<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
+<section id="id13">
+<h4>Contents<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>STELA Algorithm (main routine - phase one and two)</p></li>
 <li><p>Temporal clustering</p></li>
@@ -439,8 +592,8 @@ to geophysical sensing, radio frequency, underwater acoustics, and transient ast
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id11">
-<h4>Dependencies<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<section id="id14">
+<h4>Dependencies<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
@@ -452,60 +605,27 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 </section>
 </section>
 <dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Stela.Stela.gera_novas_solucoes">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">gera_novas_solucoes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroides</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#gera_novas_solucoes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.gera_novas_solucoes" title="Link to this definition"></a></dt>
-<dd><p>Fill an array with centroids solutions
-:param solucoes: Array of estimated solutions.
-:type solucoes: np.ndarray
-:param labels: Array of cluster labels assigned to each solution point.
-:type labels: np.ndarray
-:param centroides: Array of centroids for each clusters
-:type centroides: np.ndarray</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>novas_solucoes</strong> – Array containing new centroids solutions to each</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Stela.Stela.stela_phase_one">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">stela_phase_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_deteccao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#stela_phase_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.stela_phase_one" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">stela_phase_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices_sensores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#stela_phase_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.stela_phase_one" title="Link to this definition"></a></dt>
 <dd><p>Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Clustering Phase.</p>
 <p>This function performs the core association and filtering step based on
-the spatio-temporal consistency between multisensory detections and
-multilateration-generated candidate event positions.</p>
-<p>It applies temporal clustering to infer origin times, followed by a spatial
-clustering step with compatibility checks, optimizing a log-likelihood function.</p>
+the spatio-temporal consistency between multisensory detections using TDOA consistency criteria.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>solucoes</strong> (<em>np.ndarray</em>) – Array of shape (N, 3) with candidate event positions in geographic
-or Cartesian coordinates.</p></li>
 <li><p><strong>tempos_de_chegada</strong> (<em>np.ndarray</em>) – Array of shape (M,) with absolute signal arrival times at the sensors.</p></li>
-<li><p><strong>pontos_de_deteccao</strong> (<em>np.ndarray</em>) – Array of shape (M, 3) with sensor positions, using the same coordinate system
-as <cite>solucoes</cite>.</p></li>
-<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates whether the coordinates are Cartesian (True) or geographic (False). Default is False.</p></li>
-<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Temporal standard deviation (used in likelihood computation).</p></li>
+<li><p><strong>indice_sensores</strong> (<em>np.ndarray</em>) – Array of sensor IDs associated with times</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Association matrix with time-to-travel in light speed of the distances
+between sensors</p></li>
 <li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Temporal tolerance for spatio-temporal clustering.</p></li>
 <li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of points to form a valid cluster (DBSCAN requirement).</p></li>
-<li><p><strong>c</strong> (<em>np.float64</em>) – wave propagation velocity (default is speed of lught in vacuum)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>clusters_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Updated spatial cluster labels.</p>
-</dd>
-<dt>verossimilhanca<span class="classifier">float</span></dt><dd><p>Total log-likelihood value of the solution.</p>
-</dd>
-</dl>
-</p>
+<dd class="field-even"><p><strong>clusters_espaciais</strong> – list of clusters of asssociated detections</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple</p>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -519,7 +639,7 @@ swarm intelligence, and other meta-heuristics.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Stela.Stela.stela_phase_two">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">stela_phase_two</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_deteccao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#stela_phase_two"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.stela_phase_two" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Stela.Stela.</span></span><span class="sig-name descname"><span class="pre">stela_phase_two</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solucoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters_espaciais</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempos_de_chegada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_de_deteccao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float64</span></span></span><a class="reference internal" href="_modules/GeoLightning/Stela/Stela.html#stela_phase_two"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Stela.Stela.stela_phase_two" title="Link to this definition"></a></dt>
 <dd><p>Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Refinement Phase.</p>
 <p>This function performs the position index for a candidate event position.</p>
 <dl class="field-list simple">
@@ -527,6 +647,7 @@ swarm intelligence, and other meta-heuristics.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>solucao</strong> (<em>np.ndarray</em>) – Array of shape (N, 3) with candidate event positions in geographic
 or Cartesian coordinates.</p></li>
+<li><p><strong>clusters_espaciais</strong> (<em>np.ndarray</em>) – clusters of asssociated detections</p></li>
 <li><p><strong>tempos_de_chegada</strong> (<em>np.ndarray</em>) – Array of shape (M,) with absolute signal arrival times at the sensors.</p></li>
 <li><p><strong>pontos_de_deteccao</strong> (<em>np.ndarray</em>) – Array of shape (M, 3) with sensor positions, using the same coordinate system
 as <cite>solucoes</cite>.</p></li>
@@ -556,19 +677,19 @@ swarm intelligence, and other meta-heuristics.</p></li>
 <section id="stela-core-module">
 <h3>STELA Core Module<a class="headerlink" href="#stela-core-module" title="Link to this heading"></a></h3>
 </section>
-<section id="id12">
-<h3>Summary<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<section id="id15">
+<h3>Summary<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
 <p>Contains the core implementation of the STELA algorithm
 (Spatio-Temporal Likelihood Estimation for Lightning Analysis),
 used to identify and separate multiple atmospheric events based on
 TOA (Time-of-Arrival) data.</p>
 </section>
-<section id="id13">
-<h3>Author<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<section id="id16">
+<h3>Author<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id14">
-<h3>Submodules<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<section id="id17">
+<h3>Submodules<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Bounds.py: spatio-tempral bounds computation.</p></li>
 <li><p>Common.py: common utilities for the module.</p></li>
@@ -582,8 +703,8 @@ TOA (Time-of-Arrival) data.</p>
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id15">
-<h3>Dependencies<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<section id="id18">
+<h3>Dependencies<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>

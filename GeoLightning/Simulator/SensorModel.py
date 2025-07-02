@@ -34,13 +34,13 @@ Federal University of Paraná (UFPR), Brazil.
 Dependencies
 ------------
 - numpy
-- numba
+- GeoLightning.Utils.Utils
 """
 import numpy as np
 from numba import jit
+from GeoLightning.Utils.Utils import computa_distancia
 
 
-@jit(nopython=True, cache=True, fastmath=True)
 def get_detection_probability(distance: np.float64) -> np.float64:
     """
     Compute the probability of detecting an atmospheric event 
@@ -70,7 +70,6 @@ def get_detection_probability(distance: np.float64) -> np.float64:
         return 0.0
 
 
-@jit(nopython=True, cache=True, fastmath=True)
 def sensor_detection(distance: np.float64) -> bool:
     """
     Simulate the detection of an atmospheric event by a sensor 
@@ -93,6 +92,7 @@ def sensor_detection(distance: np.float64) -> bool:
     probability = get_detection_probability(distance)
     rand_int = np.random.random_sample()
     return rand_int <= probability
+
 
 if __name__ == "__main__":
     for i in range(100):

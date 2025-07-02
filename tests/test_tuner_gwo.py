@@ -22,8 +22,8 @@ def test_tuneit_GWO(fake_test=False):
     if fake_test:
 
         params_grid = {
-            "epoch": [10, 100, 1000],
-            "pop_size": [10, 100]
+            "epoch": [10, 100, 200, 300, 400, 500],
+            "pop_size": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         }
 
         term = {

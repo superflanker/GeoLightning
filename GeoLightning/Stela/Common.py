@@ -30,91 +30,81 @@ from GeoLightning.Utils.Utils import computa_distancia
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def calcular_centroides_espaciais(solucoes: np.ndarray,
-                                  labels: np.ndarray) -> np.ndarray:
+def calcular_media_clusters(tempos: np.ndarray,
+                            labels: np.ndarray) -> tuple:
     """
-    Computes the mean location of occurrence for each cluster and the number of sensors associated.
+    Computes the average origin time and the number of detectors for each cluster.
 
-    This function aggregates the origin times of events based on cluster labels and 
-    returns the temporal centroid (mean) for each cluster.
+    This function calculates the temporal centroid (mean estimated origin time)
+    and the count of sensor detections associated with each spatial cluster.
 
     Parameters
     ----------
-    solucoes : np.ndarray
-        Array of estimated solutions.
+    tempos : np.ndarray
+        1D array containing the estimated origin times for all detections.
     labels : np.ndarray
-        Array of cluster labels assigned to each solution point.
+        1D array containing the cluster labels assigned to each detection.
 
     Returns
     -------
-    medias : np.ndarray
-        Array of temporal centroids (mean origin times) for each cluster.
+    tuple of np.ndarray
+        medias : np.ndarray
+            Array of temporal centroids (mean origin times) for each cluster.
+        detectores : np.ndarray
+            Array with the number of detectors associated with each cluster.
     """
-
-    n_clusters = np.int32(np.max(labels) + 1)
-    if np.any(labels == -1):
-        n_clusters += 1
-        c_labels = labels + 1
-    else:
-        c_labels = labels.copy()
-
-    medias = np.zeros((n_clusters, solucoes.shape[1]))
+    n_clusters = np.max(labels) + 1
+    medias = np.zeros(n_clusters, dtype=np.float64)
     detectores = np.zeros(n_clusters, dtype=np.int32)
 
-    for i in range(labels.shape[0]):
-        lbl = c_labels[i]
-        for j in range(solucoes.shape[1]):
-            medias[lbl, j] += solucoes[lbl, j]
-        detectores[lbl] += 1
+    for i in range(len(tempos)):
+        lbl = labels[i]
+        if lbl >= 0:
+            medias[lbl] += tempos[i]
+            detectores[lbl] += 1
 
     for k in range(n_clusters):
         if detectores[k] > 0:
-            for j in range(solucoes.shape[1]):
-                medias[k, j] /= detectores[k]
-                if np.abs(medias[k, j]) < 1e-12:
-                    medias[k, j] = 0.0
-
+            medias[k] /= detectores[k]
     return medias, detectores
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def calcula_distancias_ao_centroide(solucoes: np.ndarray,
-                                    labels: np.ndarray,
-                                    centroides: np.ndarray,
-                                    sistema_cartesiano: bool = False) -> np.ndarray:
+def computa_residuos_temporais(centroides_temporais: np.ndarray,
+                               labels: np.ndarray,
+                               tempos_de_origem: np.ndarray,
+                               eps: np.float64 = 1e-8) -> np.ndarray:
     """
-    Computes the delta D used in likelihood calculations.
+    Computes the temporal residuals between assigned cluster centroids and 
+    the original event times.
 
-    This function calculates the difference in distance (ΔD) between each point in 
-    a cluster and its corresponding centroid.
+    This function calculates, for each detection, the deviation between 
+    the centroid time of its associated cluster and its actual time of origin. 
+    These residuals can be used to evaluate temporal coherence within clusters.
 
     Parameters
     ----------
-    solucoes : np.ndarray
-        Array of estimated solutions.
+    centroides_temporais : np.ndarray
+        Array of temporal centroids, where each entry corresponds to the 
+        estimated central time of a cluster (in seconds).
+
     labels : np.ndarray
-        Array of cluster labels assigned to each solution point.
-    centroides : np.ndarray
-        Array of centroids for each clusters
-    sistema_cartesiano : bool
-        Indicates whether the coordinate system is Cartesian (True) 
-        or geographic (False)
+        Array of integer labels assigning each detection to a specific cluster. 
+        It must be the same length as `tempos_de_origem`.
+
+    tempos_de_origem : np.ndarray
+        Array of original event times (in seconds), one per detection.
 
     Returns
     -------
-    distancias : np.ndarray
-        Array containing the distance differences (ΔD) for each solution point 
-        relative to its cluster centroid.
+    np.ndarray
+        Array of temporal residuals, where each value corresponds to the 
+        difference between the assigned centroid time and the detection's 
+        original time. Has the same shape as `tempos_de_origem`.
     """
-    distancias = np.zeros(len(solucoes))
-    if np.any(labels == -1):
-        c_labels = labels + 1
-    else:
-        c_labels = labels.copy()
-
-    for i in range(labels.shape[0]):
-        distancias[i] = computa_distancia(solucoes[i],
-                                          centroides[c_labels[i]],
-                                          sistema_cartesiano)
-
-    return distancias
+    residuos = np.empty(len(tempos_de_origem))
+    labels = labels.astype(np.int32)
+    for i in range(len(tempos_de_origem)):
+        residuos[i] = centroides_temporais[labels[i]] - tempos_de_origem[i]
+    residuos[np.abs(residuos) <= eps] = 0.0
+    return residuos

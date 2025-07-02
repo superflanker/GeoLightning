@@ -23,8 +23,8 @@ def test_tuneit_ESO(fake_test=False):
     if fake_test:
 
         params_grid = {
-            "epoch": [10, 100, 200, 1000],
-            "pop_size": [10, 100]
+            "epoch": [10, 100, 200, 300, 400, 500],
+            "pop_size": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         }
 
         term = {
@@ -34,8 +34,8 @@ def test_tuneit_ESO(fake_test=False):
         if fake_test:
             best_dict = tuneit(ESO(), params_grid, term)
             print(best_dict)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

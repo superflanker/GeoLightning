@@ -6,8 +6,7 @@ Summary
 -------
 Contains custom wrapper classes for MEALPY optimizers such as 
 ESO, LSA, FHO, PSO, GWO, GA, and AOA. These wrappers specialize 
-each optimizer to work directly with the STELA problem class 
-and dynamically adjust the search space during evolution.
+each optimizer to work directly with the STELA problem class.
 
 Author
 ------

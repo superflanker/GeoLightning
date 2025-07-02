@@ -104,100 +104,90 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancia</span>
 
 
-<div class="viewcode-block" id="calcular_centroides_espaciais">
-<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Common.calcular_centroides_espaciais">[docs]</a>
+<div class="viewcode-block" id="calcular_media_clusters">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Common.calcular_media_clusters">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">calcular_centroides_espaciais</span><span class="p">(</span><span class="n">solucoes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                                  <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_media_clusters</span><span class="p">(</span><span class="n">tempos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                            <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the mean location of occurrence for each cluster and the number of sensors associated.</span>
+<span class="sd">    Computes the average origin time and the number of detectors for each cluster.</span>
 
-<span class="sd">    This function aggregates the origin times of events based on cluster labels and </span>
-<span class="sd">    returns the temporal centroid (mean) for each cluster.</span>
+<span class="sd">    This function calculates the temporal centroid (mean estimated origin time)</span>
+<span class="sd">    and the count of sensor detections associated with each spatial cluster.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    solucoes : np.ndarray</span>
-<span class="sd">        Array of estimated solutions.</span>
+<span class="sd">    tempos : np.ndarray</span>
+<span class="sd">        1D array containing the estimated origin times for all detections.</span>
 <span class="sd">    labels : np.ndarray</span>
-<span class="sd">        Array of cluster labels assigned to each solution point.</span>
+<span class="sd">        1D array containing the cluster labels assigned to each detection.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    medias : np.ndarray</span>
-<span class="sd">        Array of temporal centroids (mean origin times) for each cluster.</span>
+<span class="sd">    tuple of np.ndarray</span>
+<span class="sd">        medias : np.ndarray</span>
+<span class="sd">            Array of temporal centroids (mean origin times) for each cluster.</span>
+<span class="sd">        detectores : np.ndarray</span>
+<span class="sd">            Array with the number of detectors associated with each cluster.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">n_clusters</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-    <span class="n">medias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">n_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">medias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">detectores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">lbl</span> <span class="o">=</span> <span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-            <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">solucoes</span><span class="p">[</span><span class="n">lbl</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-        <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempos</span><span class="p">)):</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">lbl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">medias</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tempos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">detectores</span><span class="p">[</span><span class="n">lbl</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">detectores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">solucoes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">medias</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">/=</span> <span class="n">detectores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">medias</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">:</span>
-                    <span class="n">medias</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
+            <span class="n">medias</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/=</span> <span class="n">detectores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">medias</span><span class="p">,</span> <span class="n">detectores</span></div>
 
 
 
-<div class="viewcode-block" id="calcula_distancias_ao_centroide">
-<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Common.calcula_distancias_ao_centroide">[docs]</a>
+<div class="viewcode-block" id="computa_residuos_temporais">
+<a class="viewcode-back" href="../../../GeoLightning.Stela.html#GeoLightning.Stela.Common.computa_residuos_temporais">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">calcula_distancias_ao_centroide</span><span class="p">(</span><span class="n">solucoes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                                    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                                    <span class="n">centroides</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                                    <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">computa_residuos_temporais</span><span class="p">(</span><span class="n">centroides_temporais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">tempos_de_origem</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                               <span class="n">eps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">1e-8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the delta D used in likelihood calculations.</span>
+<span class="sd">    Computes the temporal residuals between assigned cluster centroids and </span>
+<span class="sd">    the original event times.</span>
 
-<span class="sd">    This function calculates the difference in distance (ΔD) between each point in </span>
-<span class="sd">    a cluster and its corresponding centroid.</span>
+<span class="sd">    This function calculates, for each detection, the deviation between </span>
+<span class="sd">    the centroid time of its associated cluster and its actual time of origin. </span>
+<span class="sd">    These residuals can be used to evaluate temporal coherence within clusters.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    solucoes : np.ndarray</span>
-<span class="sd">        Array of estimated solutions.</span>
+<span class="sd">    centroides_temporais : np.ndarray</span>
+<span class="sd">        Array of temporal centroids, where each entry corresponds to the </span>
+<span class="sd">        estimated central time of a cluster (in seconds).</span>
+
 <span class="sd">    labels : np.ndarray</span>
-<span class="sd">        Array of cluster labels assigned to each solution point.</span>
-<span class="sd">    centroides : np.ndarray</span>
-<span class="sd">        Array of centroids for each clusters</span>
-<span class="sd">    sistema_cartesiano : bool</span>
-<span class="sd">        Indicates whether the coordinate system is Cartesian (True) </span>
-<span class="sd">        or geographic (False)</span>
+<span class="sd">        Array of integer labels assigning each detection to a specific cluster. </span>
+<span class="sd">        It must be the same length as `tempos_de_origem`.</span>
+
+<span class="sd">    tempos_de_origem : np.ndarray</span>
+<span class="sd">        Array of original event times (in seconds), one per detection.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    distancias : np.ndarray</span>
-<span class="sd">        Array containing the distance differences (ΔD) for each solution point </span>
-<span class="sd">        relative to its cluster centroid.</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of temporal residuals, where each value corresponds to the </span>
+<span class="sd">        difference between the assigned centroid time and the detection&#39;s </span>
+<span class="sd">        original time. Has the same shape as `tempos_de_origem`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">solucoes</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">labels</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">c_labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">distancias</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">computa_distancia</span><span class="p">(</span><span class="n">solucoes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                                          <span class="n">centroides</span><span class="p">[</span><span class="n">c_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
-                                          <span class="n">sistema_cartesiano</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">distancias</span></div>
+    <span class="n">residuos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">))</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">)):</span>
+        <span class="n">residuos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">centroides_temporais</span><span class="p">[</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">-</span> <span class="n">tempos_de_origem</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">residuos</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">residuos</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">eps</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">residuos</span></div>
 
 </pre></div>
 

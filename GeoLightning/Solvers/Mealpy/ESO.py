@@ -88,6 +88,22 @@ class ESO(Optimizer):
         self.ionized_areas_index = []
         self.ionized_areas_positions = []
 
+    def initialize_variables(self):
+        pop = [np.random.uniform(self.problem.lb, self.problem.ub)
+               for _ in range(self.pop_size)]
+        self.pop = []
+        for _, new_pos in enumerate(pop):
+            target = self.problem.get_target(new_pos)
+            new_agent = Agent(new_pos, target)
+            self.pop.append(new_agent)
+        self.stagnation = np.zeros(self.pop_size, dtype=int)
+        self.ionized_areas_index = []
+        self.ionized_areas_positions = []
+        self.field_resistance = 0
+        self.field_intensity = 0
+        self.storm_power = 0
+        self.ke = 0
+
     def exp(self, x):
         """
         Exp protected against overflow.
@@ -290,7 +306,7 @@ class ESO(Optimizer):
                 else:
                     pos_new = np.random.uniform(
                         self.problem.lb, self.problem.ub)
-        
+
         pos_new = self.amend_solution(pos_new)
         pos_new = np.clip(pos_new, self.problem.lb, self.problem.ub)
         target = self.problem.get_target(pos_new)
@@ -310,6 +326,14 @@ class ESO(Optimizer):
         epoch : int
             Current iteration number within the optimization process.
         """
+        if len(self.stagnation) != len(self.pop):
+            self.stagnation = np.zeros(len(self.pop), dtype=int)
+            self.field_resistance = 0
+            self.field_intensity = 0
+            self.storm_power = 0
+            self.ke = 0
+            self.ionized_areas_index = []
+            self.ionized_areas_positions = []
         self.epoch_current = epoch
         self.identify_ionized_areas()
         self.calculate_field_resistance()

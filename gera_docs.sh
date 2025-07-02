@@ -1,6 +1,6 @@
-#"/bin/bash"
-
-sphinx-apidoc -o docs/source ./GeoLightning
+#!/bin/bash
 cd docs/
+
+sphinx-apidoc -o source/ ../GeoLightning
 
 make html

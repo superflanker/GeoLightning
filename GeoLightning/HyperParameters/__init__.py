@@ -5,7 +5,7 @@ HyperParameter Tunning
 Summary
 -------
 
-Tiner Wrapper for PSO, GA and AOA Algorithms
+Tuner Wrapper for Mealpy Algorithms
 
 Author
 ------

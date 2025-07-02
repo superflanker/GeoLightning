@@ -85,19 +85,121 @@ from time import perf_counter
 def runner_ESO(event_positions: np.ndarray,
                event_times: np.ndarray,
                spatial_clusters: np.ndarray,
+               sensor_tt: np.ndarray,
+               sensor_indexes: np.ndarray,
                detections: np.ndarray,
                detection_times: np.ndarray,
                sensors: np.ndarray,
                min_alt: np.float64,
                max_alt: np.float64,
+               max_epochs: np.int32 = 100,
+               max_population: np.int32 = 100,
                min_pts: np.int32 = CLUSTER_MIN_PTS,
                sigma_t: np.float64 = SIGMA_T,
                sigma_d: np.float64 = SIGMA_D,
                epsilon_t: np.float64 = EPSILON_T,
                c: np.float64 = AVG_LIGHT_SPEED,
                sistema_cartesiano: bool = False) -> tuple:
+    """
+    Executes the Electrical Storm Optimization (ESO) algorithm for estimating 
+    the origin positions of events based on clustered detections and arrival time data.
+
+    This function applies the ESO metaheuristic to solve the multilateration problem 
+    under spatio-temporal constraints defined by STELA. For each spatial cluster 
+    of detections, the algorithm estimates the most likely source location that 
+    satisfies both the geometric and temporal criteria.
+
+    Parameters
+    ----------
+    event_positions : np.ndarray
+        Ground-truth event positions (used for evaluation or benchmarking).
+
+    event_times : np.ndarray
+        Ground-truth emission times of the events.
+
+    spatial_clusters : np.ndarray
+        Array of integer labels assigning each detection to a spatial cluster.
+
+    sensor_tt : np.ndarray
+        Precomputed time-of-travel matrix between all sensors (in seconds).
+
+    sensor_indexes : np.ndarray
+        Indices of sensors associated with each detection.
+
+    detections : np.ndarray
+        Spatial coordinates of each detection (e.g., latitude, longitude, altitude).
+
+    detection_times : np.ndarray
+        Timestamps of signal arrivals at each sensor (in seconds).
+
+    sensors : np.ndarray
+        Coordinates of all sensor positions in the network.
+
+    min_alt : float
+        Minimum allowed altitude for candidate event positions (in meters).
+
+    max_alt : float
+        Maximum allowed altitude for candidate event positions (in meters).
+
+    max_epochs : int, optional
+        Maximum number of iterations (epochs) for the ESO algorithm. Default is 100.
+
+    max_population : int, optional
+        Number of candidate solutions in the ESO population. Default is 100.
+
+    min_pts : int, optional
+        Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.
+
+    sigma_t : float, optional
+        Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.
+
+    sigma_d : float, optional
+        Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.
+
+    epsilon_t : float, optional
+        Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.
+
+    c : float, optional
+        Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.
+
+    sistema_cartesiano : bool, optional
+        Whether to convert coordinates to a Cartesian system for processing. Default is False.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the following elements:
+
+        sol_centroides_espaciais : np.ndarray  
+            Estimated spatial centroids of each cluster (event locations).
+
+        sol_centroides_temporais : np.ndarray  
+            Estimated temporal centroids of each cluster (event emission times).
+
+        sol_detectores : list  
+            List of sensor indices associated with each optimized cluster.
+
+        sol_best_fitness : np.ndarray  
+            Best fitness value obtained by ESO for each cluster.
+
+        sol_reference : np.ndarray  
+            Reference fitness value (ground-truth-based) for each cluster.
+
+        delta_d : np.ndarray  
+            Spatial deviation (in meters) between estimated and true positions.
+
+        delta_t : np.ndarray  
+            Temporal deviation (in seconds) between estimated and true emission times.
+
+        execution_time : float  
+            Total time taken to execute the optimization routine (in seconds).
+
+        associacoes_corretas : int  
+            Number of clusters correctly associated with ground-truth events.
+    """
 
     start_st = perf_counter()
+
     # Fase 1: clusterização
 
     execution_time = 0.0
@@ -123,37 +225,17 @@ def runner_ESO(event_positions: np.ndarray,
                            minmax="min",
                            pontos_de_chegada=detections,
                            tempos_de_chegada=detection_times,
+                           sensor_tt=sensor_tt,
+                           sensor_indexes=sensor_indexes,
                            min_pts=min_pts,
                            sigma_t=sigma_t,
                            epsilon_t=epsilon_t,
                            sistema_cartesiano=sistema_cartesiano,
-                           c=c,
-                           phase=1)
-    problem_dict = {
-        "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
-        "bounds": FloatVar(ub=ub, lb=lb),
-        "minmax": "min",
-        "n_dims": len(lb),
-        "log_to": None
-    }
-    model = StelaESO(epoch=10,
-                     pop_size=10)
-    agent = model.solve(problem_dict)
+                           c=c)
 
-    best_solution = agent.solution
-    best_fitness = agent.target.fitness
-    best_solution = np.array(best_solution).reshape(-1, 3)
+    problem.cluster_it()
 
-    # recomputando a clusterização estimada - índice de associação aplicado ao algoritmo
-
-    (clusters_espaciais,
-     _) = stela_phase_one(solucoes=best_solution,
-                          tempos_de_chegada=detection_times,
-                          pontos_de_deteccao=detections,
-                          sistema_cartesiano=sistema_cartesiano,
-                          epsilon_t=epsilon_t,
-                          min_pts=min_pts,
-                          c=c)
+    clusters_espaciais = problem.spatial_clusters
 
     associacoes_corretas = (clusters_espaciais == spatial_clusters)
     corretos = associacoes_corretas[associacoes_corretas == True]
@@ -191,12 +273,17 @@ def runner_ESO(event_positions: np.ndarray,
                                minmax="min",
                                pontos_de_chegada=current_detections,
                                tempos_de_chegada=current_detection_times,
+                               sensor_tt=sensor_tt,
+                               sensor_indexes=sensor_indexes,
                                min_pts=min_pts,
                                sigma_t=sigma_t,
                                epsilon_t=epsilon_t,
                                sistema_cartesiano=sistema_cartesiano,
-                               c=c,
-                               phase=2)
+                               c=c)
+
+        problem.spatial_clusters = np.zeros(
+            len(current_detections), dtype=np.int32)
+
         problem_dict = {
             "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
             "bounds": bounds,
@@ -205,9 +292,11 @@ def runner_ESO(event_positions: np.ndarray,
             "log_to": None
         }
 
-        model = StelaESO(epoch=50,
-                         pop_size=25)
+        model = StelaESO(epoch=max_epochs,
+                         pop_size=max_population)
         agent = model.solve(problem_dict)
+
+        
 
         best_solution = agent.solution
         best_fitness = agent.target.fitness
@@ -228,8 +317,7 @@ def runner_ESO(event_positions: np.ndarray,
 
         # valores para calcular o erro relativo em relação ao valor de referência
         sol_best_fitness += np.abs(best_fitness)
-        sol_reference -= (maxima_log_verossimilhanca(sol_detectores[i], sigma_d) 
-                    + maxima_log_verossimilhanca(sol_detectores[i], sigma_t))
+        sol_reference -= maxima_log_verossimilhanca(sol_detectores[i], sigma_d)
 
     # medições
 
@@ -237,7 +325,7 @@ def runner_ESO(event_positions: np.ndarray,
 
     delta_d = computa_distancia_batelada(sol_centroides_espaciais,
                                          event_positions)
-    
+
     delta_t = event_times - sol_centroides_temporais
 
     end_st = perf_counter()

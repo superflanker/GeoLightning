@@ -47,6 +47,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.GraphUtils.html">GeoLightning.GraphUtils package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">GeoLightning.Runners package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
@@ -97,13 +98,13 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-GeoLightning.Runners.RunnerESO">
-<span id="geolightning-runners-runnereso-module"></span><h2>GeoLightning.Runners.RunnerESO module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerESO" title="Link to this heading"></a></h2>
-<section id="stelaeso-runner-wrapper">
-<h3>StelaESO Runner Wrapper<a class="headerlink" href="#stelaeso-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="module-GeoLightning.Runners.RunnerAOA">
+<span id="geolightning-runners-runneraoa-module"></span><h2>GeoLightning.Runners.RunnerAOA module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerAOA" title="Link to this heading"></a></h2>
+<section id="stelaaoa-runner-wrapper">
+<h3>StelaAOA Runner Wrapper<a class="headerlink" href="#stelaaoa-runner-wrapper" title="Link to this heading"></a></h3>
 <section id="summary">
 <h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
-<p>Wrapper function for executing the StelaESO algorithm in the context of
+<p>Wrapper function for executing the StelaAOA algorithm in the context of
 spatio-temporal event geolocation using lightning detection data. This routine
 initializes the optimization problem, runs the solver, performs the clustering
 of the estimated solutions, and compares results with the reference ground-truth data.</p>
@@ -119,7 +120,7 @@ Time-of-Arrival (TOA) localization.</p>
 <h4>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>Problem initialization (bounds and detection parameters)</p></li>
-<li><p>Execution of the StelaESO algorithm</p></li>
+<li><p>Execution of the StelaAOA algorithm</p></li>
 <li><p>Spatial and temporal cluster assignment via STELA</p></li>
 <li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
 <li><p>CRLB estimates for spatial and temporal precision</p></li>
@@ -132,6 +133,150 @@ Federal University of Paraná (UFPR), Brazil.</p>
 </section>
 <section id="dependencies">
 <h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaAOA</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerAOA.runner_AOA">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerAOA.</span></span><span class="sig-name descname"><span class="pre">runner_AOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerAOA.html#runner_AOA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerAOA.runner_AOA" title="Link to this definition"></a></dt>
+<dd><p>Executes the Arithmetic Optimization Algorithm (AOA) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the AOA metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the AOA algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the AOA population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by AOA for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners.RunnerESO">
+<span id="geolightning-runners-runnereso-module"></span><h2>GeoLightning.Runners.RunnerESO module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerESO" title="Link to this heading"></a></h2>
+<section id="stelaeso-runner-wrapper">
+<h3>StelaESO Runner Wrapper<a class="headerlink" href="#stelaeso-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id1">
+<h4>Summary<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaESO algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id2">
+<h4>Author<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id3">
+<h4>Contents<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaESO algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id4">
+<h4>Dependencies<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
@@ -180,9 +325,818 @@ Federal University of Paraná (UFPR), Brazil.</p>
 </section>
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Runners.RunnerESO.runner_ESO">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerESO.</span></span><span class="sig-name descname"><span class="pre">runner_ESO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerESO.html#runner_ESO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerESO.runner_ESO" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerESO.</span></span><span class="sig-name descname"><span class="pre">runner_ESO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerESO.html#runner_ESO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerESO.runner_ESO" title="Link to this definition"></a></dt>
+<dd><p>Executes the Electrical Storm Optimization (ESO) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the ESO metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the ESO algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the ESO population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by ESO for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
 
+</section>
+<section id="module-GeoLightning.Runners.RunnerFHO">
+<span id="geolightning-runners-runnerfho-module"></span><h2>GeoLightning.Runners.RunnerFHO module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerFHO" title="Link to this heading"></a></h2>
+<section id="stelafho-runner-wrapper">
+<h3>StelaFHO Runner Wrapper<a class="headerlink" href="#stelafho-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaFHO algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id6">
+<h4>Author<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id7">
+<h4>Contents<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaFHO algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id8">
+<h4>Dependencies<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaFHO</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerFHO.runner_FHO">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerFHO.</span></span><span class="sig-name descname"><span class="pre">runner_FHO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerFHO.html#runner_FHO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerFHO.runner_FHO" title="Link to this definition"></a></dt>
+<dd><p>Executes the Fire Hawk Optimizer (FHO) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the FHO metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the FHO algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the FHO population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by FHO for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners.RunnerGA">
+<span id="geolightning-runners-runnerga-module"></span><h2>GeoLightning.Runners.RunnerGA module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerGA" title="Link to this heading"></a></h2>
+<section id="stelaga-runner-wrapper">
+<h3>StelaGA Runner Wrapper<a class="headerlink" href="#stelaga-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id9">
+<h4>Summary<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaGA algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id10">
+<h4>Author<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id11">
+<h4>Contents<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaGA algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id12">
+<h4>Dependencies<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaGA</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerGA.runner_GA">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerGA.</span></span><span class="sig-name descname"><span class="pre">runner_GA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerGA.html#runner_GA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerGA.runner_GA" title="Link to this definition"></a></dt>
+<dd><p>Executes the Genetic Algorithm (GA) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the GA metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the GA algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the GA population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by GA for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners.RunnerGWO">
+<span id="geolightning-runners-runnergwo-module"></span><h2>GeoLightning.Runners.RunnerGWO module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerGWO" title="Link to this heading"></a></h2>
+<section id="stelagwo-runner-wrapper">
+<h3>StelaGWO Runner Wrapper<a class="headerlink" href="#stelagwo-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id13">
+<h4>Summary<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaGWO algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id14">
+<h4>Author<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id15">
+<h4>Contents<a class="headerlink" href="#id15" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaGWO algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id16">
+<h4>Dependencies<a class="headerlink" href="#id16" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaGWO</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerGWO.runner_GWO">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerGWO.</span></span><span class="sig-name descname"><span class="pre">runner_GWO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerGWO.html#runner_GWO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerGWO.runner_GWO" title="Link to this definition"></a></dt>
+<dd><p>Executes the Grey Wolf Optimizer (GWO) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the GWO metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the GWO algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the GWO population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by GWO for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners.RunnerLSA">
+<span id="geolightning-runners-runnerlsa-module"></span><h2>GeoLightning.Runners.RunnerLSA module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerLSA" title="Link to this heading"></a></h2>
+<section id="stelalsa-runner-wrapper">
+<h3>StelaLSA Runner Wrapper<a class="headerlink" href="#stelalsa-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id17">
+<h4>Summary<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaLSA algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id18">
+<h4>Author<a class="headerlink" href="#id18" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id19">
+<h4>Contents<a class="headerlink" href="#id19" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaLSA algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id20">
+<h4>Dependencies<a class="headerlink" href="#id20" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaLSA</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerLSA.runner_LSA">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerLSA.</span></span><span class="sig-name descname"><span class="pre">runner_LSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerLSA.html#runner_LSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerLSA.runner_LSA" title="Link to this definition"></a></dt>
+<dd><p>Executes the Lightning Search Algorithm (LSA) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the LSA metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the LSA algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the LSA population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by LSA for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners.RunnerPSO">
+<span id="geolightning-runners-runnerpso-module"></span><h2>GeoLightning.Runners.RunnerPSO module<a class="headerlink" href="#module-GeoLightning.Runners.RunnerPSO" title="Link to this heading"></a></h2>
+<section id="stelapso-runner-wrapper">
+<h3>StelaPSO Runner Wrapper<a class="headerlink" href="#stelapso-runner-wrapper" title="Link to this heading"></a></h3>
+<section id="id21">
+<h4>Summary<a class="headerlink" href="#id21" title="Link to this heading"></a></h4>
+<p>Wrapper function for executing the StelaPSO algorithm in the context of
+spatio-temporal event geolocation using lightning detection data. This routine
+initializes the optimization problem, runs the solver, performs the clustering
+of the estimated solutions, and compares results with the reference ground-truth data.</p>
+<p>This wrapper is part of the evaluation pipeline for assessing optimization-based
+localization strategies, using realistic detection data and metrics aligned with
+Time-of-Arrival (TOA) localization.</p>
+</section>
+<section id="id22">
+<h4>Author<a class="headerlink" href="#id22" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id23">
+<h4>Contents<a class="headerlink" href="#id23" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Problem initialization (bounds and detection parameters)</p></li>
+<li><p>Execution of the StelaPSO algorithm</p></li>
+<li><p>Spatial and temporal cluster assignment via STELA</p></li>
+<li><p>Metric evaluation: RMSE, MAE, AMSE, PRMSE, MLE</p></li>
+<li><p>CRLB estimates for spatial and temporal precision</p></li>
+<li><p>Association accuracy computation and runtime analysis</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the academic activities of the discipline
+EELT 7019 - Applied Artificial Intelligence,
+Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id24">
+<h4>Dependencies<a class="headerlink" href="#id24" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>mealpy</p></li>
+<li><dl class="simple">
+<dt>GeoLightning modules:</dt><dd><ul>
+<li><p>StelaProblem</p></li>
+<li><p>StelaPSO</p></li>
+<li><p>stela clustering</p></li>
+<li><p>metric evaluation utilities</p></li>
+<li><p>bounding box estimation</p></li>
+<li><p>physical constants (SIGMA_D, SIGMA_T, AVG_LIGHT_SPEED)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated spatial centroids for each event cluster.</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Array of estimated origin times (temporal centroids) per cluster.</p>
+</dd>
+<dt>sol_detectores<span class="classifier">np.ndarray</span></dt><dd><p>Indices of sensors used to estimate temporal centroids.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">float</span></dt><dd><p>Value of the fitness function at the best solution found by the optimizer.</p>
+</dd>
+<dt>sol_reference<span class="classifier">float</span></dt><dd><p>Value of the fitness function with deltas equal to zero.</p>
+</dd>
+<dt>delta_d: np.ndarray</dt><dd><p>distance differences between real and estimated positions</p>
+</dd>
+<dt>delta_t: np.ndarray</dt><dd><p>time differentes between reak and estimated times of origins</p>
+</dd>
+<dt>execution_time: np.float64</dt><dd><p>total execution time</p>
+</dd>
+<dt>associacoes_corretas: np.ndarray</dt><dd><p>the correct  clustering association index</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Runners.RunnerPSO.runner_PSO">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Runners.RunnerPSO.</span></span><span class="sig-name descname"><span class="pre">runner_PSO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_tt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_indexes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detections</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_alt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_pts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int32</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Runners/RunnerPSO.html#runner_PSO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Runners.RunnerPSO.runner_PSO" title="Link to this definition"></a></dt>
+<dd><p>Executes the Particle Swarm Optimization (PSO) algorithm for estimating
+the origin positions of events based on clustered detections and arrival time data.</p>
+<p>This function applies the PSO metaheuristic to solve the multilateration problem
+under spatio-temporal constraints defined by STELA. For each spatial cluster
+of detections, the algorithm estimates the most likely source location that
+satisfies both the geometric and temporal criteria.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_positions</strong> (<em>np.ndarray</em>) – Ground-truth event positions (used for evaluation or benchmarking).</p></li>
+<li><p><strong>event_times</strong> (<em>np.ndarray</em>) – Ground-truth emission times of the events.</p></li>
+<li><p><strong>spatial_clusters</strong> (<em>np.ndarray</em>) – Array of integer labels assigning each detection to a spatial cluster.</p></li>
+<li><p><strong>sensor_tt</strong> (<em>np.ndarray</em>) – Precomputed time-of-travel matrix between all sensors (in seconds).</p></li>
+<li><p><strong>sensor_indexes</strong> (<em>np.ndarray</em>) – Indices of sensors associated with each detection.</p></li>
+<li><p><strong>detections</strong> (<em>np.ndarray</em>) – Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</p></li>
+<li><p><strong>detection_times</strong> (<em>np.ndarray</em>) – Timestamps of signal arrivals at each sensor (in seconds).</p></li>
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Coordinates of all sensor positions in the network.</p></li>
+<li><p><strong>min_alt</strong> (<em>float</em>) – Minimum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_alt</strong> (<em>float</em>) – Maximum allowed altitude for candidate event positions (in meters).</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of iterations (epochs) for the PSO algorithm. Default is 100.</p></li>
+<li><p><strong>max_population</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of candidate solutions in the PSO population. Default is 100.</p></li>
+<li><p><strong>min_pts</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</p></li>
+<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</p></li>
+<li><p><strong>sigma_d</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</p></li>
+<li><p><strong>epsilon_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</p></li>
+<li><p><strong>sistema_cartesiano</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert coordinates to a Cartesian system for processing. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing the following elements:</p>
+<dl class="simple">
+<dt>sol_centroides_espaciais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated spatial centroids of each cluster (event locations).</p>
+</dd>
+<dt>sol_centroides_temporais<span class="classifier">np.ndarray</span></dt><dd><p>Estimated temporal centroids of each cluster (event emission times).</p>
+</dd>
+<dt>sol_detectores<span class="classifier">list</span></dt><dd><p>List of sensor indices associated with each optimized cluster.</p>
+</dd>
+<dt>sol_best_fitness<span class="classifier">np.ndarray</span></dt><dd><p>Best fitness value obtained by PSO for each cluster.</p>
+</dd>
+<dt>sol_reference<span class="classifier">np.ndarray</span></dt><dd><p>Reference fitness value (ground-truth-based) for each cluster.</p>
+</dd>
+<dt>delta_d<span class="classifier">np.ndarray</span></dt><dd><p>Spatial deviation (in meters) between estimated and true positions.</p>
+</dd>
+<dt>delta_t<span class="classifier">np.ndarray</span></dt><dd><p>Temporal deviation (in seconds) between estimated and true emission times.</p>
+</dd>
+<dt>execution_time<span class="classifier">float</span></dt><dd><p>Total time taken to execute the optimization routine (in seconds).</p>
+</dd>
+<dt>associacoes_corretas<span class="classifier">int</span></dt><dd><p>Number of clusters correctly associated with ground-truth events.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-GeoLightning.Runners">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GeoLightning.Runners" title="Link to this heading"></a></h2>
+<section id="metaheuristic-solvers-runners">
+<h3>Metaheuristic Solvers Runners<a class="headerlink" href="#metaheuristic-solvers-runners" title="Link to this heading"></a></h3>
+</section>
+<section id="id25">
+<h3>Summary<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>Provides convenience wrappers to mealpy Solvers</p>
+</section>
+<section id="id26">
+<h3>Author<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="id27">
+<h3>Submodules<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Metrics.py: Metrics used to evaluate algorithms’s performance</p></li>
+<li><p>SensorModel.py: Models the detection process of sensors.</p></li>
+<li><p>Simulator.py: Generates synthetic atmospheric events.</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="id28">
+<h3>Dependencies<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+</ul>
+</section>
 </section>
 </section>
 

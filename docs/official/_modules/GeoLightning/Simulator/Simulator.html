@@ -120,7 +120,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numba.typed</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">R_LAT</span><span class="p">,</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span> <span class="n">SIGMA_T</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancias</span><span class="p">,</span> <span class="n">computa_tempos_de_origem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancias</span><span class="p">,</span> <span class="n">computa_distancia</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.SensorModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">sensor_detection</span>
 
 
@@ -196,11 +196,41 @@
 
 
 
+<div class="viewcode-block" id="get_sensor_matrix">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_sensor_matrix">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_sensor_matrix</span><span class="p">(</span><span class="n">sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                      <span class="n">wave_speed</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
+                      <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Sensor Time-To-Travel Assiciation Matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sensors: np.ndarray</span>
+<span class="sd">        list of georeferenced positions of sensors in the network</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sensor_tt: np.ndarray</span>
+<span class="sd">        The Time-to-Travel matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensor_tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">sensors</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">sensors</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sensors</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sensors</span><span class="p">)):</span>
+            <span class="n">sensor_tt</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">computa_distancia</span><span class="p">(</span><span class="n">sensors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                <span class="n">sensors</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
+                                                <span class="n">sistema_cartesiano</span><span class="p">)</span><span class="o">/</span><span class="n">wave_speed</span>
+
+    <span class="k">return</span> <span class="n">sensor_tt</span></div>
+
+
+
 <div class="viewcode-block" id="get_lightning_limits">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_lightning_limits">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lightning_limits</span><span class="p">(</span><span class="n">sensores_latlon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                         <span class="n">margem_metros</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">40000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+                         <span class="n">margem_metros</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">20000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes geographic bounding box around sensor constellation with an additional margin.</span>
 
@@ -235,6 +265,7 @@
     <span class="n">max_lon</span> <span class="o">+=</span> <span class="n">delta_lon</span>
 
     <span class="k">return</span> <span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span></div>
+
 
 
 <div class="viewcode-block" id="generate_events">
@@ -286,26 +317,11 @@
 <span class="sd">        event_times : (N,) array of timestamps</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">min_dt</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="n">sigma_t</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;event_times = []</span>
-
-<span class="sd">    attempts = 0</span>
-<span class="sd">    while len(event_times) &lt; num_events and attempts &lt; max_attempts:</span>
-<span class="sd">        candidate = np.random.uniform(min_time, max_time)</span>
-<span class="sd">        if all(abs(candidate - t) &gt;= min_dt for t in event_times):</span>
-<span class="sd">            event_times.append(candidate)</span>
-<span class="sd">        attempts += 1</span>
-
-<span class="sd">    if len(event_times) &lt; num_events:</span>
-<span class="sd">        raise RuntimeError(&quot;Unable to generate events with minimum time spacing within the number of attempts.&quot;)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># event_times = np.array(sorted(event_times))</span>
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
     <span class="n">lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">alts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
-    <span class="n">event_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
+    <span class="n">event_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)))</span>
     <span class="n">event_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">lats</span><span class="p">,</span> <span class="n">lons</span><span class="p">,</span> <span class="n">alts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span></div>
@@ -345,9 +361,12 @@
 <span class="sd">            Event times repeated for each detection (for traceability).</span>
 <span class="sd">        distances : np.ndarray</span>
 <span class="sd">            Propagation distances between each detection pair.</span>
+<span class="sd">        sensor_indexes: np.ndarray</span>
+<span class="sd">            sensor indexes association with time of detections (phase one)</span>
 <span class="sd">        spatial_clusters : np.ndarray</span>
 <span class="sd">            Cluster IDs identifying to which event each detection belongs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
     <span class="n">detections</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">detection_times</span> <span class="o">=</span> <span class="p">[]</span>
@@ -355,6 +374,7 @@
     <span class="n">n_event_times</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">spatial_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sensor_indexes</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">cluster_id</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -362,19 +382,21 @@
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">event_position</span> <span class="o">=</span> <span class="n">event_positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">event_time</span> <span class="o">=</span> <span class="n">event_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">event_distances</span> <span class="o">=</span> <span class="n">computa_distancias</span><span class="p">(</span><span class="n">event_position</span><span class="p">,</span> <span class="n">sensor_positions</span><span class="p">)</span>
+            <span class="n">event_distances</span> <span class="o">=</span> <span class="n">computa_distancias</span><span class="p">(</span>
+                <span class="n">event_position</span><span class="p">,</span> <span class="n">sensor_positions</span><span class="p">)</span>
             <span class="n">t_detections</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">t_detection_times</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">t_n_event_positions</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">t_n_event_times</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">t_distances</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">t_spatial_clusters</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">t_sensor_indexes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensor_positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
                 <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">jitter_std</span><span class="p">),</span>
                                 <span class="nb">min</span><span class="o">=-</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">,</span>
                                 <span class="nb">max</span><span class="o">=</span><span class="mi">6</span> <span class="o">*</span> <span class="n">jitter_std</span><span class="p">)</span>
                 <span class="n">t_detect</span> <span class="o">=</span> <span class="n">event_time</span> <span class="o">+</span> \
-                    <span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span>  <span class="o">+</span> <span class="n">noise</span>
+                    <span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span> <span class="o">+</span> <span class="n">noise</span>
                 <span class="k">if</span> <span class="n">sensor_detection</span><span class="p">(</span><span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
                     <span class="n">t_detections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sensor_positions</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
                     <span class="n">t_detection_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_detect</span><span class="p">)</span>
@@ -382,6 +404,7 @@
                     <span class="n">t_n_event_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_time</span><span class="p">)</span>
                     <span class="n">t_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_distances</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
                     <span class="n">t_spatial_clusters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+                    <span class="n">t_sensor_indexes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_detections</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">cluster_id</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">detections</span> <span class="o">+=</span> <span class="n">t_detections</span>
@@ -390,6 +413,7 @@
                 <span class="n">n_event_times</span> <span class="o">+=</span> <span class="n">t_n_event_times</span>
                 <span class="n">distances</span> <span class="o">+=</span> <span class="n">t_distances</span>
                 <span class="n">spatial_clusters</span> <span class="o">+=</span> <span class="n">t_spatial_clusters</span>
+                <span class="n">sensor_indexes</span> <span class="o">+=</span> <span class="n">t_sensor_indexes</span>
                 <span class="k">break</span>
 
     <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">detections</span><span class="p">),</span>
@@ -397,6 +421,7 @@
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n_event_positions</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">n_event_times</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sensor_indexes</span><span class="p">),</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spatial_clusters</span><span class="p">))</span></div>
 
 

@@ -5,7 +5,7 @@ HyperParameter Tunning
 Summary
 -------
 
-Tiner Wrapper for PSO, GA and AOA Algorithms
+Tuner Wrapper for PSO, GA and AOA Algorithms
 
 Author
 ------
@@ -31,7 +31,7 @@ import numpy as np
 from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
 from GeoLightning.Simulator.Simulator import (get_sensors,
-                                              get_random_sensors,
+                                              get_sensor_matrix,
                                               get_lightning_limits,
                                               generate_detections,
                                               generate_events)
@@ -81,16 +81,17 @@ def tuneit(model: Optimizer,
     mealpy.Tuner : Interface used for parameter tuning.
     StelaProblem : Custom optimization problem based on TOA geolocation.
     """
-    model.logging = False
+
     # recuperando o grupo de sensores
     sensors = get_sensors()
+    sensors_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
     # gerando os eventos
     min_alt = 935
     max_alt = 935
     min_time = 10000
-    max_time = min_time + 72 * 3600
+    max_time = min_time + 210
     num_events = 1
 
     event_positions, event_times = generate_events(num_events,
@@ -109,25 +110,32 @@ def tuneit(model: Optimizer,
      n_event_positions,
      n_event_times,
      distances,
+     sensor_indexes,
      spatial_clusters) = generate_detections(event_positions,
                                              event_times,
                                              sensors)
 
     # limites
 
-    bounds = FloatVar(lb=[min_lat, min_lon, min_alt],
-                      ub=[max_lat, max_lon, max_alt])
+    bounds = FloatVar(lb=[min_lat, min_lon, min_alt] * num_events,
+                      ub=[max_lat, max_lon, max_alt] * num_events)
 
     problem = StelaProblem(bounds,
-                           minmax="min",
-                           pontos_de_chegada=detections,
-                           tempos_de_chegada=detection_times,
-                           min_pts=CLUSTER_MIN_PTS,
-                           sigma_t=SIGMA_T,
-                           epsilon_t=EPSILON_T,
-                           sistema_cartesiano=True,
-                           c=AVG_LIGHT_SPEED,
-                           phase=2)
+                           "min",
+                           detections,
+                           detection_times,
+                           sensors_tt,
+                           sensor_indexes,
+                           False,
+                           SIGMA_T,
+                           EPSILON_T,
+                           CLUSTER_MIN_PTS,
+                           AVG_LIGHT_SPEED)
+    
+    problem.cluster_it()
+
+    print(problem.spatial_clusters)
+
     problem_dict = {
         "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
         "bounds": bounds,

@@ -26,12 +26,12 @@ def test_tuneit_AOA(fake_test=False):
     if fake_test:
 
         params_grid = {
-            "epoch": [10, 50, 100, 150, 200],
-            "pop_size": [10, 50, 100],
+            "epoch": [10, 50, 100, 150, 200, 500],
+            "pop_size": [10, 50, 100, 500],
             "alpha": [3, 4, 5],
-            "miu": [0.5],
-            "moa_min": [0.1],
-            "moa_max": [0.5]
+            "miu": [0.5, 0.6, 0.7],
+            "moa_min": [0.1, 0.3],
+            "moa_max": [0.5, 0.8]
         }
 
         term = {
@@ -41,8 +41,8 @@ def test_tuneit_AOA(fake_test=False):
         if fake_test:
             best_dict = tuneit(OriginalAOA(), params_grid, term)
             print(best_dict)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

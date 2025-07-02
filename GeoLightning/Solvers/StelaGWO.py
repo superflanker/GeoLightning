@@ -56,7 +56,7 @@ class StelaGWO(OriginalGWO):
 
     def evolve(self, epoch):
         """
-        Executes one iteration of the algorithm with adaptive search space refinement.
+        Executes one iteration of the algorithm.
 
         Parameters
         ----------

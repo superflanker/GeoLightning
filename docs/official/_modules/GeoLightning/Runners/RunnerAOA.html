@@ -80,12 +80,12 @@
 <span class="sd">Summary</span>
 <span class="sd">-------</span>
 <span class="sd">Wrapper function for executing the StelaAOA algorithm in the context of</span>
-<span class="sd">spatio-temporal event geolocation using lightning detection data. This routine</span>
-<span class="sd">initializes the optimization problem, runs the solver, performs the clustering</span>
+<span class="sd">spatio-temporal event geolocation using lightning detection data. This routine </span>
+<span class="sd">initializes the optimization problem, runs the solver, performs the clustering </span>
 <span class="sd">of the estimated solutions, and compares results with the reference ground-truth data.</span>
 
 <span class="sd">This wrapper is part of the evaluation pipeline for assessing optimization-based</span>
-<span class="sd">localization strategies, using realistic detection data and metrics aligned with</span>
+<span class="sd">localization strategies, using realistic detection data and metrics aligned with </span>
 <span class="sd">Time-of-Arrival (TOA) localization.</span>
 
 <span class="sd">Author</span>
@@ -103,8 +103,8 @@
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
-<span class="sd">This module is part of the academic activities of the discipline</span>
-<span class="sd">EELT 7019 - Applied Artificial Intelligence,</span>
+<span class="sd">This module is part of the academic activities of the discipline </span>
+<span class="sd">EELT 7019 - Applied Artificial Intelligence, </span>
 <span class="sd">Federal University of Paraná (UFPR), Brazil.</span>
 
 <span class="sd">Dependencies</span>
@@ -123,7 +123,6 @@
 <span class="sd">Returns</span>
 <span class="sd">-------</span>
 <span class="sd">tuple</span>
-
 <span class="sd">    sol_centroides_espaciais : np.ndarray</span>
 <span class="sd">        Array of estimated spatial centroids for each event cluster.</span>
 <span class="sd">    sol_centroides_temporais : np.ndarray</span>
@@ -147,15 +146,13 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaProblem</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaProblem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Solvers.StelaAOA</span><span class="w"> </span><span class="kn">import</span> <span class="n">StelaAOA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela_phase_one</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Stela</span><span class="w"> </span><span class="kn">import</span> <span class="n">stela_phase_one</span><span class="p">,</span> <span class="n">stela_phase_two</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Bounds</span><span class="w"> </span><span class="kn">import</span> <span class="n">gera_limites_iniciais</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.Common</span><span class="w"> </span><span class="kn">import</span> <span class="n">calcular_centroides_espaciais</span><span class="p">,</span> \
-    <span class="n">calcula_centroides_temporais</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Stela.LogLikelihood</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxima_log_verossimilhanca</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.Metrics</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Simulator.Simulator</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Constants</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancia_batelada</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">GeoLightning.Utils.Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">computa_distancia_batelada</span><span class="p">,</span> <span class="n">computa_distancias</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mealpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FloatVar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
 
@@ -165,19 +162,121 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">runner_AOA</span><span class="p">(</span><span class="n">event_positions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">event_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">spatial_clusters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+               <span class="n">sensor_tt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+               <span class="n">sensor_indexes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">detections</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">detection_times</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                <span class="n">min_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                <span class="n">max_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+               <span class="n">max_epochs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+               <span class="n">max_population</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
                <span class="n">min_pts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="n">CLUSTER_MIN_PTS</span><span class="p">,</span>
                <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
                <span class="n">sigma_d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_D</span><span class="p">,</span>
                <span class="n">epsilon_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">EPSILON_T</span><span class="p">,</span>
                <span class="n">c</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">AVG_LIGHT_SPEED</span><span class="p">,</span>
                <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Executes the Arithmetic Optimization Algorithm (AOA) algorithm for estimating </span>
+<span class="sd">    the origin positions of events based on clustered detections and arrival time data.</span>
+
+<span class="sd">    This function applies the AOA metaheuristic to solve the multilateration problem </span>
+<span class="sd">    under spatio-temporal constraints defined by STELA. For each spatial cluster </span>
+<span class="sd">    of detections, the algorithm estimates the most likely source location that </span>
+<span class="sd">    satisfies both the geometric and temporal criteria.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    event_positions : np.ndarray</span>
+<span class="sd">        Ground-truth event positions (used for evaluation or benchmarking).</span>
+
+<span class="sd">    event_times : np.ndarray</span>
+<span class="sd">        Ground-truth emission times of the events.</span>
+
+<span class="sd">    spatial_clusters : np.ndarray</span>
+<span class="sd">        Array of integer labels assigning each detection to a spatial cluster.</span>
+
+<span class="sd">    sensor_tt : np.ndarray</span>
+<span class="sd">        Precomputed time-of-travel matrix between all sensors (in seconds).</span>
+
+<span class="sd">    sensor_indexes : np.ndarray</span>
+<span class="sd">        Indices of sensors associated with each detection.</span>
+
+<span class="sd">    detections : np.ndarray</span>
+<span class="sd">        Spatial coordinates of each detection (e.g., latitude, longitude, altitude).</span>
+
+<span class="sd">    detection_times : np.ndarray</span>
+<span class="sd">        Timestamps of signal arrivals at each sensor (in seconds).</span>
+
+<span class="sd">    sensors : np.ndarray</span>
+<span class="sd">        Coordinates of all sensor positions in the network.</span>
+
+<span class="sd">    min_alt : float</span>
+<span class="sd">        Minimum allowed altitude for candidate event positions (in meters).</span>
+
+<span class="sd">    max_alt : float</span>
+<span class="sd">        Maximum allowed altitude for candidate event positions (in meters).</span>
+
+<span class="sd">    max_epochs : int, optional</span>
+<span class="sd">        Maximum number of iterations (epochs) for the AOA algorithm. Default is 100.</span>
+
+<span class="sd">    max_population : int, optional</span>
+<span class="sd">        Number of candidate solutions in the AOA population. Default is 100.</span>
+
+<span class="sd">    min_pts : int, optional</span>
+<span class="sd">        Minimum number of detections required to form a valid cluster. Default is CLUSTER_MIN_PTS.</span>
+
+<span class="sd">    sigma_t : float, optional</span>
+<span class="sd">        Standard deviation of the temporal measurement noise (in seconds). Default is SIGMA_T.</span>
+
+<span class="sd">    sigma_d : float, optional</span>
+<span class="sd">        Standard deviation of the spatial measurement noise (in meters). Default is SIGMA_D.</span>
+
+<span class="sd">    epsilon_t : float, optional</span>
+<span class="sd">        Maximum allowable temporal deviation for event validity (in seconds). Default is EPSILON_T.</span>
+
+<span class="sd">    c : float, optional</span>
+<span class="sd">        Signal propagation speed (e.g., speed of light) in m/s. Default is AVG_LIGHT_SPEED.</span>
+
+<span class="sd">    sistema_cartesiano : bool, optional</span>
+<span class="sd">        Whether to convert coordinates to a Cartesian system for processing. Default is False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        A tuple containing the following elements:</span>
+
+<span class="sd">        sol_centroides_espaciais : np.ndarray  </span>
+<span class="sd">            Estimated spatial centroids of each cluster (event locations).</span>
+
+<span class="sd">        sol_centroides_temporais : np.ndarray  </span>
+<span class="sd">            Estimated temporal centroids of each cluster (event emission times).</span>
+
+<span class="sd">        sol_detectores : list  </span>
+<span class="sd">            List of sensor indices associated with each optimized cluster.</span>
+
+<span class="sd">        sol_best_fitness : np.ndarray  </span>
+<span class="sd">            Best fitness value obtained by AOA for each cluster.</span>
+
+<span class="sd">        sol_reference : np.ndarray  </span>
+<span class="sd">            Reference fitness value (ground-truth-based) for each cluster.</span>
+
+<span class="sd">        delta_d : np.ndarray  </span>
+<span class="sd">            Spatial deviation (in meters) between estimated and true positions.</span>
+
+<span class="sd">        delta_t : np.ndarray  </span>
+<span class="sd">            Temporal deviation (in seconds) between estimated and true emission times.</span>
+
+<span class="sd">        execution_time : float  </span>
+<span class="sd">            Total time taken to execute the optimization routine (in seconds).</span>
+
+<span class="sd">        associacoes_corretas : int  </span>
+<span class="sd">            Number of clusters correctly associated with ground-truth events.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">start_st</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+
     <span class="c1"># Fase 1: clusterização</span>
 
     <span class="n">execution_time</span> <span class="o">=</span> <span class="mf">0.0</span>
@@ -203,41 +302,17 @@
                            <span class="n">minmax</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
                            <span class="n">pontos_de_chegada</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span>
                            <span class="n">tempos_de_chegada</span><span class="o">=</span><span class="n">detection_times</span><span class="p">,</span>
+                           <span class="n">sensor_tt</span><span class="o">=</span><span class="n">sensor_tt</span><span class="p">,</span>
+                           <span class="n">sensor_indexes</span><span class="o">=</span><span class="n">sensor_indexes</span><span class="p">,</span>
                            <span class="n">min_pts</span><span class="o">=</span><span class="n">min_pts</span><span class="p">,</span>
                            <span class="n">sigma_t</span><span class="o">=</span><span class="n">sigma_t</span><span class="p">,</span>
                            <span class="n">epsilon_t</span><span class="o">=</span><span class="n">epsilon_t</span><span class="p">,</span>
                            <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
-                           <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
-                           <span class="n">phase</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">problem_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;obj_func&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">evaluate</span><span class="p">,</span>  <span class="c1"># o próprio objeto como função objetivo</span>
-        <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">FloatVar</span><span class="p">(</span><span class="n">ub</span><span class="o">=</span><span class="n">ub</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">lb</span><span class="p">),</span>
-        <span class="s2">&quot;minmax&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">lb</span><span class="p">),</span>
-        <span class="s2">&quot;log_to&quot;</span><span class="p">:</span> <span class="kc">None</span>
-    <span class="p">}</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">StelaAOA</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                     <span class="n">pop_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                     <span class="n">alpha</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                     <span class="n">miu</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                     <span class="n">moa_min</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                     <span class="n">moa_max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-    <span class="n">agent</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">problem_dict</span><span class="p">)</span>
+                           <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
 
-    <span class="n">best_solution</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">solution</span>
-    <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">fitness</span>
-    <span class="n">best_solution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">best_solution</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">cluster_it</span><span class="p">()</span>
 
-    <span class="c1"># recomputando a clusterização estimada - índice de associação aplicado ao algoritmo</span>
-
-    <span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">,</span>
-     <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">stela_phase_one</span><span class="p">(</span><span class="n">solucoes</span><span class="o">=</span><span class="n">best_solution</span><span class="p">,</span>
-                          <span class="n">tempos_de_chegada</span><span class="o">=</span><span class="n">detection_times</span><span class="p">,</span>
-                          <span class="n">pontos_de_deteccao</span><span class="o">=</span><span class="n">detections</span><span class="p">,</span>
-                          <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
-                          <span class="n">epsilon_t</span><span class="o">=</span><span class="n">epsilon_t</span><span class="p">,</span>
-                          <span class="n">min_pts</span><span class="o">=</span><span class="n">min_pts</span><span class="p">,</span>
-                          <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">clusters_espaciais</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">spatial_clusters</span>
 
     <span class="n">associacoes_corretas</span> <span class="o">=</span> <span class="p">(</span><span class="n">clusters_espaciais</span> <span class="o">==</span> <span class="n">spatial_clusters</span><span class="p">)</span>
     <span class="n">corretos</span> <span class="o">=</span> <span class="n">associacoes_corretas</span><span class="p">[</span><span class="n">associacoes_corretas</span> <span class="o">==</span> <span class="kc">True</span><span class="p">]</span>
@@ -275,12 +350,17 @@
                                <span class="n">minmax</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>
                                <span class="n">pontos_de_chegada</span><span class="o">=</span><span class="n">current_detections</span><span class="p">,</span>
                                <span class="n">tempos_de_chegada</span><span class="o">=</span><span class="n">current_detection_times</span><span class="p">,</span>
+                               <span class="n">sensor_tt</span><span class="o">=</span><span class="n">sensor_tt</span><span class="p">,</span>
+                               <span class="n">sensor_indexes</span><span class="o">=</span><span class="n">sensor_indexes</span><span class="p">,</span>
                                <span class="n">min_pts</span><span class="o">=</span><span class="n">min_pts</span><span class="p">,</span>
                                <span class="n">sigma_t</span><span class="o">=</span><span class="n">sigma_t</span><span class="p">,</span>
                                <span class="n">epsilon_t</span><span class="o">=</span><span class="n">epsilon_t</span><span class="p">,</span>
                                <span class="n">sistema_cartesiano</span><span class="o">=</span><span class="n">sistema_cartesiano</span><span class="p">,</span>
-                               <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
-                               <span class="n">phase</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                               <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="n">problem</span><span class="o">.</span><span class="n">spatial_clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">current_detections</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
         <span class="n">problem_dict</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;obj_func&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">evaluate</span><span class="p">,</span>  <span class="c1"># o próprio objeto como função objetivo</span>
             <span class="s2">&quot;bounds&quot;</span><span class="p">:</span> <span class="n">bounds</span><span class="p">,</span>
@@ -288,13 +368,13 @@
             <span class="s2">&quot;n_dims&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
             <span class="s2">&quot;log_to&quot;</span><span class="p">:</span> <span class="kc">None</span>
         <span class="p">}</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">StelaAOA</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-                         <span class="n">pop_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                         <span class="n">alpha</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">StelaAOA</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="n">max_epochs</span><span class="p">,</span>
+                         <span class="n">pop_size</span><span class="o">=</span><span class="n">max_population</span><span class="p">,</span>
+                         <span class="n">alpha</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                          <span class="n">miu</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                          <span class="n">moa_min</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                         <span class="n">moa_max</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                         <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                         <span class="n">moa_max</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
         <span class="n">agent</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">problem_dict</span><span class="p">)</span>
 
         <span class="n">best_solution</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">solution</span>
@@ -315,9 +395,8 @@
         <span class="n">sol_detectores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">detectores</span>
 
         <span class="c1"># valores para calcular o erro relativo em relação ao valor de referência</span>
-        <span class="n">sol_best_fitness</span> <span class="o">+=</span> <span class="n">best_fitness</span>        
-        <span class="n">sol_reference</span> <span class="o">-=</span> <span class="p">(</span><span class="n">maxima_log_verossimilhanca</span><span class="p">(</span><span class="n">sol_detectores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sigma_d</span><span class="p">)</span> 
-                          <span class="o">+</span> <span class="n">maxima_log_verossimilhanca</span><span class="p">(</span><span class="n">sol_detectores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sigma_t</span><span class="p">))</span>
+        <span class="n">sol_best_fitness</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">best_fitness</span><span class="p">)</span>
+        <span class="n">sol_reference</span> <span class="o">-=</span> <span class="n">maxima_log_verossimilhanca</span><span class="p">(</span><span class="n">sol_detectores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sigma_d</span><span class="p">)</span>
 
     <span class="c1"># medições</span>
 

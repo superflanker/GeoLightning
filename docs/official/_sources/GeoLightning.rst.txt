@@ -6,9 +6,10 @@ Subpackages
 
 .. toctree::
    :maxdepth: 4
-   
+
+   GeoLightning.GraphUtils
    GeoLightning.HyperParameters
-   GeoLightning.Runners   
+   GeoLightning.Runners
    GeoLightning.Simulator
    GeoLightning.Solvers
    GeoLightning.Stela

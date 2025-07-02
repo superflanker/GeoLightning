@@ -47,6 +47,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.GraphUtils.html">GeoLightning.GraphUtils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Simulator.html">GeoLightning.Simulator package</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="GeoLightning.Solvers.html">GeoLightning.Solvers package</a></li>
@@ -341,6 +343,11 @@ of new candidate solutions in subsequent steps.</p>
 </dl>
 </section>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.initialize_variables">
+<span class="sig-name descname"><span class="pre">initialize_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/ESO.html#ESO.initialize_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.ESO.ESO.initialize_variables" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.ESO.ESO.log">
@@ -683,20 +690,6 @@ and lead projectile (Gaussian).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.compute_diversity">
-<span class="sig-name descname"><span class="pre">compute_diversity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.compute_diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_diversity" title="Link to this definition"></a></dt>
-<dd><p>Computes Mean Population diversity</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Mean Standard Deviation of the population</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu">
 <span class="sig-name descname"><span class="pre">compute_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.compute_mu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu" title="Link to this definition"></a></dt>
 <dd><p>Compute the distance (mu) from a given agent to the global best.</p>
@@ -750,31 +743,9 @@ and lead projectile (Gaussian).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.force_diversity">
-<span class="sig-name descname"><span class="pre">force_diversity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.force_diversity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.force_diversity" title="Link to this definition"></a></dt>
-<dd><p>Reinforces population diversity restarting a fraction of the population
-with Transition Projectiles.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.get_global_best">
-<span class="sig-name descname"><span class="pre">get_global_best</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_best</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.get_global_best"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.get_global_best" title="Link to this definition"></a></dt>
-<dd><p>Returns the best agent between the population and the current global best.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pop</strong> (<em>list</em><em> of </em><em>Agent</em>) – List of agents in the current population.</p></li>
-<li><p><strong>current_best</strong> (<em>Agent</em>) – Best agent so far (previous g_best).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The new global best agent.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Agent</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.initialize_variables">
+<span class="sig-name descname"><span class="pre">initialize_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/Solvers/Mealpy/LSA.html#LSA.initialize_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Solvers.Mealpy.LSA.LSA.initialize_variables" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GeoLightning.Solvers.Mealpy.LSA.LSA.lead_projectile">

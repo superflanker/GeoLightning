@@ -535,6 +535,7 @@
 <a class="viewcode-back" href="../../../GeoLightning.Utils.html#GeoLightning.Utils.Utils.computa_tempos_de_origem">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">computa_tempos_de_origem</span><span class="p">(</span><span class="n">solucoes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                             <span class="n">clusters_espaciais</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                              <span class="n">tempos_de_chegada</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                              <span class="n">pontos_de_deteccao</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                              <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -548,7 +549,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    solucoes : np.ndarray</span>
-<span class="sd">        Array of shape (N, 3) containing the spatial coordinates of candidate event locations..</span>
+<span class="sd">        Array of shape (N, 3) containing the spatial coordinates of candidate event locations.</span>
+<span class="sd">    clusters_espaciais : np.ndarray</span>
+<span class="sd">        Array of shape (M,) mapping each arrival time and sensor position to a candidate solution (M ≤ N).</span>
 <span class="sd">    tempos_de_chegada : np.ndarray</span>
 <span class="sd">        Array of shape (M,) with the absolute arrival times of signals at the sensors.</span>
 <span class="sd">    pontos_de_deteccao : np.ndarray</span>
@@ -569,16 +572,19 @@
 <span class="sd">    - Optimized using Numba for high-performance numerical computation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">solucoes</span><span class="p">)</span>
-    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">clusters_espaciais</span><span class="p">)</span>
+    <span class="n">distancias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">clusters_espaciais</span> <span class="o">-</span> <span class="n">clusters_espaciais</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sistema_cartesiano</span><span class="p">:</span>
             <span class="n">distancias</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">distancia_cartesiana_entre_pontos</span><span class="p">(</span>
-                <span class="n">solucoes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pontos_de_deteccao</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">solucoes</span><span class="p">[</span><span class="n">clusters_espaciais</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span>
+                  <span class="n">pontos_de_deteccao</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">distancias</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">distancia_esferica_entre_pontos</span><span class="p">(</span>
-                <span class="n">solucoes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pontos_de_deteccao</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">solucoes</span><span class="p">[</span><span class="n">clusters_espaciais</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> 
+                <span class="n">pontos_de_deteccao</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
     <span class="n">tempos_de_origem</span> <span class="o">=</span> <span class="n">tempos_de_chegada</span> <span class="o">-</span> <span class="n">distancias</span> <span class="o">/</span> <span class="n">AVG_LIGHT_SPEED</span>
 

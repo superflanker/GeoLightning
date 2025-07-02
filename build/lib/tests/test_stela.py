@@ -7,24 +7,30 @@ import numpy as np
 from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 
 from GeoLightning.Simulator.Simulator import (get_sensors,
-                                              get_random_sensors,
+                                              get_sensor_matrix,
                                               get_lightning_limits,
                                               generate_detections,
                                               generate_events)
 
-from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca
+from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca, funcao_log_verossimilhanca
 
-from GeoLightning.Utils.Constants import SIGMA_D
+from GeoLightning.Utils.Constants import (SIGMA_T, 
+                                          SIGMA_D, 
+                                          AVG_LIGHT_SPEED, 
+                                          CLUSTER_MIN_PTS, 
+                                          EPSILON_T)
+
+from time import perf_counter
 
 
 def test_stela():
 
     num_events = [2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000]
-
     for i in range(len(num_events)):
         # recuperando o grupo de sensores
         sensors = get_sensors()
+        sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
         min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
         # gerando os eventos
@@ -49,17 +55,36 @@ def test_stela():
          n_event_positions,
          n_event_times,
          distances,
+         sensor_indexes,
          spatial_clusters) = generate_detections(event_positions,
                                                  event_times,
                                                  sensors)
-        (clusters_espaciais,
-         verossimilhanca) = stela_phase_one(n_event_positions,
-                                            detection_times,
-                                            detections,
-                                            sistema_cartesiano=False)
+        start_st = perf_counter()
 
-        assert len(np.unique(clusters_espaciais)) == len(event_positions)
+        clusters_espaciais = stela_phase_one(detection_times,
+                                             sensor_indexes,
+                                             sensor_tt,
+                                             EPSILON_T,
+                                             CLUSTER_MIN_PTS)
 
+        end_st = perf_counter()
+        print(
+            f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st} Segundos")
+        len_clusterizados = len(
+            np.unique(clusters_espaciais[clusters_espaciais >= 0]))
+        len_reais = len(event_positions)
+        print(len_clusterizados, len_reais)
+
+        correct_association_index = np.mean(
+            spatial_clusters == clusters_espaciais) * 100
+        print(correct_association_index)
+        try:
+            assert len_clusterizados == len_reais
+            assert spatial_clusters == clusters_espaciais
+        except:
+            print(f"Clusterizados: {len_clusterizados}, Reais: {len_reais}")
+
+    # fase 2 - localização dos eventos
     sensors = get_sensors()
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
@@ -69,7 +94,7 @@ def test_stela():
     min_time = 10000
     max_time = min_time + 72 * 3600
 
-    event_positions, event_times = generate_events(1,
+    event_positions, event_times = generate_events(10,
                                                    min_lat,
                                                    max_lat,
                                                    min_lon,
@@ -81,20 +106,29 @@ def test_stela():
 
     # gerando as detecções
     (detections,
-        detection_times,
-        n_event_positions,
-        n_event_times,
-        distances,
-        spatial_clusters) = generate_detections(event_positions,
+    detection_times,
+    n_event_positions,
+    n_event_times,
+    distances,
+    sensor_indexes,
+    spatial_clusters) = generate_detections(event_positions,
                                                 event_times,
                                                 sensors)
 
-    verossimilhanca = stela_phase_two(event_positions[0],
+    verossimilhanca = stela_phase_two(event_positions,
+                                      spatial_clusters,
                                       detection_times,
-                                      detections)
+                                      detections,
+                                      False,
+                                      SIGMA_T,
+                                      AVG_LIGHT_SPEED)
 
     maxima_verossimilhanca = maxima_log_verossimilhanca(
-        len(detection_times), SIGMA_D)
+        len(detection_times), AVG_LIGHT_SPEED * SIGMA_T)
+    print(verossimilhanca, maxima_verossimilhanca)
+    print(len(detections))
+    maxima_verossimilhanca = funcao_log_verossimilhanca(np.zeros(len(detections)), AVG_LIGHT_SPEED * SIGMA_T)
+    print(maxima_verossimilhanca)
     assert np.isclose(verossimilhanca, maxima_verossimilhanca, 10)
 
 

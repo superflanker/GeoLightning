@@ -20,6 +20,14 @@ GeoLightning.Stela.Common module
    :undoc-members:
    :show-inheritance:
 
+GeoLightning.Stela.DBSCAN module
+--------------------------------
+
+.. automodule:: GeoLightning.Stela.DBSCAN
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 GeoLightning.Stela.LogLikelihood module
 ---------------------------------------
 
@@ -27,7 +35,6 @@ GeoLightning.Stela.LogLikelihood module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 GeoLightning.Stela.Stela module
 -------------------------------

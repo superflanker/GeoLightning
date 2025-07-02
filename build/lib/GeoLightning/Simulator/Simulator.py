@@ -45,7 +45,7 @@ import numpy as np
 from numba import jit
 from numba.typed import List
 from GeoLightning.Utils.Constants import R_LAT, AVG_LIGHT_SPEED, SIGMA_T
-from GeoLightning.Utils.Utils import computa_distancias, computa_tempos_de_origem
+from GeoLightning.Utils.Utils import computa_distancias, computa_distancia
 from GeoLightning.Simulator.SensorModel import sensor_detection
 
 
@@ -116,6 +116,33 @@ def get_sensors() -> np.ndarray:
 
 
 @jit(nopython=True, cache=True, fastmath=True)
+def get_sensor_matrix(sensors: np.ndarray,
+                      wave_speed: np.float64 = AVG_LIGHT_SPEED,
+                      sistema_cartesiano: bool = False) -> np.ndarray:
+    """
+    Computes the Sensor Time-To-Travel Assiciation Matrix
+
+    Parameters
+    ----------
+    sensors: np.ndarray
+        list of georeferenced positions of sensors in the network
+
+    Returns
+    -------
+    sensor_tt: np.ndarray
+        The Time-to-Travel matrix
+    """
+    sensor_tt = np.empty((len(sensors), len(sensors)), dtype=np.float64)
+    for i in range(len(sensors)):
+        for j in range(len(sensors)):
+            sensor_tt[i, j] = computa_distancia(sensors[i],
+                                                sensors[j],
+                                                sistema_cartesiano)/wave_speed
+
+    return sensor_tt
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_limits(sensores_latlon: np.ndarray,
                          margem_metros: float = -20000.0) -> tuple:
     """
@@ -152,6 +179,7 @@ def get_lightning_limits(sensores_latlon: np.ndarray,
     max_lon += delta_lon
 
     return min_lat, max_lat, min_lon, max_lon
+
 
 def generate_events(num_events: int,
                     min_lat: float,
@@ -200,26 +228,11 @@ def generate_events(num_events: int,
         event_times : (N,) array of timestamps
     """
 
-    min_dt = 6.0 * sigma_t
-    """event_times = []
-
-    attempts = 0
-    while len(event_times) < num_events and attempts < max_attempts:
-        candidate = np.random.uniform(min_time, max_time)
-        if all(abs(candidate - t) >= min_dt for t in event_times):
-            event_times.append(candidate)
-        attempts += 1
-
-    if len(event_times) < num_events:
-        raise RuntimeError("Unable to generate events with minimum time spacing within the number of attempts.")
-    """
-
-    # event_times = np.array(sorted(event_times))
     np.random.seed(42)
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-    event_times = np.linspace(min_time, max_time, num_events)
+    event_times = np.array(sorted(np.random.uniform(min_time, max_time, num_events)))
     event_positions = np.stack((lats, lons, alts), axis=1)
 
     return event_positions, event_times
@@ -256,9 +269,12 @@ def generate_detections(event_positions: np.ndarray,
             Event times repeated for each detection (for traceability).
         distances : np.ndarray
             Propagation distances between each detection pair.
+        sensor_indexes: np.ndarray
+            sensor indexes association with time of detections (phase one)
         spatial_clusters : np.ndarray
             Cluster IDs identifying to which event each detection belongs.
     """
+
     np.random.seed(42)
     detections = []
     detection_times = []
@@ -266,6 +282,7 @@ def generate_detections(event_positions: np.ndarray,
     n_event_times = []
     distances = []
     spatial_clusters = []
+    sensor_indexes = []
 
     cluster_id = 0
 
@@ -273,19 +290,21 @@ def generate_detections(event_positions: np.ndarray,
         while True:
             event_position = event_positions[i]
             event_time = event_times[i]
-            event_distances = computa_distancias(event_position, sensor_positions)
+            event_distances = computa_distancias(
+                event_position, sensor_positions)
             t_detections = []
             t_detection_times = []
             t_n_event_positions = []
             t_n_event_times = []
             t_distances = []
             t_spatial_clusters = []
+            t_sensor_indexes = []
             for j in range(sensor_positions.shape[0]):
                 noise = np.clip(np.random.normal(0.0, jitter_std),
                                 min=-6 * jitter_std,
                                 max=6 * jitter_std)
                 t_detect = event_time + \
-                    event_distances[j] / AVG_LIGHT_SPEED  + noise
+                    event_distances[j] / AVG_LIGHT_SPEED + noise
                 if sensor_detection(event_distances[j]):
                     t_detections.append(sensor_positions[j])
                     t_detection_times.append(t_detect)
@@ -293,6 +312,7 @@ def generate_detections(event_positions: np.ndarray,
                     t_n_event_times.append(event_time)
                     t_distances.append(event_distances[j])
                     t_spatial_clusters.append(cluster_id)
+                    t_sensor_indexes.append(j)
             if len(t_detections) >= 3:
                 cluster_id += 1
                 detections += t_detections
@@ -301,6 +321,7 @@ def generate_detections(event_positions: np.ndarray,
                 n_event_times += t_n_event_times
                 distances += t_distances
                 spatial_clusters += t_spatial_clusters
+                sensor_indexes += t_sensor_indexes
                 break
 
     return (np.array(detections),
@@ -308,6 +329,7 @@ def generate_detections(event_positions: np.ndarray,
             np.array(n_event_positions),
             np.array(n_event_times),
             np.array(distances),
+            np.array(sensor_indexes),
             np.array(spatial_clusters))
 
 

@@ -95,7 +95,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">StelaLSA</span></code>: Custom LSA with search-space refinement.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">StelaFHO</span></code>: Custom FHO with search-space refinement.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">StelaESO</span></code>: Custom ESO with search-space refinement.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stela()</span></code>: Core algorithm performing spatiotemporal clustering and likelihood estimation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stela_phase_one()</span></code> and <code class="docutils literal notranslate"><span class="pre">stela_phase_two()</span></code>: Core algorithm performing spatiotemporal clustering and likelihood estimation.</p></li>
 </ul>
 </section>
 <hr class="docutils" />
@@ -126,6 +126,7 @@
 <h2>📁 Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GeoLightning/
 ├── GeoLightning/
+│   ├── GraphUtils/            # Plot Utilities
 │   ├── HyperParameters/       # Parameter Tuning Utility
 │   ├── Runners/               # Convenience Wrappers for Mealpy Solvers
 │   ├── Simulator/             # Sensor modeling and synthetic data
@@ -148,6 +149,7 @@
 
 <span class="c1"># Define bounds, arrival points and times...</span>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">StelaProblem</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">arrival_points</span><span class="p">,</span> <span class="n">arrival_times</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">cluster_it</span><span class="p">()</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">StelaPSO</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">best_solution</span><span class="p">,</span> <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
 </pre></div>

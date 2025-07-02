@@ -47,6 +47,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">GeoLightning</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="GeoLightning.html">GeoLightning package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="GeoLightning.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="GeoLightning.GraphUtils.html">GeoLightning.GraphUtils package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.HyperParameters.html">GeoLightning.HyperParameters package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="GeoLightning.Runners.html">GeoLightning.Runners package</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">GeoLightning.Simulator package</a></li>
@@ -198,87 +199,6 @@ Federal University of Paraná (UFPR), Brazil.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_espacial">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_espacial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299.792458</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_espacial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_espacial" title="Link to this definition"></a></dt>
-<dd><p>Calculates the Cramér-Rao Lower Bound (CRLB) matrix for estimating the position of an event.</p>
-<p>A model of isotropic spatial variance is assumed and distance measurements are subject to Gaussian noise with constant standard deviation. The CRLB matrix expresses the lower bound of the variance of any unbiased estimator of the event’s position in three-dimensional space.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sigma_d</strong> (<em>float</em>) – Standard deviation of distance measurements (in meters), assumed to be the same for all sensors.</p></li>
-<li><p><strong>N</strong> (<em>int</em>) – Total number of sensors used in the geolocation system.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>CRLB matrix of dimension (1,1) representing the CRLB in the versor of distance.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_rmse">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crlb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_rmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_rmse" title="Link to this definition"></a></dt>
-<dd><p>Computes the root mean square error (RMSE) derived from the CRLB matrix.</p>
-<p>This function calculates the quadratic mean of the trace of the product of
-the CRLB matrix with itself, normalized by its dimension.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>crlb</strong> (<em>np.ndarray</em>) – CRLB matrix from which the RMSE is to be computed.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>RMSE value computed from the CRLB matrix.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_crlb_temporal">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_crlb_temporal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_crlb_temporal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_crlb_temporal" title="Link to this definition"></a></dt>
-<dd><p>Computes the Cramér-Rao Lower Bound (CRLB) for estimating the time of origin of an event.</p>
-<p>The CRLB represents the theoretical lower bound on the variance of any unbiased estimator
-for the temporal origin, under Gaussian noise with standard deviation <cite>sigma_t</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sigma_t</strong> (<em>float</em><em>, </em><em>optional</em>) – Standard deviation of the time measurements (in seconds). Default is <cite>SIGMA_T</cite>.</p></li>
-<li><p><strong>N</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sensors involved in the estimation. Default is 7.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A (1, 1) array representing the CRLB for the origin time estimate.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.calcular_mean_crlb">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">calcular_mean_crlb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crlb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#calcular_mean_crlb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.calcular_mean_crlb" title="Link to this definition"></a></dt>
-<dd><p>Computes the mean of the variances along the diagonal of the CRLB matrix.</p>
-<p>This metric represents the average uncertainty (variance) associated with
-the estimation of each parameter under the CRLB model.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>crlb</strong> (<em>np.ndarray</em>) – CRLB matrix obtained from the estimation process.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Mean value of the variances in the CRLB matrix.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Metrics.erro_relativo_funcao_ajuste">
 <span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Metrics.</span></span><span class="sig-name descname"><span class="pre">erro_relativo_funcao_ajuste</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_estimado</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F_referencia</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Metrics.html#erro_relativo_funcao_ajuste"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Metrics.erro_relativo_funcao_ajuste" title="Link to this definition"></a></dt>
 <dd><p>Calculates the percentage relative error between the estimated fitting function and a reference.</p>
@@ -417,7 +337,7 @@ Federal University of Paraná (UFPR), Brazil.</p>
 <h4>Dependencies<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
-<li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Utils</p></li>
 </ul>
 </section>
 </section>
@@ -532,6 +452,8 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 </dd>
 <dt>distances<span class="classifier">np.ndarray</span></dt><dd><p>Propagation distances between each detection pair.</p>
 </dd>
+<dt>sensor_indexes: np.ndarray</dt><dd><p>sensor indexes association with time of detections (phase one)</p>
+</dd>
 <dt>spatial_clusters<span class="classifier">np.ndarray</span></dt><dd><p>Cluster IDs identifying to which event each detection belongs.</p>
 </dd>
 </dl>
@@ -576,7 +498,7 @@ event_times : (N,) array of timestamps</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.get_lightning_limits">
-<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_lightning_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensores_latlon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margem_metros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-40000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_lightning_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_lightning_limits" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_lightning_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensores_latlon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margem_metros</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-20000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_lightning_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_lightning_limits" title="Link to this definition"></a></dt>
 <dd><p>Computes geographic bounding box around sensor constellation with an additional margin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -612,6 +534,23 @@ event_times : (N,) array of timestamps</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Array of shape (num_sensors, 3) with sensor positions as (lat, lon, alt).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Simulator.Simulator.get_sensor_matrix">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Simulator.Simulator.</span></span><span class="sig-name descname"><span class="pre">get_sensor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wave_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">299792458.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sistema_cartesiano</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Simulator/Simulator.html#get_sensor_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Simulator.Simulator.get_sensor_matrix" title="Link to this definition"></a></dt>
+<dd><p>Computes the Sensor Time-To-Travel Assiciation Matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sensors</strong> (<em>np.ndarray</em>) – list of georeferenced positions of sensors in the network</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sensor_tt</strong> – The Time-to-Travel matrix</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>

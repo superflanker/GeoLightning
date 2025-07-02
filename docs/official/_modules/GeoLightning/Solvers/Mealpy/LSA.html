@@ -159,6 +159,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">diversity_threshold</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;diversity_threshold&quot;</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">diversity_fraction</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;diversity_fraction&quot;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 
+<div class="viewcode-block" id="LSA.initialize_variables">
+<a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.initialize_variables">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">lb</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">ub</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">new_pos</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_target</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
+            <span class="n">new_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">new_pos</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_agent</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="LSA.compute_mu">
 <a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_mu">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
@@ -199,10 +211,10 @@
 <span class="sd">        float</span>
 <span class="sd">            Standard deviation used for Gaussian sampling.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># return mu / 2.0</span>
+        <span class="k">return</span> <span class="n">mu</span> <span class="o">/</span> <span class="mf">2.0</span></div>
 
-        <span class="k">return</span> <span class="n">mu</span> <span class="o">*</span> <span class="mf">0.75</span></div>
 
+        <span class="c1"># return mu * 0.75</span>
 
 <div class="viewcode-block" id="LSA.transition_projectile">
 <a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.transition_projectile">[docs]</a>
@@ -222,41 +234,6 @@
                                    <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">ub</span><span class="p">,</span>
                                    <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tp_new</span></div>
-
-
-<div class="viewcode-block" id="LSA.compute_diversity">
-<a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.compute_diversity">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_diversity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Computes Mean Population diversity</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        float</span>
-<span class="sd">            Mean Standard Deviation of the population</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">all_solutions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">agent</span><span class="o">.</span><span class="n">solution</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">])</span>
-        <span class="n">std_per_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">all_solutions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">std_per_dim</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="LSA.force_diversity">
-<a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.force_diversity">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">force_diversity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reinforces population diversity restarting a fraction of the population </span>
-<span class="sd">        with Transition Projectiles.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n_to_replace</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">diversity_fraction</span><span class="p">))</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">n_to_replace</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-            <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_projectile</span><span class="p">()</span>
-            <span class="n">new_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amend_solution</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-            <span class="n">new_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_target</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">new_pos</span><span class="p">,</span> <span class="n">new_target</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">no_improve_counter</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
-
 
 
 <div class="viewcode-block" id="LSA.space_projectile">
@@ -280,8 +257,8 @@
 <span class="sd">        ndarray</span>
 <span class="sd">            A new solution vector generated via exponential displacement.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sp_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
-        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
+        <span class="n">sp_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">lb</span><span class="p">))</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">lb</span><span class="p">))</span>
         <span class="n">sp_new</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">solution</span> <span class="o">+</span> <span class="n">direction</span> <span class="o">*</span> <span class="n">sp_offset</span>
         <span class="k">return</span> <span class="n">sp_new</span></div>
 
@@ -316,34 +293,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">opposition_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">ub</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">lb</span> <span class="o">-</span> <span class="n">pos</span></div>
 
-    
-<div class="viewcode-block" id="LSA.get_global_best">
-<a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.get_global_best">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_global_best</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">current_best</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the best agent between the population and the current global best.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pop : list of Agent</span>
-<span class="sd">            List of agents in the current population.</span>
-<span class="sd">        current_best : Agent</span>
-<span class="sd">            Best agent so far (previous g_best).</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Agent</span>
-<span class="sd">            The new global best agent.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">minmax</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
-            <span class="n">best_in_pop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">agent</span><span class="p">:</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">best_in_pop</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">agent</span><span class="p">:</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_target</span><span class="p">(</span><span class="n">best_in_pop</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">current_best</span><span class="o">.</span><span class="n">target</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">best_in_pop</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">current_best</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
-
-    
 
 <div class="viewcode-block" id="LSA.evolve">
 <a class="viewcode-back" href="../../../../GeoLightning.Solvers.Mealpy.html#GeoLightning.Solvers.Mealpy.LSA.LSA.evolve">[docs]</a>
@@ -376,34 +325,12 @@
             <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]</span> <span class="k">if</span> <span class="n">mu</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">else</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
             <span class="n">pos_new</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-            <span class="c1"># Apply forking (opposition-based movement)</span>
-            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
-                <span class="n">pos_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opposition_position</span><span class="p">(</span><span class="n">pos_new</span><span class="p">)</span>
-
             <span class="n">pos_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amend_solution</span><span class="p">(</span><span class="n">pos_new</span><span class="p">)</span>
             <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_target</span><span class="p">(</span><span class="n">pos_new</span><span class="p">)</span>
             <span class="n">new_agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">pos_new</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compare_target</span><span class="p">(</span><span class="n">new_agent</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">target</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_agent</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">no_improve_counter</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">no_improve_counter</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-                <span class="c1"># Restart agent if stagnant</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_improve_counter</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_projectile</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">get_target</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">solution</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">no_improve_counter</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        
-        <span class="c1"># adaptive diversity</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;diversity = self.compute_diversity()</span>
-<span class="sd">        if diversity &lt; self.diversity_threshold:</span>
-<span class="sd">            self.force_diversity()&quot;&quot;&quot;</span>
-
-        <span class="c1"># best candidate update</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">g_best</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_global_best</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_best</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_agent</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 </div>
 
 </pre></div>

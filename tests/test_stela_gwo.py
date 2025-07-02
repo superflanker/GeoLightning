@@ -5,7 +5,7 @@ Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
 from GeoLightning.Simulator.Simulator import (get_sensors,
-                                              get_random_sensors,
+                                              get_sensor_matrix,
                                               get_lightning_limits,
                                               generate_detections,
                                               generate_events)
@@ -23,11 +23,12 @@ def test_stela_gwo():
 
     # recuperando o grupo de sensores
     sensors = get_sensors()
+    sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
     # gerando os eventos
-    min_alt = 0
-    max_alt = 1
+    min_alt = 935
+    max_alt = 935
     min_time = 10000
     max_time = min_time + 72 * 3600
     num_events = 1
@@ -48,6 +49,7 @@ def test_stela_gwo():
      n_event_positions,
      n_event_times,
      distances,
+     sensor_indexes,
      spatial_clusters) = generate_detections(event_positions,
                                              event_times,
                                              sensors)
@@ -63,12 +65,16 @@ def test_stela_gwo():
                            minmax="min",
                            pontos_de_chegada=detections,
                            tempos_de_chegada=detection_times,
+                           sensor_tt=sensor_tt,
+                           sensor_indexes=sensor_indexes,
                            min_pts=CLUSTER_MIN_PTS,
                            SIGMA_T=SIGMA_T,
                            epsilon_t=EPSILON_T,
                            sistema_cartesiano=False,
-                           c=AVG_LIGHT_SPEED,
-                           phase=2)
+                           c=AVG_LIGHT_SPEED)
+    
+    problem.cluster_it()
+
     problem_dict = {
         "obj_func": problem.evaluate,  # o próprio objeto como função objetivo
         "bounds": bounds,
@@ -79,8 +85,8 @@ def test_stela_gwo():
 
     start_st = perf_counter()
 
-    model = StelaGWO(epoch=1000,
-                     pop_size=10)
+    model = StelaGWO(epoch=300,
+                     pop_size=100)
     agent = model.solve(problem_dict)
 
     end_st = perf_counter()
