@@ -148,6 +148,7 @@ class TestUtils(unittest.TestCase):
         # Detector 3: associado a solução 1 (10,10,10). Ponto detecção (11,10,10). Dist = 1. Tempo_origem = 6 - 1/c
 
         tempos_origem = computa_tempos_de_origem(self.solucoes_ex,
+                                                 self.clusters_espaciais_ex,
                                                  self.tempos_de_chegada_ex,
                                                  self.pontos_de_deteccao_ex,
                                                  True) # Cartesiano
@@ -169,6 +170,7 @@ class TestUtils(unittest.TestCase):
         empty_pontos_deteccao = np.array([], dtype=np.float64).reshape(0, 3)
 
         tempos_origem = computa_tempos_de_origem(empty_solucoes,
+                                                 empty_clusters,
                                                  empty_tempos_chegada, 
                                                  empty_pontos_deteccao, 
                                                  True)

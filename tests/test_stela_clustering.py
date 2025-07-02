@@ -144,11 +144,6 @@ def test_clustering_stela(fake_test=False):
                                  polyorder=polyorder)
         
         # Plotando os resultados
-
-        """plt.plot(x, 
-                 y, 
-                 color='black', 
-                 label='Observed Separation')"""
         
         plt.plot(x, 
                  y_savgol, 
@@ -161,10 +156,10 @@ def test_clustering_stela(fake_test=False):
                  linestyle='--', 
                  color='gray',
                  linewidth=1.0, 
-                 label='Reference ($100\%$)')
+                 label=r'Reference ($100\%$)')
 
-        plt.xlabel('Mean Time Between Events ($s/\\text{event}$)')
-        plt.ylabel('Separation Efficiency (\%)')
+        plt.xlabel(r'Mean Time Between Events ($s/\\text{event}$)')
+        plt.ylabel(r'Separation Efficiency (\%)')
         plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
         plt.tight_layout()
         filename = os.path.join(basedir, "clustering_efficiency.png")

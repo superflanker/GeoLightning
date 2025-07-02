@@ -113,8 +113,6 @@ def make_histogram_graph(hist: np.ndarray,
 
     #: histograma
 
-    #: func_interp = UnivariateSpline(bin_edges, hist)
-
     func_interp = interp1d(bin_edges, hist, 'cubic')
 
     rv_x_confidence_interval = np.arange(quantile_0,
@@ -142,7 +140,7 @@ def make_histogram_graph(hist: np.ndarray,
                      0,
                      rv_values_confidence_interval,
                      facecolor='#ababab',
-                     label="90 Confidence Interval\% ")
+                     label=r"$90\%$ Interval")
 
     plt.xlabel("Location Error (m)")
 

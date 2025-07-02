@@ -5,10 +5,12 @@ Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
 from GeoLightning.Simulator.Simulator import (get_sensors,
+                                              get_sensor_matrix,
                                               get_random_sensors,
                                               get_lightning_limits,
                                               generate_detections,
                                               generate_events)
+from GeoLightning.Utils.Constants import *
 
 from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 
@@ -17,6 +19,7 @@ def test_simulations():
 
     # recuperando o grupo de sensores
     sensors = get_sensors()
+    sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
     # gerando os eventos
@@ -42,16 +45,18 @@ def test_simulations():
      n_event_positions,
      n_event_times,
      distances,
+     sensor_indexes,
      spatial_clusters) = generate_detections(event_positions,
                                              event_times,
                                              sensors)
 
     # clusterizando
-    (clusters_espaciais,
-     verossimilhanca) = stela_phase_one(n_event_positions,
-                                        detection_times,
-                                        detections,
-                                        sistema_cartesiano=False)
+
+    clusters_espaciais = stela_phase_one(detection_times,
+                                         sensor_indexes,
+                                         sensor_tt,
+                                         EPSILON_T/1.5,
+                                         CLUSTER_MIN_PTS)
 
     assert len(np.unique(clusters_espaciais)) == len(event_positions)
 
@@ -63,21 +68,24 @@ def test_simulations():
                                  min_alt,
                                  max_alt)
 
+    sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
+
     # gerando as detecções
     (detections,
      detection_times,
      n_event_positions,
      n_event_times,
      distances,
+     sensor_indexes,
      spatial_clusters) = generate_detections(event_positions,
                                              event_times,
                                              sensors)
 
     # clusterizando
-    (clusters_espaciais,
-     verossimilhanca) = stela_phase_one(n_event_positions,
-                                        detection_times,
-                                        detections,
-                                        sistema_cartesiano=False)
+    clusters_espaciais = stela_phase_one(detection_times,
+                                         sensor_indexes,
+                                         sensor_tt,
+                                         EPSILON_T/1.5,
+                                         CLUSTER_MIN_PTS)
 
     assert len(np.unique(clusters_espaciais)) == len(event_positions)
