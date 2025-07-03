@@ -10,20 +10,20 @@ GeoLightning is a Python package for the **spatiotemporal estimation of geophysi
 
 This project models the detection of geophysical events by multiple distributed sensors. The key algorithm, `stela()`, performs **spatial and temporal clustering** based on time-of-arrival (TOA) data and location information.
 
-GeoLightning supports flexible optimization by wrapping the problem in a `StelaProblem` class compatible with any MEALPY algorithm. A specialized version `StelaPSO` (and others) adds adaptive search space refinement to improve convergence.
+GeoLightning supports flexible optimization by wrapping the problem in a `StelaProblem` class compatible with any MEALPY algorithm. A specialized version `StelaPSO` and others are just convenience wrappers for our research.
 
 ---
 
 ## 📦 Main Components
 
 - `StelaProblem`: Problem wrapper for MEALPY optimizers.
-- `StelaPSO`: Custom PSO with search-space refinement.
-- `StelaAOA`: Custom AOA with search-space refinement.
-- `StelaGWO`: Custom GWO with search-space refinement.
-- `StelaGA`: Custom GA with search-space refinement.
-- `StelaLSA`: Custom LSA with search-space refinement.
-- `StelaFHO`: Custom FHO with search-space refinement.
-- `StelaESO`: Custom ESO with search-space refinement.
+- `StelaPSO`: Custom PSO convenience wrapper.
+- `StelaAOA`: Custom AOA convenience wrapper.
+- `StelaGWO`: Custom GWO convenience wrapper.
+- `StelaGA`: Custom GA convenience wrapper.
+- `StelaLSA`: Custom LSA convenience wrapper.
+- `StelaFHO`: Custom FHO convenience wrapper.
+- `StelaESO`: Custom ESO convenience wrapper.
 - `stela_phase_one()`, `stela_phase_two()`: Core algorithm performing spatiotemporal clustering and likelihood estimation.
 
 ---

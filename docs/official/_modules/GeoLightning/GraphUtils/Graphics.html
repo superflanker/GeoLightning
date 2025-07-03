@@ -131,6 +131,8 @@
                          <span class="n">bin_edges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                          <span class="n">quantile_0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                          <span class="n">quantile_90</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                         <span class="n">xlabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                         <span class="n">ylabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                          <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates and saves a stylized histogram plot with smoothed interpolation </span>
@@ -155,6 +157,12 @@
 
 <span class="sd">    quantile_90 : float</span>
 <span class="sd">        Upper bound of the desired confidence interval (e.g., 0.95 for 95th percentile).</span>
+
+<span class="sd">    xlabel: str</span>
+<span class="sd">        name of x axis</span>
+
+<span class="sd">    ylabel: str</span>
+<span class="sd">        name of y axis</span>
 
 <span class="sd">    filename : str</span>
 <span class="sd">        Path to save the resulting figure. Saved with 600 DPI resolution.</span>
@@ -190,8 +198,6 @@
 
     <span class="c1">#: histograma</span>
 
-    <span class="c1">#: func_interp = UnivariateSpline(bin_edges, hist)</span>
-
     <span class="n">func_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">hist</span><span class="p">,</span> <span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
 
     <span class="n">rv_x_confidence_interval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">quantile_0</span><span class="p">,</span>
@@ -219,13 +225,17 @@
                      <span class="mi">0</span><span class="p">,</span>
                      <span class="n">rv_values_confidence_interval</span><span class="p">,</span>
                      <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;#ababab&#39;</span><span class="p">,</span>
-                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;90 Confidence Interval\% &quot;</span><span class="p">)</span>
+                     <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$90\%$ Interval&quot;</span><span class="p">)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Location Error (m)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.xlabel(&quot;Location Error (m)&quot;)</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Probability Density Function (PDF)&quot;</span><span class="p">)</span>
+    <span class="c1"># plt.ylabel(&quot;Probability Density Function (PDF)&quot;)</span>
 
     <span class="c1">#: plt.title(title)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fancybox</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
