@@ -1,3 +1,8 @@
+"""
+EELT 7019 - Applied Artificial Intelligence
+Problem Plot - STELA Theory
+Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
 import matplotlib.pyplot as plt
 import scienceplots
 import numpy as np
