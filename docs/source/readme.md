@@ -17,13 +17,13 @@ GeoLightning supports flexible optimization by wrapping the problem in a `StelaP
 ## 📦 Main Components
 
 - `StelaProblem`: Problem wrapper for MEALPY optimizers.
-- `StelaPSO`: Custom PSO with search-space refinement.
-- `StelaAOA`: Custom AOA with search-space refinement.
-- `StelaGWO`: Custom GWO with search-space refinement.
-- `StelaGA`: Custom GA with search-space refinement.
-- `StelaLSA`: Custom LSA with search-space refinement.
-- `StelaFHO`: Custom FHO with search-space refinement.
-- `StelaESO`: Custom ESO with search-space refinement.
+- `StelaPSO`: Custom PSO convenience wrapper.
+- `StelaAOA`: Custom AOA convenience wrapper.
+- `StelaGWO`: Custom GWO convenience wrapper.
+- `StelaGA`: Custom GA convenience wrapper.
+- `StelaLSA`: Custom LSA convenience wrapper.
+- `StelaFHO`: Custom FHO convenience wrapper.
+- `StelaESO`: Custom ESO convenience wrapper.
 - `stela_phase_one()`, `stela_phase_two()`: Core algorithm performing spatiotemporal clustering and likelihood estimation.
 
 ---
