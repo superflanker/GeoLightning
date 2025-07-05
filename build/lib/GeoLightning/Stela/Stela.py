@@ -154,17 +154,18 @@ def stela_phase_two(solucoes: np.ndarray,
                                                 sistema_cartesiano)
     # média dos tempos por cluster
     centroides_temporais, _ = calcular_media_clusters(tempos_de_origem,
-                                                   clusters_espaciais)
+                                                      clusters_espaciais)
     # residuos temporais
     residuos_temporais = computa_residuos_temporais(centroides_temporais,
                                                     clusters_espaciais,
-                                                    tempos_de_origem)    
+                                                    tempos_de_origem)
 
     # distancias a partir do ponto de origem
     residuos_espaciais = c * np.abs(residuos_temporais)
 
     # verossimilhança
-    verossimilhanca = funcao_log_verossimilhanca(residuos_espaciais, c * sigma_t)
+    verossimilhanca = funcao_log_verossimilhanca(
+        residuos_espaciais, c * sigma_t)
 
     # tudo pronto, retornando
     return verossimilhanca
@@ -231,7 +232,8 @@ if __name__ == "__main__":
         len_reais = len(event_positions)
         print(len_clusterizados, len_reais)
 
-        correct_association_index = np.mean(spatial_clusters == clusters_espaciais) * 100
+        correct_association_index = np.mean(
+            spatial_clusters == clusters_espaciais) * 100
         print(correct_association_index)
         try:
             assert len_clusterizados == len_reais
