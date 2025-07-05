@@ -98,6 +98,74 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
+<section id="module-GeoLightning.Utils.Bearing">
+<span id="geolightning-utils-bearing-module"></span><h2>GeoLightning.Utils.Bearing module<a class="headerlink" href="#module-GeoLightning.Utils.Bearing" title="Link to this heading"></a></h2>
+<section id="bearing-position-functions">
+<h3>Bearing Position Functions<a class="headerlink" href="#bearing-position-functions" title="Link to this heading"></a></h3>
+<p>Bearing Calculation - Destination Point on a Sphere</p>
+<section id="summary">
+<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
+<p>This module implements the spherical bearing calculation, allowing the estimation of
+a destination point on a sphere (e.g., Earth) given an initial position, a distance, and an azimuth.</p>
+<p>The altitude is assumed to be constant throughout the computation. This function
+is essential in geolocation applications, navigation, and spatial simulation of
+movement or dispersion from known coordinates.</p>
+</section>
+<section id="author">
+<h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
+<p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
+</section>
+<section id="contents">
+<h4>Contents<a class="headerlink" href="#contents" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Conversion of geodetic coordinates to radians</p></li>
+<li><p>Spherical forward geodesic problem</p></li>
+<li><p>Latitude and longitude destination computation</p></li>
+<li><p>Preservation of original altitude</p></li>
+</ul>
+<p class="rubric">Notes</p>
+<p>This module is part of the activities of the discipline
+EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>numba</p></li>
+<li><p>GeoLightning.Utils.Utils</p></li>
+<li><p>GeoLightning.Utils.Constants</p></li>
+</ul>
+</section>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.Utils.Bearing.destino_esferico">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.Utils.Bearing.</span></span><span class="sig-name descname"><span class="pre">destino_esferico</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posicao</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distancia</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azimute_deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6371008.8</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/GeoLightning/Utils/Bearing.html#destino_esferico"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.Utils.Bearing.destino_esferico" title="Link to this definition"></a></dt>
+<dd><p>Computes the destination point over a spherical surface given an initial position,
+a distance, and an azimuth (bearing), assuming constant altitude.</p>
+<p>This function solves the forward geodesic problem on a sphere. It calculates
+the destination latitude and longitude from a given point, distance, and bearing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>posicao</strong> (<em>np.ndarray</em>) – Array of shape (3,) representing the initial position in the format
+[latitude, longitude, altitude], with latitude and longitude in degrees and altitude in meters.</p></li>
+<li><p><strong>distancia</strong> (<em>np.float64</em>) – Distance to be traveled over the sphere’s surface (in meters).</p></li>
+<li><p><strong>azimute_deg</strong> (<em>np.float64</em>) – Azimuth (bearing) in degrees, measured clockwise from the north.</p></li>
+<li><p><strong>raio</strong> (<em>np.float64</em><em>, </em><em>optional</em>) – Radius of the sphere in meters. Default is the Earth’s average radius (6371000 m).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of shape (3,) with the destination point in the format
+[latitude, longitude, altitude], where latitude and longitude are in degrees and
+the altitude remains the same as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-GeoLightning.Utils.Constants">
 <span id="geolightning-utils-constants-module"></span><h2>GeoLightning.Utils.Constants module<a class="headerlink" href="#module-GeoLightning.Utils.Constants" title="Link to this heading"></a></h2>
 <section id="constants">
@@ -109,12 +177,12 @@ of atmospheric event locations. It includes physical constants,
 sensor-related noise parameters, spatial tolerances, and thresholds
 for spatiotemporal clustering and localization bounds.</p>
 </section>
-<section id="author">
-<h4>Author<a class="headerlink" href="#author" title="Link to this heading"></a></h4>
+<section id="id1">
+<h4>Author<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="summary">
-<h4>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h4>
+<section id="id2">
+<h4>Summary<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
 <p>The constants defined in this module are used across multiple components
 of the STELA pipeline and simulation tools. These include:
 - Physical constants such as the average Earth radius and speed of light.
@@ -125,8 +193,8 @@ of the STELA pipeline and simulation tools. These include:
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="dependencies">
-<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<section id="id3">
+<h4>Dependencies<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
 <p>numpy</p>
 </section>
 </section>
@@ -251,12 +319,12 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 coordinate transformations, and time-of-origin estimations
 in geolocation systems based on Time-of-Arrival (TOA) data.</p>
 </section>
-<section id="id1">
-<h4>Author<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<section id="id4">
+<h4>Author<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id2">
-<h4>Summary<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<section id="id5">
+<h4>Summary<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <p>The functions included in this module support core tasks such as:
 - Conversion of coordinates from degrees to radians
 - Computation of distances in spherical and Cartesian systems
@@ -268,8 +336,8 @@ with large-scale simulations of geophysical or atmospheric detection systems.</p
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id3">
-<h4>Dependencies<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<section id="id6">
+<h4>Dependencies<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>
@@ -584,18 +652,18 @@ Latitude and longitude are internally converted to radians.</p>
 <section id="utility-functions-and-constants">
 <h3>Utility Functions and Constants<a class="headerlink" href="#utility-functions-and-constants" title="Link to this heading"></a></h3>
 </section>
-<section id="id4">
-<h3>Summary<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>Summary<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p>Provides constants, spatial computations, and helper functions
 used across the GeoLightning framework. Includes TOA-based distance
 calculations in both spherical and Cartesian coordinates.</p>
 </section>
-<section id="id5">
-<h3>Author<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>Author<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <p>Augusto Mathias Adams &lt;<a class="reference external" href="mailto:augusto&#46;adams&#37;&#52;&#48;ufpr&#46;br">augusto<span>&#46;</span>adams<span>&#64;</span>ufpr<span>&#46;</span>br</a>&gt;</p>
 </section>
-<section id="id6">
-<h3>Submodules<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Submodules<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Bearing.py: Bearing Positioning utility.</p></li>
 <li><p>Constants.py: Geophysical constants and thresholds.</p></li>
@@ -605,8 +673,8 @@ calculations in both spherical and Cartesian coordinates.</p>
 <p>This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</p>
 </section>
-<section id="id7">
-<h3>Dependencies<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id10">
+<h3>Dependencies<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>numpy</p></li>
 <li><p>numba</p></li>

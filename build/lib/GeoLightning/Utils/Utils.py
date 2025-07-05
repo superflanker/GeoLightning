@@ -461,7 +461,7 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
 
     M = len(clusters_espaciais)
     distancias = np.zeros(M, dtype=np.float64)
-    clusters_espaciais - clusters_espaciais.astype(np.int32)
+    clusters_espaciais = clusters_espaciais.astype(np.int32)
 
     for i in range(M):
         if sistema_cartesiano:

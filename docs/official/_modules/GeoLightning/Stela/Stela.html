@@ -234,17 +234,18 @@
                                                 <span class="n">sistema_cartesiano</span><span class="p">)</span>
     <span class="c1"># média dos tempos por cluster</span>
     <span class="n">centroides_temporais</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">calcular_media_clusters</span><span class="p">(</span><span class="n">tempos_de_origem</span><span class="p">,</span>
-                                                   <span class="n">clusters_espaciais</span><span class="p">)</span>
+                                                      <span class="n">clusters_espaciais</span><span class="p">)</span>
     <span class="c1"># residuos temporais</span>
     <span class="n">residuos_temporais</span> <span class="o">=</span> <span class="n">computa_residuos_temporais</span><span class="p">(</span><span class="n">centroides_temporais</span><span class="p">,</span>
                                                     <span class="n">clusters_espaciais</span><span class="p">,</span>
-                                                    <span class="n">tempos_de_origem</span><span class="p">)</span>    
+                                                    <span class="n">tempos_de_origem</span><span class="p">)</span>
 
     <span class="c1"># distancias a partir do ponto de origem</span>
     <span class="n">residuos_espaciais</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">residuos_temporais</span><span class="p">)</span>
 
     <span class="c1"># verossimilhança</span>
-    <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">(</span><span class="n">residuos_espaciais</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span>
+    <span class="n">verossimilhanca</span> <span class="o">=</span> <span class="n">funcao_log_verossimilhanca</span><span class="p">(</span>
+        <span class="n">residuos_espaciais</span><span class="p">,</span> <span class="n">c</span> <span class="o">*</span> <span class="n">sigma_t</span><span class="p">)</span>
 
     <span class="c1"># tudo pronto, retornando</span>
     <span class="k">return</span> <span class="n">verossimilhanca</span></div>
@@ -312,7 +313,8 @@
         <span class="n">len_reais</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_positions</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">len_clusterizados</span><span class="p">,</span> <span class="n">len_reais</span><span class="p">)</span>
 
-        <span class="n">correct_association_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">spatial_clusters</span> <span class="o">==</span> <span class="n">clusters_espaciais</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">correct_association_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="n">spatial_clusters</span> <span class="o">==</span> <span class="n">clusters_espaciais</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">correct_association_index</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">len_clusterizados</span> <span class="o">==</span> <span class="n">len_reais</span>
