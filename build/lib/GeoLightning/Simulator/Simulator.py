@@ -28,7 +28,7 @@ Contents
 
 Notes
 -----
-This module is part of the activities of the discipline 
+This module is part of the activities of the discipline
 EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.
 
 Dependencies
@@ -115,6 +115,49 @@ def get_sensors() -> np.ndarray:
     return sensors
 
 
+@jit(nopythos=True, cache=True, fastmath=True)
+def get_parana_state_sensors() -> np.ndarray:
+    """
+    Returns a network over Paraná's state - StormEye Projections
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (30, 3) with fixed sensor coordinates.
+    """
+    sensors = np.array([[-24.84724728, -50.0468059, 935.0],
+                        [-25.13080449, -53.95538321, 935.0],
+                        [-25.6502094, -50.54685779, 935.0],
+                        [-23.08138184, -51.86892399, 935.0],
+                        [-25.67956232, -49.23511376, 935.0],
+                        [-25.21635234, -52.03071597, 935.0],
+                        [-24.00697991, -53.56584922, 935.0],
+                        [-25.05870181, -52.67555993, 935.0],
+                        [-23.70833581, -51.03976658, 935.0],
+                        [-24.0994583, -52.19448522, 935.0],
+                        [-24.36170654, -52.86064998, 935.0],
+                        [-24.17208351, -50.01961616, 935.0],
+                        [-23.63157396, -49.76620254, 935.0],
+                        [-23.02581538, -52.8103863, 935.0],
+                        [-24.53030951, -53.85851116, 935.0],
+                        [-25.72041993, -51.26124428, 935.0],
+                        [-24.84820667, -51.42181062, 935.0],
+                        [-23.32281152, -50.33646275, 935.0],
+                        [-24.20921727, -51.38527814, 935.0],
+                        [-23.48428711, -53.24842583, 935.0],
+                        [-25.2547867, -48.71641353, 935.0],
+                        [-24.66839792, -50.65967657, 935.0],
+                        [-26.03148476, -53.2408701, 935.0],
+                        [-26.03427782, -51.868153, 935.0],
+                        [-25.62400935, -49.89004677, 935.0],
+                        [-25.44005846, -53.37693271, 935.0],
+                        [-25.95367629, -52.58149423, 935.0],
+                        [-24.89614112, -49.31104506, 935.0],
+                        [-23.13667294, -51.1806208, 935.0],
+                        [-23.44671885, -52.37700765, 935.0]])
+    return sensors
+
+
 @jit(nopython=True, cache=True, fastmath=True)
 def get_sensor_matrix(sensors: np.ndarray,
                       wave_speed: np.float64 = AVG_LIGHT_SPEED,
@@ -143,8 +186,59 @@ def get_sensor_matrix(sensors: np.ndarray,
 
 
 @jit(nopython=True, cache=True, fastmath=True)
+def get_lightning_area_grid(min_lat: np.float64,
+                            max_lat: np.float64,
+                            min_lon: np.float64,
+                            max_lon: np.float64,
+                            step: np.int32 = 1000) -> np.ndarray:
+    """
+
+    Generates a grid inside a ligntning area
+
+    Parameters
+    ----------
+    min_lat : np.float64
+        Minimum latitude.
+    max_lat : np.float64
+        Maximum latitude.
+    min_lon : np.float64
+        Minimum longitude.
+    max_lon : np.float64
+        Maximum longitude.
+    step: np.int32
+        the grid step in meters
+
+    Returns
+    -------
+    grid : np.ndarray
+        the lightning area grid points
+    """
+    avg_lat = (min_lat + max_lat) / 2.0
+    delta_lat = step / R_LAT
+    delta_lon = step / (R_LAT * np.cos(np.radians(avg_lat)))
+
+    n_lat = int(np.floor((max_lat - min_lat) / delta_lat)) + 1
+    n_lon = int(np.floor((max_lon - min_lon) / delta_lon)) + 1
+
+    total = n_lat * n_lon
+    grid = np.empty((total, 3), dtype=np.float64)
+
+    idx = 0
+    for i in range(n_lat):
+        for j in range(n_lon):
+            lat = min_lat + i * delta_lat + delta_lat / 2
+            lon = min_lon + j * delta_lon + delta_lon / 2
+            grid[idx, 0] = lat
+            grid[idx, 1] = lon
+            grid[idx, 2] = 935.0
+            idx += 1
+
+    return grid
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_limits(sensores_latlon: np.ndarray,
-                         margem_metros: float = -20000.0) -> tuple:
+                         margem_metros: float = 50000.0) -> tuple:
     """
     Computes geographic bounding box around sensor constellation with an additional margin.
 
@@ -232,7 +326,8 @@ def generate_events(num_events: int,
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-    event_times = np.array(sorted(np.random.uniform(min_time, max_time, num_events)))
+    event_times = np.array(
+        sorted(np.random.uniform(min_time, max_time, num_events)))
     event_positions = np.stack((lats, lons, alts), axis=1)
 
     return event_positions, event_times
