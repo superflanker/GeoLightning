@@ -71,7 +71,7 @@ threadpoolctl==3.6.0
 tomli==2.2.1
 typing_extensions==4.14.0
 tzdata==2025.2
-urllib3==2.4.0
+urllib3==2.5.0
 uvicorn==0.34.3
 watchfiles==1.1.0
 webencodings==0.5.1
