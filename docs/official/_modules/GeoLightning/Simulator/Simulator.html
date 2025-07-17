@@ -103,7 +103,7 @@
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
-<span class="sd">This module is part of the activities of the discipline </span>
+<span class="sd">This module is part of the activities of the discipline</span>
 <span class="sd">EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR), Brazil.</span>
 
 <span class="sd">Dependencies</span>
@@ -196,6 +196,52 @@
 
 
 
+<div class="viewcode-block" id="get_parana_state_sensors">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_parana_state_sensors">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopythos</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_parana_state_sensors</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a network over Paraná&#39;s state - StormEye Projections</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of shape (30, 3) with fixed sensor coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sensors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">24.84724728</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.0468059</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.13080449</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.95538321</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.6502094</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.54685779</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.08138184</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.86892399</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.67956232</span><span class="p">,</span> <span class="o">-</span><span class="mf">49.23511376</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.21635234</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.03071597</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.00697991</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.56584922</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.05870181</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.67555993</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.70833581</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.03976658</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.0994583</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.19448522</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.36170654</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.86064998</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.17208351</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.01961616</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.63157396</span><span class="p">,</span> <span class="o">-</span><span class="mf">49.76620254</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.02581538</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.8103863</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.53030951</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.85851116</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.72041993</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.26124428</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.84820667</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.42181062</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.32281152</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.33646275</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.20921727</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.38527814</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.48428711</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.24842583</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.2547867</span><span class="p">,</span> <span class="o">-</span><span class="mf">48.71641353</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.66839792</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.65967657</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">26.03148476</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.2408701</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">26.03427782</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.868153</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.62400935</span><span class="p">,</span> <span class="o">-</span><span class="mf">49.89004677</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.44005846</span><span class="p">,</span> <span class="o">-</span><span class="mf">53.37693271</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">25.95367629</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.58149423</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">24.89614112</span><span class="p">,</span> <span class="o">-</span><span class="mf">49.31104506</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.13667294</span><span class="p">,</span> <span class="o">-</span><span class="mf">51.1806208</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">],</span>
+                        <span class="p">[</span><span class="o">-</span><span class="mf">23.44671885</span><span class="p">,</span> <span class="o">-</span><span class="mf">52.37700765</span><span class="p">,</span> <span class="mf">935.0</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">sensors</span></div>
+
+
+
 <div class="viewcode-block" id="get_sensor_matrix">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_sensor_matrix">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -230,7 +276,7 @@
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_lightning_limits">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lightning_limits</span><span class="p">(</span><span class="n">sensores_latlon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                         <span class="n">margem_metros</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">20000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">50000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes geographic bounding box around sensor constellation with an additional margin.</span>
 
@@ -238,7 +284,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    sensores_latlon : np.ndarray</span>
 <span class="sd">        Array of shape (N, 2) with latitude and longitude in degrees.</span>
-<span class="sd">    margem_metros : float, optional</span>
+<span class="sd">    margem_metros : np.float64, optional</span>
 <span class="sd">        Margin in meters around the bounding box (default is 5000.0).</span>
 
 <span class="sd">    Returns</span>
@@ -268,46 +314,123 @@
 
 
 
+<div class="viewcode-block" id="get_lightning_area_grid">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_lightning_area_grid">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_lightning_area_grid</span><span class="p">(</span><span class="n">min_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                            <span class="n">max_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                            <span class="n">min_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                            <span class="n">max_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                            <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Generates a grid inside a ligntning area</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    min_lat : np.float64</span>
+<span class="sd">        Minimum latitude.</span>
+<span class="sd">    max_lat : np.float64</span>
+<span class="sd">        Maximum latitude.</span>
+<span class="sd">    min_lon : np.float64</span>
+<span class="sd">        Minimum longitude.</span>
+<span class="sd">    max_lon : np.float64</span>
+<span class="sd">        Maximum longitude.</span>
+<span class="sd">    step: np.int32</span>
+<span class="sd">        the grid step in meters</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    grid : np.ndarray</span>
+<span class="sd">        the lightning area grid points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">avg_lat</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_lat</span> <span class="o">+</span> <span class="n">max_lat</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">delta_lat</span> <span class="o">=</span> <span class="n">step</span> <span class="o">/</span> <span class="n">R_LAT</span>
+    <span class="n">delta_lon</span> <span class="o">=</span> <span class="n">step</span> <span class="o">/</span> <span class="p">(</span><span class="n">R_LAT</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">avg_lat</span><span class="p">)))</span>
+
+    <span class="n">n_lat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">max_lat</span> <span class="o">-</span> <span class="n">min_lat</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta_lat</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">n_lon</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">max_lon</span> <span class="o">-</span> <span class="n">min_lon</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta_lon</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="n">n_lat</span> <span class="o">*</span> <span class="n">n_lon</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">total</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lat</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lon</span><span class="p">):</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="n">min_lat</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">delta_lat</span> <span class="o">+</span> <span class="n">delta_lat</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="n">min_lon</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="n">delta_lon</span> <span class="o">+</span> <span class="n">delta_lon</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lat</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lon</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">935.0</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">grid</span></div>
+
+
+<div class="viewcode-block" id="compute_network_detection_efficiency">
+<a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.compute_network_detection_efficiency">[docs]</a>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_network_detection_efficiency</span><span class="p">(</span><span class="n">sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes network detection efficienty (NDE)</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    sensores : np.ndarray</span>
+<span class="sd">        Array of shape (N, 2) with latitude and longitude in degrees.</span>
+<span class="sd">    margem_metros : np.float64, optional</span>
+<span class="sd">        Margin in meters around the bounding box (default is 5000.0).</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (grid: np.ndarray, nde: np.ndarray)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+    
 <div class="viewcode-block" id="generate_events">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.generate_events">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                    <span class="n">min_lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">max_lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">min_lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">max_lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">min_alt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">max_alt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">min_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">max_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                    <span class="n">sigma_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
-                    <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+                    <span class="n">min_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">max_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">min_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">max_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">min_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">max_alt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">min_time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">max_time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                    <span class="n">sigma_t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="n">SIGMA_T</span><span class="p">,</span>
+                    <span class="n">max_attempts</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates atmospheric events with spatial and temporal attributes,</span>
 <span class="sd">    ensuring a minimum temporal spacing of 6 * sigma_t.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    num_events : int</span>
+<span class="sd">    num_events : np.int32</span>
 <span class="sd">        Number of events to generate.</span>
-<span class="sd">    min_lat : float</span>
+<span class="sd">    min_lat : np.float64</span>
 <span class="sd">        Minimum latitude.</span>
-<span class="sd">    max_lat : float</span>
+<span class="sd">    max_lat : np.float64</span>
 <span class="sd">        Maximum latitude.</span>
-<span class="sd">    min_lon : float</span>
+<span class="sd">    min_lon : np.float64</span>
 <span class="sd">        Minimum longitude.</span>
-<span class="sd">    max_lon : float</span>
+<span class="sd">    max_lon : np.float64</span>
 <span class="sd">        Maximum longitude.</span>
-<span class="sd">    min_alt : float</span>
+<span class="sd">    min_alt : np.float64</span>
 <span class="sd">        Minimum altitude.</span>
-<span class="sd">    max_alt : float</span>
+<span class="sd">    max_alt : np.float64</span>
 <span class="sd">        Maximum altitude.</span>
-<span class="sd">    min_time : float</span>
+<span class="sd">    min_time : np.float64</span>
 <span class="sd">        Minimum timestamp.</span>
-<span class="sd">    max_time : float</span>
+<span class="sd">    max_time : np.float64</span>
 <span class="sd">        Maximum timestamp.</span>
-<span class="sd">    sigma_t : float, optional</span>
+<span class="sd">    sigma_t : np.float64, optional</span>
 <span class="sd">        Temporal standard deviation (default is SIGMA_T).</span>
-<span class="sd">    max_attempts : int, optional</span>
+<span class="sd">    max_attempts : np.int32, optional</span>
 <span class="sd">        Maximum number of attempts to generate valid timestamps (default is 10000).</span>
 
 <span class="sd">    Returns</span>
@@ -321,7 +444,8 @@
     <span class="n">lats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span> <span class="n">max_lat</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">lons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_lon</span><span class="p">,</span> <span class="n">max_lon</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
     <span class="n">alts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_alt</span><span class="p">,</span> <span class="n">max_alt</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)</span>
-    <span class="n">event_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)))</span>
+    <span class="n">event_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_time</span><span class="p">,</span> <span class="n">max_time</span><span class="p">,</span> <span class="n">num_events</span><span class="p">)))</span>
     <span class="n">event_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">lats</span><span class="p">,</span> <span class="n">lons</span><span class="p">,</span> <span class="n">alts</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">event_positions</span><span class="p">,</span> <span class="n">event_times</span></div>
@@ -345,7 +469,7 @@
 <span class="sd">        Array of event timestamps with shape (N,).</span>
 <span class="sd">    sensor_positions : np.ndarray</span>
 <span class="sd">        Array of sensor coordinates with shape (M, 3).</span>
-<span class="sd">    jitter_std : float, optional</span>
+<span class="sd">    jitter_std : np.float64, optional</span>
 <span class="sd">        Standard deviation of temporal noise added to detection times (default is SIGMA_T).</span>
 
 <span class="sd">    Returns</span>

@@ -186,6 +186,45 @@ def get_sensor_matrix(sensors: np.ndarray,
 
 
 @jit(nopython=True, cache=True, fastmath=True)
+def get_lightning_limits(sensores_latlon: np.ndarray,
+                         margem_metros: np.float64 = 50000.0) -> tuple:
+    """
+    Computes geographic bounding box around sensor constellation with an additional margin.
+
+    Parameters
+    ----------
+    sensores_latlon : np.ndarray
+        Array of shape (N, 2) with latitude and longitude in degrees.
+    margem_metros : np.float64, optional
+        Margin in meters around the bounding box (default is 5000.0).
+
+    Returns
+    -------
+    tuple
+        (min_lat, max_lat, min_lon, max_lon) with margin applied.
+    """
+    latitudes = sensores_latlon[:, 0]
+    longitudes = sensores_latlon[:, 1]
+
+    min_lat = np.min(latitudes)
+    max_lat = np.max(latitudes)
+    min_lon = np.min(longitudes)
+    max_lon = np.max(longitudes)
+
+    lat_media = np.mean(latitudes)
+
+    delta_lat = margem_metros / R_LAT
+    delta_lon = margem_metros / (R_LAT * np.cos(np.radians(lat_media)))
+
+    min_lat -= delta_lat
+    max_lat += delta_lat
+    min_lon -= delta_lon
+    max_lon += delta_lon
+
+    return min_lat, max_lat, min_lon, max_lon
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_area_grid(min_lat: np.float64,
                             max_lat: np.float64,
                             min_lon: np.float64,
@@ -235,84 +274,65 @@ def get_lightning_area_grid(min_lat: np.float64,
 
     return grid
 
-
 @jit(nopython=True, cache=True, fastmath=True)
-def get_lightning_limits(sensores_latlon: np.ndarray,
-                         margem_metros: float = 50000.0) -> tuple:
+def compute_network_detection_efficiency(sensors: np.ndarray,
+                                         margem_metros: np.float64) -> tuple:
     """
-    Computes geographic bounding box around sensor constellation with an additional margin.
-
+    Computes network detection efficienty (NDE)
+    
     Parameters
     ----------
-    sensores_latlon : np.ndarray
+    
+    sensores : np.ndarray
         Array of shape (N, 2) with latitude and longitude in degrees.
-    margem_metros : float, optional
+    margem_metros : np.float64, optional
         Margin in meters around the bounding box (default is 5000.0).
-
+    
     Returns
     -------
     tuple
-        (min_lat, max_lat, min_lon, max_lon) with margin applied.
+        (grid: np.ndarray, nde: np.ndarray)
+
     """
-    latitudes = sensores_latlon[:, 0]
-    longitudes = sensores_latlon[:, 1]
-
-    min_lat = np.min(latitudes)
-    max_lat = np.max(latitudes)
-    min_lon = np.min(longitudes)
-    max_lon = np.max(longitudes)
-
-    lat_media = np.mean(latitudes)
-
-    delta_lat = margem_metros / R_LAT
-    delta_lon = margem_metros / (R_LAT * np.cos(np.radians(lat_media)))
-
-    min_lat -= delta_lat
-    max_lat += delta_lat
-    min_lon -= delta_lon
-    max_lon += delta_lon
-
-    return min_lat, max_lat, min_lon, max_lon
-
-
-def generate_events(num_events: int,
-                    min_lat: float,
-                    max_lat: float,
-                    min_lon: float,
-                    max_lon: float,
-                    min_alt: float,
-                    max_alt: float,
-                    min_time: float,
-                    max_time: float,
-                    sigma_t: float = SIGMA_T,
-                    max_attempts: int = 10000) -> tuple:
+    
+def generate_events(num_events: np.int32,
+                    min_lat: np.float64,
+                    max_lat: np.float64,
+                    min_lon: np.float64,
+                    max_lon: np.float64,
+                    min_alt: np.float64,
+                    max_alt: np.float64,
+                    min_time: np.float64,
+                    max_time: np.float64,
+                    sigma_t: np.float64 = SIGMA_T,
+                    max_attempts: np.int32 = 10000) -> tuple:
     """
     Generates atmospheric events with spatial and temporal attributes,
     ensuring a minimum temporal spacing of 6 * sigma_t.
 
     Parameters
     ----------
-    num_events : int
+    num_events : np.int32
         Number of events to generate.
-    min_lat : float
+    min_lat : np.float64
         Minimum latitude.
-    max_lat : float
+    max_lat : np.float64
         Maximum latitude.
-    min_lon : float
+    min_lon : np.float64
         Minimum longitude.
-    max_lon : float
+    max_lon : np.float64
         Maximum longitude.
-    min_alt : float
+    min_alt : np.float64
         Minimum altitude.
-    max_alt : float
+    max_alt : np.float64
         Maximum altitude.
-    min_time : float
+    min_time : np.float64
         Minimum timestamp.
-    max_time : float
+    max_time : np.float64
         Maximum timestamp.
-    sigma_t : float, optional
+    sigma_t : np.float64, optional
         Temporal standard deviation (default is SIGMA_T).
-    max_attempts : int, optional
+    max_attempts : np.int32, optional
         Maximum number of attempts to generate valid timestamps (default is 10000).
 
     Returns
@@ -348,7 +368,7 @@ def generate_detections(event_positions: np.ndarray,
         Array of event timestamps with shape (N,).
     sensor_positions : np.ndarray
         Array of sensor coordinates with shape (M, 3).
-    jitter_std : float, optional
+    jitter_std : np.float64, optional
         Standard deviation of temporal noise added to detection times (default is SIGMA_T).
 
     Returns
