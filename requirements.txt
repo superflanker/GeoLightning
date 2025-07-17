@@ -37,7 +37,7 @@ numpy==2.2.6
 opfunu==1.0.4
 packaging==25.0
 pandas==2.3.0
-pillow==11.2.1
+pillow==11.3.0
 pluggy==1.6.0
 Pygments==2.19.1
 pyogrio==0.11.0
