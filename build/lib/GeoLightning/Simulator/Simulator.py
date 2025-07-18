@@ -115,7 +115,7 @@ def get_sensors() -> np.ndarray:
     return sensors
 
 
-@jit(nopythos=True, cache=True, fastmath=True)
+@jit(nopython=True, cache=True, fastmath=True)
 def get_parana_state_sensors() -> np.ndarray:
     """
     Returns a network over Paraná's state - StormEye Projections
@@ -169,6 +169,10 @@ def get_sensor_matrix(sensors: np.ndarray,
     ----------
     sensors: np.ndarray
         list of georeferenced positions of sensors in the network
+    wave_speed: np.float64
+        wave propagation speed (default is the speed of light)
+    sistema_cartesiano : bool, optional
+        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).
 
     Returns
     -------
@@ -187,7 +191,7 @@ def get_sensor_matrix(sensors: np.ndarray,
 
 @jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_limits(sensores_latlon: np.ndarray,
-                         margem_metros: np.float64 = 50000.0) -> tuple:
+                         margem_metros: np.float64 = 200000.0) -> tuple:
     """
     Computes geographic bounding box around sensor constellation with an additional margin.
 
@@ -196,7 +200,7 @@ def get_lightning_limits(sensores_latlon: np.ndarray,
     sensores_latlon : np.ndarray
         Array of shape (N, 2) with latitude and longitude in degrees.
     margem_metros : np.float64, optional
-        Margin in meters around the bounding box (default is 5000.0).
+        Margin in meters around the bounding box (default is 200000.0).
 
     Returns
     -------
@@ -229,7 +233,7 @@ def get_lightning_area_grid(min_lat: np.float64,
                             max_lat: np.float64,
                             min_lon: np.float64,
                             max_lon: np.float64,
-                            step: np.int32 = 1000) -> np.ndarray:
+                            step: np.float64 = 1000.0) -> np.ndarray:
     """
 
     Generates a grid inside a ligntning area
@@ -244,7 +248,7 @@ def get_lightning_area_grid(min_lat: np.float64,
         Minimum longitude.
     max_lon : np.float64
         Maximum longitude.
-    step: np.int32
+    step: np.float64
         the grid step in meters
 
     Returns
@@ -274,27 +278,75 @@ def get_lightning_area_grid(min_lat: np.float64,
 
     return grid
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def compute_network_detection_efficiency(sensors: np.ndarray,
-                                         margem_metros: np.float64) -> tuple:
+                                         margem_metros: np.float64,
+                                         step: np.float64,
+                                         num_events: np.int32 = 1000,
+                                         sistema_cartesiano: bool = False) -> tuple:
     """
-    Computes network detection efficienty (NDE)
-    
+    Computes Network Detection Efficienty (NDE) by simulation
+
     Parameters
     ----------
-    
+
     sensores : np.ndarray
         Array of shape (N, 2) with latitude and longitude in degrees.
     margem_metros : np.float64, optional
-        Margin in meters around the bounding box (default is 5000.0).
-    
+        Margin in meters around the bounding box.
+    step: np.float64
+        the grid step in meters
+    num_events : np.int32
+        Number of events to generate.
+    sistema_cartesiano : bool, optional
+        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).
+
     Returns
     -------
     tuple
         (grid: np.ndarray, nde: np.ndarray)
 
     """
-    
+    (min_lat,
+     max_lat,
+     min_lon,
+     max_lon) = get_lightning_limits(sensors,
+                                     margem_metros)
+
+    lightning_grid = get_lightning_area_grid(min_lat,
+                                             max_lat,
+                                             min_lon,
+                                             max_lon,
+                                             step)
+
+    n = len(lightning_grid)
+
+    nde = np.zeros(n, dtype=np.float64)
+
+    for i in range(n):
+
+        distancias = computa_distancias(lightning_grid[i],
+                                        sensors,
+                                        sistema_cartesiano)
+        current_nde = 0.0
+        # eficiência de detecção
+        for _ in range(num_events):
+
+            detections = 0
+
+            for j in range(sensors.shape[0]):
+
+                if sensor_detection(distancias[j]):
+                    detections += 1
+
+            if detections >= 3:
+                current_nde += 1
+        nde[i] = current_nde / num_events
+
+    return lightning_grid, nde
+
+
 def generate_events(num_events: np.int32,
                     min_lat: np.float64,
                     max_lat: np.float64,

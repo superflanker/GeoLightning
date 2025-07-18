@@ -88,6 +88,10 @@ setup(
         "urllib3>=2.4.0",
         "uvicorn>=0.34.3",
         "watchfiles>=1.1.0",
-        "websockets>=15.0.1"
+        "websockets>=15.0.1",
+        "geobr>=0.2.2",
+        "geographiclib>=2.0",
+        "geopandas>=1.1.0",
+        "geopy>=2.4.1",
     ],
 )

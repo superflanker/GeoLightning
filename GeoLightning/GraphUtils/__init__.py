@@ -22,6 +22,11 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 
 Dependencies
 ------------
-- Numpy
-- MatplotLib
+- numpy
+- Matplotlib
+- SciencePlots
+- Scipy (interp1d)
+- GeoPandas
+- GeoPy
+- Shapely
 """

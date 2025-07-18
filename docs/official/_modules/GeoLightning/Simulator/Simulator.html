@@ -198,7 +198,7 @@
 
 <div class="viewcode-block" id="get_parana_state_sensors">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_parana_state_sensors">[docs]</a>
-<span class="nd">@jit</span><span class="p">(</span><span class="n">nopythos</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_parana_state_sensors</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a network over Paraná&#39;s state - StormEye Projections</span>
@@ -255,6 +255,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    sensors: np.ndarray</span>
 <span class="sd">        list of georeferenced positions of sensors in the network</span>
+<span class="sd">    wave_speed: np.float64</span>
+<span class="sd">        wave propagation speed (default is the speed of light)</span>
+<span class="sd">    sistema_cartesiano : bool, optional</span>
+<span class="sd">        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -276,7 +280,7 @@
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.get_lightning_limits">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_lightning_limits</span><span class="p">(</span><span class="n">sensores_latlon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">50000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">200000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes geographic bounding box around sensor constellation with an additional margin.</span>
 
@@ -285,7 +289,7 @@
 <span class="sd">    sensores_latlon : np.ndarray</span>
 <span class="sd">        Array of shape (N, 2) with latitude and longitude in degrees.</span>
 <span class="sd">    margem_metros : np.float64, optional</span>
-<span class="sd">        Margin in meters around the bounding box (default is 5000.0).</span>
+<span class="sd">        Margin in meters around the bounding box (default is 200000.0).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -321,7 +325,7 @@
                             <span class="n">max_lat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                             <span class="n">min_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                             <span class="n">max_lon</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
-                            <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+                            <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Generates a grid inside a ligntning area</span>
@@ -336,7 +340,7 @@
 <span class="sd">        Minimum longitude.</span>
 <span class="sd">    max_lon : np.float64</span>
 <span class="sd">        Maximum longitude.</span>
-<span class="sd">    step: np.int32</span>
+<span class="sd">    step: np.float64</span>
 <span class="sd">        the grid step in meters</span>
 
 <span class="sd">    Returns</span>
@@ -367,30 +371,78 @@
     <span class="k">return</span> <span class="n">grid</span></div>
 
 
+
 <div class="viewcode-block" id="compute_network_detection_efficiency">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.compute_network_detection_efficiency">[docs]</a>
 <span class="nd">@jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_network_detection_efficiency</span><span class="p">(</span><span class="n">sensors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+                                         <span class="n">margem_metros</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                                         <span class="n">step</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                                         <span class="n">num_events</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">sistema_cartesiano</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes network detection efficienty (NDE)</span>
-<span class="sd">    </span>
+<span class="sd">    Computes Network Detection Efficienty (NDE) by simulation</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    </span>
+
 <span class="sd">    sensores : np.ndarray</span>
 <span class="sd">        Array of shape (N, 2) with latitude and longitude in degrees.</span>
 <span class="sd">    margem_metros : np.float64, optional</span>
-<span class="sd">        Margin in meters around the bounding box (default is 5000.0).</span>
-<span class="sd">    </span>
+<span class="sd">        Margin in meters around the bounding box.</span>
+<span class="sd">    step: np.float64</span>
+<span class="sd">        the grid step in meters</span>
+<span class="sd">    num_events : np.int32</span>
+<span class="sd">        Number of events to generate.</span>
+<span class="sd">    sistema_cartesiano : bool, optional</span>
+<span class="sd">        If True, uses Euclidean (Cartesian) distance. If False, uses spherical distance (default: False).</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple</span>
 <span class="sd">        (grid: np.ndarray, nde: np.ndarray)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span><span class="n">min_lat</span><span class="p">,</span>
+     <span class="n">max_lat</span><span class="p">,</span>
+     <span class="n">min_lon</span><span class="p">,</span>
+     <span class="n">max_lon</span><span class="p">)</span> <span class="o">=</span> <span class="n">get_lightning_limits</span><span class="p">(</span><span class="n">sensors</span><span class="p">,</span>
+                                     <span class="n">margem_metros</span><span class="p">)</span>
 
-    
+    <span class="n">lightning_grid</span> <span class="o">=</span> <span class="n">get_lightning_area_grid</span><span class="p">(</span><span class="n">min_lat</span><span class="p">,</span>
+                                             <span class="n">max_lat</span><span class="p">,</span>
+                                             <span class="n">min_lon</span><span class="p">,</span>
+                                             <span class="n">max_lon</span><span class="p">,</span>
+                                             <span class="n">step</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lightning_grid</span><span class="p">)</span>
+
+    <span class="n">nde</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+
+        <span class="n">distancias</span> <span class="o">=</span> <span class="n">computa_distancias</span><span class="p">(</span><span class="n">lightning_grid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                        <span class="n">sensors</span><span class="p">,</span>
+                                        <span class="n">sistema_cartesiano</span><span class="p">)</span>
+        <span class="n">current_nde</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="c1"># eficiência de detecção</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_events</span><span class="p">):</span>
+
+            <span class="n">detections</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sensors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+                <span class="k">if</span> <span class="n">sensor_detection</span><span class="p">(</span><span class="n">distancias</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
+                    <span class="n">detections</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">detections</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">current_nde</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">nde</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_nde</span> <span class="o">/</span> <span class="n">num_events</span>
+
+    <span class="k">return</span> <span class="n">lightning_grid</span><span class="p">,</span> <span class="n">nde</span></div>
+
+
+
 <div class="viewcode-block" id="generate_events">
 <a class="viewcode-back" href="../../../GeoLightning.Simulator.html#GeoLightning.Simulator.Simulator.generate_events">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_events</span><span class="p">(</span><span class="n">num_events</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>

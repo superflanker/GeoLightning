@@ -40,7 +40,7 @@ import numpy as np
 from numba import jit
 from GeoLightning.Utils.Utils import computa_distancia
 
-
+@jit(nopython=True, cache=True, fastmath=True)
 def get_detection_probability(distance: np.float64) -> np.float64:
     """
     Compute the probability of detecting an atmospheric event 
@@ -70,6 +70,7 @@ def get_detection_probability(distance: np.float64) -> np.float64:
         return 0.0
 
 
+@jit(nopython=True, cache=True, fastmath=True)
 def sensor_detection(distance: np.float64) -> bool:
     """
     Simulate the detection of an atmospheric event by a sensor 

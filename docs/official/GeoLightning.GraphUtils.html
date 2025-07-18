@@ -142,8 +142,106 @@ Federal University of Paraná (UFPR), Brazil.</p>
 <li><p>Matplotlib</p></li>
 <li><p>SciencePlots</p></li>
 <li><p>Scipy (interp1d)</p></li>
+<li><p>GeoPandas</p></li>
+<li><p>GeoPy</p></li>
+<li><p>Shapely</p></li>
+<li><p>pyproj</p></li>
 </ul>
 </section>
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.GraphUtils.Graphics.coverage_plot">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.GraphUtils.Graphics.</span></span><span class="sig-name descname"><span class="pre">coverage_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pontos_malha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">120000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsg_utm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32722</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salvar_em</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data/area_cobertura.png'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/GeoLightning/GraphUtils/Graphics.html#coverage_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.GraphUtils.Graphics.coverage_plot" title="Link to this definition"></a></dt>
+<dd><p>Plots the sensor distribution and coverage area on a geographic map (EPSG:4326),
+converting coordinates from UTM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapa</strong> (<em>gpd.GeoDataFrame</em>) – Base map in EPSG:4326 (e.g., states or municipalities).</p></li>
+<li><p><strong>sensores</strong> (<em>np.ndarray</em>) – Array of sensor positions in UTM (shape: [n, 2]).</p></li>
+<li><p><strong>pontos_malha</strong> (<em>np.ndarray</em>) – Grid points to be plotted (also in UTM).</p></li>
+<li><p><strong>raio</strong> (<em>float</em>) – Radius of coverage in meters (default: 120 km).</p></li>
+<li><p><strong>epsg_utm</strong> (<em>int</em>) – EPSG code of the UTM coordinate system (default: 32722 = WGS 84 / UTM zone 22S).</p></li>
+<li><p><strong>salvar_em</strong> (<em>str</em>) – Path to save the resulting figure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.GraphUtils.Graphics.generate_nde_report">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.GraphUtils.Graphics.</span></span><span class="sig-name descname"><span class="pre">generate_nde_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nde</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lightning_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cities_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'#fc8505'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">de_multipliers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/GeoLightning/GraphUtils/Graphics.html#generate_nde_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.GraphUtils.Graphics.generate_nde_report" title="Link to this definition"></a></dt>
+<dd><p>Generate a geographic report of the Metwork Detection Efficiency (NDE).</p>
+<p>This function creates a choropleth map representing the spatial distribution of detection
+efficiency over a lightning-prone region. It visualizes sensors, state and municipal borders,
+and highlights the effective detection region where the NDE exceeds a given threshold (e.g., 95% of max).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sensors</strong> (<em>np.ndarray</em>) – Array of sensor coordinates in the format [[lon, lat], …] in decimal degrees.</p></li>
+<li><p><strong>nde</strong> (<em>np.ndarray</em>) – Normalized detection efficiency values (from 0 to 1), corresponding to <cite>lightning_area</cite> points.</p></li>
+<li><p><strong>lightning_area</strong> (<em>np.ndarray</em>) – Array of coordinates [[lon, lat], …] where the NDE values are defined.</p></li>
+<li><p><strong>report_filename</strong> (<em>str</em>) – Output filename (including path) for the generated PNG image.</p></li>
+<li><p><strong>cities_df</strong> (<em>gpd.GeoDataframe</em>) – cities map GeoDataframe.</p></li>
+<li><p><strong>states_df</strong> (<em>gpd.GeoDataframe</em>) – states map GeoDataframe</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title of the plot.</p></li>
+<li><p><strong>sensors_colors</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the sensor markers in the plot (default: “#fc8505”).</p></li>
+<li><p><strong>de_multipliers</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative threshold (0–1) to define the region of effective detection.
+Only areas with DE ≥ <cite>de_multipliers * max(DE)</cite> will be enclosed (default: 0.95).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function saves the figure directly to <cite>report_filename</cite> as a high-resolution PNG.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>All spatial data is reprojected to EPSG:4326 (WGS 84).</p></li>
+<li><p>The function computes the convex hull of the effective detection region (DE ≥ threshold).</p></li>
+<li><p>Useful for validating coverage of lightning sensor networks and identifying blind spots.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="GeoLightning.GraphUtils.Graphics.geo_countour_plot">
+<span class="sig-prename descclassname"><span class="pre">GeoLightning.GraphUtils.Graphics.</span></span><span class="sig-name descname"><span class="pre">geo_countour_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapa_base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors_colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'#fc8505'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/GeoLightning/GraphUtils/Graphics.html#geo_countour_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.GraphUtils.Graphics.geo_countour_plot" title="Link to this definition"></a></dt>
+<dd><p>Save a contour plot representing the mean error landscape of a bivariate algorithm.</p>
+<p>This function generates and saves a level curve (contour) plot from a grid of error values
+defined over two parameters or spatial dimensions. It is typically used to visualize the
+performance surface of optimization algorithms or estimation methods, where each point
+corresponds to the average error associated with a pair (x₁, x₂).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_vals</strong> (<em>np.ndarray</em>) – Longitude or easting (1D array).</p></li>
+<li><p><strong>y_vals</strong> (<em>np.ndarray</em>) – Latitude or northing (1D array).</p></li>
+<li><p><strong>z_vals</strong> (<em>np.ndarray</em>) – 2D array of scalar values with shape (len(y_vals), len(x_vals)).</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title of the plot.</p></li>
+<li><p><strong>mapa_base</strong> (<em>gpd.GeoDataFrame</em>) – Base map to overlay the contours (e.g., municipalities or states).</p></li>
+<li><p><strong>sensor_map</strong> (<em>gpd.GeoDataFrame</em>) – Sensor’s map</p></li>
+<li><p><strong>output_file</strong> (<em>str</em>) – Path to save the final figure.</p></li>
+<li><p><strong>levels</strong> (<em>int</em>) – Number of contour levels (default: 10).</p></li>
+<li><p><strong>sensors_colors</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the sensor markers in the plot (default: “#fc8505”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function produces a <cite>.png</cite> file containing the contour plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The color gradient and contour lines indicate error magnitude: darker regions correspond
+to higher error values.</p></li>
+<li><p>It is recommended to verify the shape of <cite>z_vals</cite> before passing to this function. Use
+<cite>z_vals.shape == (len(y_vals), len(x_vals))</cite>.</p></li>
+</ul>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="GeoLightning.GraphUtils.Graphics.make_histogram_graph">
 <span class="sig-prename descclassname"><span class="pre">GeoLightning.GraphUtils.Graphics.</span></span><span class="sig-name descname"><span class="pre">make_histogram_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_90</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GeoLightning/GraphUtils/Graphics.html#make_histogram_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#GeoLightning.GraphUtils.Graphics.make_histogram_graph" title="Link to this definition"></a></dt>
@@ -213,8 +311,13 @@ EELT 7019 - Applied Artificial Intelligence, Federal University of Paraná (UFPR
 <section id="id4">
 <h3>Dependencies<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>Numpy</p></li>
-<li><p>MatplotLib</p></li>
+<li><p>numpy</p></li>
+<li><p>Matplotlib</p></li>
+<li><p>SciencePlots</p></li>
+<li><p>Scipy (interp1d)</p></li>
+<li><p>GeoPandas</p></li>
+<li><p>GeoPy</p></li>
+<li><p>Shapely</p></li>
 </ul>
 </section>
 </section>
