@@ -238,20 +238,32 @@ def generate_nde_report(sensors: np.ndarray,
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.1)
 
-    de_geo.plot(column="de_index", ax=ax, cax=cax,
-                legend=True, cmap='Blues')
+    de_geo.plot(column="de_index",
+                ax=ax, 
+                cax=cax,
+                legend=True, 
+                cmap='Blues')
+    
+    states_df.boundary.plot(ax=ax, 
+                            color="#000000",
+                            linewidth=0.5, 
+                            markersize=0.0, 
+                            alpha=0.5)
 
-    cities_df.boundary.plot(ax=ax, color="#6a9cb0",
-                            linewidth=0.5, markersize=0.0, alpha=0.5)
-    states_df.boundary.plot(ax=ax, color="#000000",
-                            linewidth=0.5, markersize=0.0, alpha=0.5)
-
-    sensors_geo.plot(
-        ax=ax, color=sensors_colors, markersize=10, label="Sensores")
+    sensors_geo.plot(ax=ax, 
+                     color=sensors_colors, 
+                     markersize=10, 
+                     label="Sensores")
 
     de_area.boundary.plot(ax=ax, color="yellow",
                           label="Limite de Detecção Efetiva $ (DE > 95\%)$")
-
+    cities_df.plot(ax=ax, 
+                   color="#6a9cb0",
+                   linewidth=0.5, 
+                   markersize=0.5, 
+                   alpha=0.9,
+                   label="Linhas de Transmissão")
+    
     norm = Normalize(vmin=0, vmax=100)
     sm = plt.cm.ScalarMappable(cmap="Blues", norm=norm)
     cbar = plt.colorbar(sm, cax=cax)
