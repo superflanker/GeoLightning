@@ -159,6 +159,8 @@ class StelaProblem(Problem):
                                                   self.epsilon_t,
                                                   self.min_pts)
         
+        self.pontos_de_chegada = self.pontos_de_chegada[ordered_indexes]
+        
     def obj_func(self, solution):
         """
         Objective function for the STELA problem.

@@ -170,13 +170,15 @@ def stela_phase_one(tempos_de_chegada: np.ndarray,
 
     labels = labels[label_ordered_indexes]
 
+    ordered_indexes = ordered_indexes[label_ordered_indexes]
+
     cluster_cleanup(labels=labels,
                     min_pts=min_pts)
 
     return (tempos_ordenados,
             indices_sensores_ordenados,
             labels,
-            label_ordered_indexes)
+            ordered_indexes)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
