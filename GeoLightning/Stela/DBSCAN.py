@@ -31,51 +31,7 @@ Dependencies
 from numba import jit
 import numpy as np
 from GeoLightning.Utils.Constants import EPSILON_T, CLUSTER_MIN_PTS
-
-
-@jit(nopython=True, cache=True, fastmath=True)
-def clustering_metric(detection_time_s1: np.float64,
-                      detection_time_s2: np.float64,
-                      s1_index: np.int32,
-                      s2_index: np.int32,
-                      sensor_tt: np.ndarray) -> np.float64:
-    """
-    Computes the Spatio-Temporal Consistency Metric based on the TDOA 
-    between two detection times and the physical distance between their 
-    respective sensors.
-
-    This metric evaluates how well the observed time difference between 
-    two detections matches the expected time difference implied by the 
-    distance between the sensors and the signal propagation speed.
-
-    Parameters
-    ----------
-    detection_time_s1 : np.float64
-        Detection timestamp (in seconds) from sensor s1.
-
-    detection_time_s2 : np.float64
-        Detection timestamp (in seconds) from sensor s2.
-
-    s1_index : np.int32
-        Index of the first sensor in the sensor array.
-
-    s2_index : np.int32
-        Index of the second sensor in the sensor array.
-
-    sensor_tt : np.ndarray
-        Precomputed symmetric matrix containing the pairwise distances 
-        between all sensor positions divided by the signal propagation 
-        speed (i.e., time-of-travel between sensors), in seconds.
-
-    Returns
-    -------
-    np.float64
-        The absolute deviation between the observed time difference and 
-        the expected time-of-travel between the two sensors. Lower values 
-        indicate higher spatio-temporal consistency and, hence, greater 
-        likelihood that the detections are from the same physical event.
-    """
-    return np.abs(np.abs(detection_time_s1 - detection_time_s2) - sensor_tt[s1_index, s2_index])
+from GeoLightning.Stela.Common import clustering_metric
 
 
 @jit(nopython=True, cache=True, fastmath=True)

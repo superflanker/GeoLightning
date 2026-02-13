@@ -35,7 +35,7 @@ numpy
 
 import numpy as np
 
-AVG_EARTH_RADIUS: np.float64 = 1000 * 6371.0088
+AVG_EARTH_RADIUS: np.float64 = 1_000 * 6_371.0088
 """float: Mean radius of the Earth in meters."""
 
 AVG_LIGHT_SPEED: np.float64 = 299_792_458.0
@@ -47,13 +47,13 @@ SIGMA_T: np.float64 = 1.0e-6
 SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
 """float: Spatial standard deviation corresponding to SIGMA_T (in meters)."""
 
-EPSILON_T: np.float64 = 1000 * SIGMA_T
+EPSILON_T: np.float64 = 12 * SIGMA_T
 """float: Maximum admissible temporal tolerance (in seconds)."""
 
-EPSILON_D: np.float64 = 1000 * SIGMA_D
+EPSILON_D: np.float64 = 12 * SIGMA_D
 """float: Maximum admissible spatial tolerance (in meters)."""
 
-LIMIT_D: np.float64 = 10 * SIGMA_D
+LIMIT_D: np.float64 = 12 * SIGMA_D
 """float: Maximum search radius for metaheuristic methods (in meters)."""
 
 CLUSTER_MIN_PTS: np.int32 = 3

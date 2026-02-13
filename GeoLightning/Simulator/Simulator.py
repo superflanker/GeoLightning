@@ -191,7 +191,7 @@ def get_sensor_matrix(sensors: np.ndarray,
 
 @jit(nopython=True, cache=True, fastmath=True)
 def get_lightning_limits(sensores_latlon: np.ndarray,
-                         margem_metros: np.float64 = 200000.0) -> tuple:
+                         margem_metros: np.float64 = 200.0) -> tuple:
     """
     Computes geographic bounding box around sensor constellation with an additional margin.
 
@@ -398,8 +398,9 @@ def generate_events(num_events: np.int32,
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)
-    event_times = np.array(
-        sorted(np.random.uniform(min_time, max_time, num_events)))
+
+    event_times = np.linspace(min_time, max_time, num_events)
+
     event_positions = np.stack((lats, lons, alts), axis=1)
 
     return event_positions, event_times
@@ -442,7 +443,7 @@ def generate_detections(event_positions: np.ndarray,
             Cluster IDs identifying to which event each detection belongs.
     """
 
-    np.random.seed(42)
+    # np.random.seed(42)
     detections = []
     detection_times = []
     n_event_positions = []
@@ -453,7 +454,7 @@ def generate_detections(event_positions: np.ndarray,
 
     cluster_id = 0
 
-    for i in range(event_positions.shape[0]):
+    for i in range(len(event_positions)):
         while True:
             event_position = event_positions[i]
             event_time = event_times[i]
@@ -468,8 +469,8 @@ def generate_detections(event_positions: np.ndarray,
             t_sensor_indexes = []
             for j in range(sensor_positions.shape[0]):
                 noise = np.clip(np.random.normal(0.0, jitter_std),
-                                min=-6 * jitter_std,
-                                max=6 * jitter_std)
+                                min=-12 * jitter_std,
+                                max=12 * jitter_std)
                 t_detect = event_time + \
                     event_distances[j] / AVG_LIGHT_SPEED + noise
                 if sensor_detection(event_distances[j]):

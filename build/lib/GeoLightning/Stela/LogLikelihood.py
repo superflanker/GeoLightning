@@ -145,3 +145,34 @@ def funcao_log_verossimilhanca(deltas: np.ndarray,
     # log_likelihoods = np.sum(-(deltas ** 2))
     return log_likelihoods
 
+@jit(nopython=True, cache=True, fastmath=True)
+def funcao_log_verossimilhanca_ponderada(deltas: np.ndarray,
+                                         pesos: np.ndarray,
+                                         sigma:np.ndarray) -> np.float64:
+    """
+    Computes the log-likelihood under a standard normal distribution 
+    with zero mean and standard deviation sigma, ponderated by affinity or attraction.
+
+    This function evaluates the sum of log-likelihoods for a given array 
+    of deviations, assuming they follow a Gaussian distribution N(0, σ²).
+
+    Formula
+    -------
+    log(ℒ) = -0.5 * log(2π * σ²) - (Δ² / (2σ²))
+
+    Parameters
+    ----------
+    deltas : np.ndarray
+        Array of observed deviations Δ.
+    sigma : float
+        Standard deviation σ > 0.
+
+    Returns
+    -------
+    float
+        Total log-likelihood value for the observed deviations.
+    """
+    const = -np.log(sigma) - 0.5 * np.log(np.pi) - 0.5 * np.log(2)
+    denom = 2 * (sigma ** 2)
+    log_likelihoods = np.sum(const - ((np.dot(pesos, deltas) ** 2) / denom))
+    return log_likelihoods

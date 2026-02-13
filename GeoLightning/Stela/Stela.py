@@ -47,23 +47,23 @@ Dependencies
 
 import numpy as np
 from numba import jit
+from typing import Tuple
 from GeoLightning.Utils.Constants import SIGMA_T, \
     EPSILON_T, \
     CLUSTER_MIN_PTS, \
     AVG_LIGHT_SPEED, \
     AVG_EARTH_RADIUS
 from GeoLightning.Utils.Utils import computa_tempos_de_origem
-from GeoLightning.Stela.DBSCAN import dbscan
+from GeoLightning.Stela.PivotClustering import pivot_clustering
 from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
 from GeoLightning.Stela.Common import computa_residuos_temporais, calcular_media_clusters
 
 
-@jit(nopython=True, cache=True, fastmath=True)
+# @jit(nopython=True, cache=True, fastmath=True)
 def stela_phase_one(tempos_de_chegada: np.ndarray,
                     indices_sensores: np.ndarray,
                     sensor_tt: np.ndarray,
-                    epsilon_t: np.float64 = EPSILON_T,
-                    min_pts: np.int32 = CLUSTER_MIN_PTS) -> np.ndarray:
+                    epsilon_t: np.float64 = EPSILON_T) -> np.ndarray:
     """
     Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Clustering Phase.
 
@@ -81,13 +81,20 @@ def stela_phase_one(tempos_de_chegada: np.ndarray,
         between sensors
     epsilon_t : float, optional
         Temporal tolerance for spatio-temporal clustering.
-    min_pts : int, optional
-        Minimum number of points to form a valid cluster (DBSCAN requirement).
 
     Returns
     -------
-    clusters_espaciais: np.ndarray
-        list of clusters of asssociated detections
+    tempos_ordenados : np.ndarray
+        Copy of ``tempos`` sorted in ascending order.
+
+    indices_sensores_ordenados : np.ndarray
+        Copy of ``indices_sensores`` permuted by the same ordering applied to
+        ``tempos_ordenados``.
+
+    labels : np.ndarray
+        One-dimensional array of integer cluster labels aligned with
+        ``tempos_ordenados``. Labels start at 1 and increase sequentially as new
+        clusters are created.
 
     Notes
     -----
@@ -96,12 +103,17 @@ def stela_phase_one(tempos_de_chegada: np.ndarray,
     - Suitable for pre-processing before global optimization with genetic algorithms,
       swarm intelligence, and other meta-heuristics.
     """
-    clusters_espaciais = dbscan(tempos_de_chegada,
-                                indices_sensores,
-                                sensor_tt,
-                                epsilon_t,
-                                min_pts)
-    return clusters_espaciais
+
+    (tempos_ordenados,
+     indices_sensores_ordenados,
+     labels) = pivot_clustering(tempos=tempos_de_chegada,
+                                indices_sensores=indices_sensores,
+                                sensor_tt=sensor_tt,
+                                eps=epsilon_t)
+
+    return (tempos_ordenados,
+            indices_sensores_ordenados,
+            labels)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -160,7 +172,7 @@ def stela_phase_two(solucoes: np.ndarray,
                                                     clusters_espaciais,
                                                     tempos_de_origem)
 
-    # distancias a partir do ponto de origem
+    # distancias residuais a partir do ponto de origem
     residuos_espaciais = c * np.abs(residuos_temporais)
 
     # verossimilhança
@@ -182,19 +194,23 @@ if __name__ == "__main__":
     from time import perf_counter
 
     num_events = [1, 2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000, 5000, 20000]
+                  30, 100, 500, 800, 1000, 5000, 10000, 100000, 1000000]
+
+    # num_events = [5, 10, 100]
+
+    # recuperando o grupo de sensores
+    sensors = get_sensors()
+    sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors, 3000)
+
+    # gerando os eventos
+    min_alt = 935.0
+    max_alt = 935.0
+    min_time = 10000
 
     for i in range(len(num_events)):
-        # recuperando o grupo de sensores
-        sensors = get_sensors()
-        sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
-        min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
-        # gerando os eventos
-        min_alt = 935.0
-        max_alt = 935.0
-        min_time = 10000
-        max_time = min_time + 72 * 3600
+        max_time = min_time + num_events[i] * 1e-3
 
         event_positions, event_times = generate_events(num_events[i],
                                                        min_lat,
@@ -216,27 +232,22 @@ if __name__ == "__main__":
          spatial_clusters) = generate_detections(event_positions,
                                                  event_times,
                                                  sensors)
+
         start_st = perf_counter()
 
-        clusters_espaciais = stela_phase_one(detection_times,
-                                             sensor_indexes,
-                                             sensor_tt,
-                                             2 * EPSILON_T,
-                                             CLUSTER_MIN_PTS)
+        (tempos_ordenados,
+         indices_sensores_ordenados,
+         clusters_espaciais) = stela_phase_one(detection_times,
+                                               sensor_indexes,
+                                               sensor_tt,
+                                               EPSILON_T)
 
         end_st = perf_counter()
         print(
-            f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st} Segundos")
+            f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st:0.8f} Segundos")
         len_clusterizados = len(
             np.unique(clusters_espaciais[clusters_espaciais >= 0]))
         len_reais = len(event_positions)
-        print(len_clusterizados, len_reais)
 
-        correct_association_index = np.mean(
-            spatial_clusters == clusters_espaciais) * 100
-        print(correct_association_index)
-        try:
-            assert len_clusterizados == len_reais
-            assert spatial_clusters == clusters_espaciais
-        except:
-            print(f"Clusterizados: {len_clusterizados}, Reais: {len_reais}")
+        print(
+            f"Clusterizados: {len_clusterizados}, Reais: {len_reais} ({100 * len_clusterizados/len_reais:.4f} %)")
