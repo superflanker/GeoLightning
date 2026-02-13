@@ -39,35 +39,47 @@ def test_stela():
         min_time = 10000
         max_time = min_time + 72 * 3600
 
-        event_positions, event_times = generate_events(num_events[i],
-                                                       min_lat,
-                                                       max_lat,
-                                                       min_lon,
-                                                       max_lon,
-                                                       min_alt,
-                                                       max_alt,
-                                                       min_time,
-                                                       max_time)
+        # protagonista da história - eventos
+        event_positions, event_times = generate_events(num_events=num_events,
+                                                        min_lat=min_lat,
+                                                        max_lat=max_lat,
+                                                        min_lon=min_lon,
+                                                        max_lon=max_lon,
+                                                        min_alt=min_alt,
+                                                        max_alt=max_alt,
+                                                        min_time=min_time,
+                                                        max_time=max_time)
 
         # gerando as detecções
         (detections,
-         detection_times,
-         n_event_positions,
-         n_event_times,
-         distances,
-         sensor_indexes,
-         spatial_clusters) = generate_detections(event_positions,
-                                                 event_times,
-                                                 sensors)
+            detection_times,
+            n_event_positions,
+            n_event_times,
+            distances,
+            sensor_indexes,
+            spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                    event_times=event_times,
+                                                    sensors_positions=sensors,
+                                                    jitter_std=SIGMA_T,
+                                                    simulate_complete_detections=True,
+                                                    min_pts=CLUSTER_MIN_PTS)
+
+        # tudo pronto, rodando a clusterização
+
         start_st = perf_counter()
 
-        clusters_espaciais = stela_phase_one(detection_times,
-                                             sensor_indexes,
-                                             sensor_tt,
-                                             EPSILON_T,
-                                             CLUSTER_MIN_PTS)
+        (tempos_ordenados,
+            indices_sensores_ordenados,
+            clusters_espaciais,
+            ordered_indexes) = stela_phase_one(tempos_de_chegada=detection_times,
+                                            indices_sensores=sensor_indexes,
+                                            sensor_tt=sensor_tt,
+                                            epsilon_t=EPSILON_T,
+                                            min_pts=CLUSTER_MIN_PTS)
+
 
         end_st = perf_counter()
+
         print(
             f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st} Segundos")
         len_clusterizados = len(

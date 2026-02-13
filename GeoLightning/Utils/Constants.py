@@ -47,14 +47,11 @@ SIGMA_T: np.float64 = 1.0e-6
 SIGMA_D: np.float64 = AVG_LIGHT_SPEED * SIGMA_T
 """float: Spatial standard deviation corresponding to SIGMA_T (in meters)."""
 
-EPSILON_T: np.float64 = 12 * SIGMA_T
+EPSILON_T: np.float64 = 6 * SIGMA_T
 """float: Maximum admissible temporal tolerance (in seconds)."""
 
-EPSILON_D: np.float64 = 12 * SIGMA_D
+EPSILON_D: np.float64 = 6 * SIGMA_D
 """float: Maximum admissible spatial tolerance (in meters)."""
-
-LIMIT_D: np.float64 = 12 * SIGMA_D
-"""float: Maximum search radius for metaheuristic methods (in meters)."""
 
 CLUSTER_MIN_PTS: np.int32 = 3
 """int: Minimum number of points to form a valid cluster."""

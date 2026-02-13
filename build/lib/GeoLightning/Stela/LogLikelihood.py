@@ -42,9 +42,10 @@ import numpy as np
 from GeoLightning.Utils.Constants import AVG_LIGHT_SPEED, SIGMA_D, SIGMA_T, AVG_EARTH_RADIUS
 from GeoLightning.Utils.Utils import coordenadas_esfericas_para_cartesianas_batelada
 
+
 @jit(nopython=True, cache=True, fastmath=True)
-def numba_clip(value: np.float64, 
-               min_bound: np.float64, 
+def numba_clip(value: np.float64,
+               min_bound: np.float64,
                max_bound: np.float64) -> np.float64:
     """
     Clamps a scalar value between specified lower and upper bounds.
@@ -82,6 +83,7 @@ def numba_clip(value: np.float64,
     else:
         out = value
     return out
+
 
 @jit(nopython=True, cache=True, fastmath=True)
 def maxima_log_verossimilhanca(N: np.int32,
@@ -145,10 +147,11 @@ def funcao_log_verossimilhanca(deltas: np.ndarray,
     # log_likelihoods = np.sum(-(deltas ** 2))
     return log_likelihoods
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def funcao_log_verossimilhanca_ponderada(deltas: np.ndarray,
                                          pesos: np.ndarray,
-                                         sigma:np.ndarray) -> np.float64:
+                                         sigma: np.ndarray) -> np.float64:
     """
     Computes the log-likelihood under a standard normal distribution 
     with zero mean and standard deviation sigma, ponderated by affinity or attraction.

@@ -99,6 +99,7 @@ from GeoLightning.Utils.Constants import EPSILON_T
 @jit(nopython=True, cache=True, fastmath=True)
 def order_events(tempos: np.ndarray,
                  indices_sensores: np.ndarray) -> Tuple[np.ndarray,
+                                                        np.ndarray,
                                                         np.ndarray]:
     """
     Sort detections by timestamp and reorder associated sensor indices accordingly.
@@ -129,6 +130,10 @@ def order_events(tempos: np.ndarray,
         Copy of ``indices_sensores`` permuted by the same ordering applied to
         ``tempos``, preserving the timestamp-to-sensor association.
 
+    ordered_indexes : np.ndarray
+        The indexes that should order any array associated with ``tempos``, 
+        returned by argsort
+
     Notes
     -----
     This function performs an ``argsort`` over ``tempos`` and returns copies of the
@@ -139,18 +144,21 @@ def order_events(tempos: np.ndarray,
     --------
     >>> tempos = np.array([3.0, 1.0, 2.0])
     >>> indices_sensores = np.array([10, 11, 12])
-    >>> t_ord, s_ord = order_events(tempos, indices_sensores)
+    >>> t_ord, s_ord , o_idxs= order_events(tempos, indices_sensores)
     >>> t_ord
     array([1., 2., 3.])
     >>> s_ord
-    array([11, 12, 10])
+    array([11, 12, 10])    
+    >>> o_idxs
+    array([1, 2, 0])
     """
 
     ordered_indexes = np.argsort(tempos)
     tempos_ordenados = tempos[ordered_indexes].copy()
     indices_sensores_ordenados = indices_sensores[ordered_indexes].copy()
     return (tempos_ordenados,
-            indices_sensores_ordenados)
+            indices_sensores_ordenados,
+            ordered_indexes)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -222,7 +230,6 @@ def pivot_clustering(tempos: np.ndarray,
                      eps: np.float64 = EPSILON_T) -> Tuple[np.ndarray,
                                                            np.ndarray,
                                                            np.ndarray]:
-
     """
     Cluster detections using pivot-based gating with safe pivot expiration.
 
@@ -291,6 +298,10 @@ def pivot_clustering(tempos: np.ndarray,
         ``tempos_ordenados``. Labels start at 1 and increase sequentially as new
         clusters are created.
 
+    ordered_indexes : np.ndarray
+        The indexes that should order any array associated with ``tempos``, 
+        returned by argsort
+
     Notes
     -----
     - The clustering criterion enforces compatibility with at least one pivot
@@ -310,9 +321,10 @@ def pivot_clustering(tempos: np.ndarray,
     """
 
     (tempos_ordenados,
-     indices_sensores_ordenados) = order_events(tempos=tempos,
-                                                indices_sensores=indices_sensores)
-    
+     indices_sensores_ordenados,
+     ordered_indexes) = order_events(tempos=tempos,
+                                     indices_sensores=indices_sensores)
+
     n = len(tempos_ordenados)
     labels = -np.ones(n, dtype=np.int32)
 
@@ -367,4 +379,5 @@ def pivot_clustering(tempos: np.ndarray,
 
     return (tempos_ordenados,
             indices_sensores_ordenados,
-            labels)
+            labels,
+            ordered_indexes)

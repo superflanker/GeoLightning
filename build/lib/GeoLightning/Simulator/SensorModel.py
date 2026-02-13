@@ -98,4 +98,4 @@ def sensor_detection(distance: np.float64) -> bool:
 if __name__ == "__main__":
     for i in range(100):
         distance = np.random.uniform(20_000.0, 200_000.0)
-        print(distance, sensor_detection(distance))
+        print(distance, sensor_detection(distance=distance))

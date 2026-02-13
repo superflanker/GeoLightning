@@ -202,14 +202,13 @@ def dbscan(tempos: np.ndarray,
             expand_cluster(tempos,
                            indices_sensores,
                            sensor_tt,
-                           labels, 
-                           visitado, 
-                           i, 
+                           labels,
+                           visitado,
+                           i,
                            vizinhos,
-                           cluster_id, 
-                           eps, 
+                           cluster_id,
+                           eps,
                            min_pts)
             cluster_id += 1
 
     return labels
-

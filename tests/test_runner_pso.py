@@ -22,21 +22,29 @@ from GeoLightning.Runners.RunnerPSO import runner_PSO
 
 def test_runner_PSO(fake_test=False):
 
+
     # diretório onde salvar os dados
 
     basedir = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../data/'))
 
     # recuperando o grupo de sensores
-    sensors = get_sensors()
-    sensot_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
-    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
-    # gerando os eventos
-    min_alt = 935
-    max_alt = 935
-    min_time = 10000
-    max_time = min_time + 5000 * (50000 * SIGMA_T)
+    sensors = get_sensors()
+
+    sensor_tt = get_sensor_matrix(sensors=sensors,
+                                  wave_speed=AVG_LIGHT_SPEED,
+                                  sistema_cartesiano=False)
+
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
+                                                              margem_metros=3000)
+
+    delta_time = 0.0
+
+    for i in range(len(sensor_tt)):
+        for j in range(i, len(sensor_tt[i])):
+            if sensor_tt[i, j] > delta_time:
+                delta_time = sensor_tt[i, j]
 
     paper_data = list()
 
@@ -52,6 +60,8 @@ def test_runner_PSO(fake_test=False):
 
     sigma_t = SIGMA_T
 
+    multiplier = 3
+
     # define se estou rodando na mão o script
     if fake_test:
 
@@ -59,17 +69,22 @@ def test_runner_PSO(fake_test=False):
 
         runs = 100
 
+    # gerando os eventos
+    min_alt = 935
+    max_alt = 935
+    min_time = 10000
+    max_time = min_time + num_events * delta_time * multiplier
+
     # protagonista da história - eventos
-    event_positions, event_times = generate_events(num_events,
-                                                   min_lat,
-                                                   max_lat,
-                                                   min_lon,
-                                                   max_lon,
-                                                   min_alt,
-                                                   max_alt,
-                                                   min_time,
-                                                   max_time,
-                                                   sigma_t=sigma_t)
+    event_positions, event_times = generate_events(num_events=num_events,
+                                                   min_lat=min_lat,
+                                                   max_lat=max_lat,
+                                                   min_lon=min_lon,
+                                                   max_lon=max_lon,
+                                                   min_alt=min_alt,
+                                                   max_alt=max_alt,
+                                                   min_time=min_time,
+                                                   max_time=max_time)
 
     # gerando as detecções
     (detections,
@@ -78,10 +93,12 @@ def test_runner_PSO(fake_test=False):
         n_event_times,
         distances,
         sensor_indexes,
-        spatial_clusters) = generate_detections(event_positions,
-                                                event_times,
-                                                sensors,
-                                                jitter_std=sigma_t)
+        spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                event_times=event_times,
+                                                sensor_positions=sensors,
+                                                simulate_complete_detections=True,
+                                                fixed_seed=False,
+                                                min_pts=CLUSTER_MIN_PTS)
 
     for _ in range(runs):
 
@@ -98,7 +115,7 @@ def test_runner_PSO(fake_test=False):
             associacoes_corretas) = runner_PSO(event_positions,
                                                event_times,
                                                spatial_clusters,
-                                               sensot_tt,
+                                               sensor_tt,
                                                sensor_indexes,
                                                detections,
                                                detection_times,

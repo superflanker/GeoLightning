@@ -43,8 +43,8 @@ Dependencies
 
 import numpy as np
 from numba import jit
-from numba.typed import List
-from GeoLightning.Utils.Constants import R_LAT, AVG_LIGHT_SPEED, SIGMA_T
+from numba.typed import List as nList
+from GeoLightning.Utils.Constants import R_LAT, AVG_LIGHT_SPEED, SIGMA_T, CLUSTER_MIN_PTS
 from GeoLightning.Utils.Utils import computa_distancias, computa_distancia
 from GeoLightning.Simulator.SensorModel import sensor_detection
 
@@ -347,6 +347,7 @@ def compute_network_detection_efficiency(sensors: np.ndarray,
     return lightning_grid, nde
 
 
+@jit(nopython=True, cache=True, fastmath=True)
 def generate_events(num_events: np.int32,
                     min_lat: np.float64,
                     max_lat: np.float64,
@@ -355,9 +356,7 @@ def generate_events(num_events: np.int32,
                     min_alt: np.float64,
                     max_alt: np.float64,
                     min_time: np.float64,
-                    max_time: np.float64,
-                    sigma_t: np.float64 = SIGMA_T,
-                    max_attempts: np.int32 = 10000) -> tuple:
+                    max_time: np.float64) -> tuple:
     """
     Generates atmospheric events with spatial and temporal attributes,
     ensuring a minimum temporal spacing of 6 * sigma_t.
@@ -382,10 +381,6 @@ def generate_events(num_events: np.int32,
         Minimum timestamp.
     max_time : np.float64
         Maximum timestamp.
-    sigma_t : np.float64, optional
-        Temporal standard deviation (default is SIGMA_T).
-    max_attempts : np.int32, optional
-        Maximum number of attempts to generate valid timestamps (default is 10000).
 
     Returns
     -------
@@ -406,9 +401,13 @@ def generate_events(num_events: np.int32,
     return event_positions, event_times
 
 
+@jit(nopython=True, cache=True, fastmath=True)
 def generate_detections(event_positions: np.ndarray,
                         event_times: np.ndarray,
                         sensor_positions: np.ndarray,
+                        simulate_complete_detections: bool = True,
+                        fixed_seed: bool = True,
+                        min_pts: np.int32 = CLUSTER_MIN_PTS,
                         jitter_std: np.float64 = SIGMA_T) -> tuple:
     """
     Simulates detections from a sensor network based on lightning events.
@@ -421,6 +420,12 @@ def generate_detections(event_positions: np.ndarray,
         Array of event timestamps with shape (N,).
     sensor_positions : np.ndarray
         Array of sensor coordinates with shape (M, 3).
+    simulate_complete_detections: bool
+        Flag indicating that the generation sohould respect the min_pts parameter
+    fixed_seed: bool
+        Flag indicating whether the generation should fix the seed fr traceability or not
+    min_pts: np.int32
+        minimum points to consider a complete detection (Imposed by TOA/TDOA standards)
     jitter_std : np.float64, optional
         Standard deviation of temporal noise added to detection times (default is SIGMA_T).
 
@@ -443,69 +448,77 @@ def generate_detections(event_positions: np.ndarray,
             Cluster IDs identifying to which event each detection belongs.
     """
 
-    # np.random.seed(42)
-    detections = []
-    detection_times = []
-    n_event_positions = []
-    n_event_times = []
-    distances = []
-    spatial_clusters = []
-    sensor_indexes = []
+    num_events = len(event_positions)
+    num_sensors = len(sensor_positions)
 
+    max_size = num_events * num_sensors
+
+    out_detections = np.empty((max_size, 3), dtype=np.float64)
+    out_detection_times = np.empty(max_size, dtype=np.float64)
+    out_event_positions = np.empty((max_size, 3), dtype=np.float64)
+    out_event_times = np.empty(max_size, dtype=np.float64)
+    out_distances = np.empty(max_size, dtype=np.float64)
+    out_spatial_clusters = np.empty(max_size, dtype=np.int64)
+    out_sensor_indexes = np.empty(max_size, dtype=np.int64)
+    write_idx = 0
     cluster_id = 0
+    
+    if fixed_seed:
+        np.random.seed(42)
+    
+    for i in range(num_events):
+        event_pos = event_positions[i]
+        event_t = event_times[i]
 
-    for i in range(len(event_positions)):
         while True:
-            event_position = event_positions[i]
-            event_time = event_times[i]
-            event_distances = computa_distancias(
-                event_position, sensor_positions)
-            t_detections = []
-            t_detection_times = []
-            t_n_event_positions = []
-            t_n_event_times = []
-            t_distances = []
-            t_spatial_clusters = []
-            t_sensor_indexes = []
-            for j in range(sensor_positions.shape[0]):
-                noise = np.clip(np.random.normal(0.0, jitter_std),
-                                min=-12 * jitter_std,
-                                max=12 * jitter_std)
-                t_detect = event_time + \
-                    event_distances[j] / AVG_LIGHT_SPEED + noise
+            event_distances = computa_distancias(event_pos, sensor_positions)
+
+            start_idx = write_idx
+
+            for j in range(num_sensors):
+                noise = np.random.normal(0.0, jitter_std)
+                t_detect = event_t + \
+                    (event_distances[j] / AVG_LIGHT_SPEED) + noise
+
                 if sensor_detection(event_distances[j]):
-                    t_detections.append(sensor_positions[j])
-                    t_detection_times.append(t_detect)
-                    t_n_event_positions.append(event_position)
-                    t_n_event_times.append(event_time)
-                    t_distances.append(event_distances[j])
-                    t_spatial_clusters.append(cluster_id)
-                    t_sensor_indexes.append(j)
-            if len(t_detections) >= 3:
+                    out_detections[write_idx] = sensor_positions[j]
+                    out_detection_times[write_idx] = t_detect
+                    out_event_positions[write_idx] = event_pos
+                    out_event_times[write_idx] = event_t
+                    out_distances[write_idx] = event_distances[j]
+                    out_spatial_clusters[write_idx] = cluster_id
+                    out_sensor_indexes[write_idx] = j
+                    write_idx += 1
+
+            if simulate_complete_detections:
+
+                if (write_idx - start_idx) >= min_pts:
+                    cluster_id += 1
+                    break
+                else:
+                    write_idx = start_idx
+            else:
                 cluster_id += 1
-                detections += t_detections
-                detection_times += t_detection_times
-                n_event_positions += t_n_event_positions
-                n_event_times += t_n_event_times
-                distances += t_distances
-                spatial_clusters += t_spatial_clusters
-                sensor_indexes += t_sensor_indexes
                 break
 
-    return (np.array(detections),
-            np.array(detection_times),
-            np.array(n_event_positions),
-            np.array(n_event_times),
-            np.array(distances),
-            np.array(sensor_indexes),
-            np.array(spatial_clusters))
+    shuffled_indices = np.arange(write_idx)
+    np.random.shuffle(shuffled_indices)
+
+    return (out_detections[shuffled_indices],
+            out_detection_times[shuffled_indices],
+            out_event_positions[shuffled_indices],
+            out_event_times[shuffled_indices],
+            out_distances[shuffled_indices],
+            out_sensor_indexes[shuffled_indices],
+            out_spatial_clusters[shuffled_indices])
 
 
 if __name__ == "__main__":
 
     # recuperando o grupo de sensores
     sensors = get_sensors()
-    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
+                                                              margem_metros=3000)
 
     # gerando os eventos
     min_alt = 0
@@ -516,15 +529,15 @@ if __name__ == "__main__":
 
     print(min_lat, max_lat, min_lon, max_lon, min_alt, max_alt)
 
-    event_positions, event_times = generate_events(num_events,
-                                                   min_lat,
-                                                   max_lat,
-                                                   min_lon,
-                                                   max_lon,
-                                                   min_alt,
-                                                   max_alt,
-                                                   min_time,
-                                                   max_time)
+    event_positions, event_times = generate_events(num_events=num_events,
+                                                   min_lat=min_lat,
+                                                   max_lat=max_lat,
+                                                   min_lon=min_lon,
+                                                   max_lon=max_lon,
+                                                   min_alt=min_alt,
+                                                   max_alt=max_alt,
+                                                   min_time=min_time,
+                                                   max_time=max_time)
 
     # gerando as detecções
     (detections,
@@ -532,9 +545,12 @@ if __name__ == "__main__":
      n_event_positions,
      n_event_times,
      distances,
-     spatial_clusters) = generate_detections(event_positions,
-                                             event_times,
-                                             sensors)
+     spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                event_times=event_times,
+                                                sensors=sensors,
+                                                jitter_std=SIGMA_T,
+                                                simulate_complete_detections=True,
+                                                min_pts=CLUSTER_MIN_PTS)
 
     print(detections)
     print(n_event_positions)

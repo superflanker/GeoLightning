@@ -59,11 +59,59 @@ from GeoLightning.Stela.LogLikelihood import funcao_log_verossimilhanca
 from GeoLightning.Stela.Common import computa_residuos_temporais, calcular_media_clusters
 
 
-# @jit(nopython=True, cache=True, fastmath=True)
+@jit(nopython=True, cache=True, fastmath=True)
+def cluster_cleanup(labels: np.ndarray,
+                    min_pts: np.int32) -> None:
+    """
+    Prune clusters with fewer than `min_pts` points (in place).
+
+    This function assumes that `labels` is ordered such that equal labels form
+    contiguous segments (i.e., each cluster appears as a single block). Each
+    block whose length is strictly smaller than `min_pts` is relabeled as -1.
+
+    Parameters
+    ----------
+    labels : np.ndarray
+        One-dimensional array of integer labels. Clusters are identified by
+        positive integers. The value -1 is treated as noise/outlier.
+        The array is modified in place.
+
+    min_pts : np.int32
+        Minimum number of points required for a label block to be kept.
+    """
+    n = len(labels)
+    if n == 0:
+        return
+
+    cluster_start = 0
+    current_label = labels[0]
+
+    # Scan transitions between contiguous label blocks
+    for i in range(1, n):
+        if labels[i] != current_label:
+            # Close the block [cluster_start, i)
+            if current_label != -1:
+                num_points = i - cluster_start
+                if num_points < min_pts:
+                    labels[cluster_start:i] = -1
+
+            # Start a new block
+            cluster_start = i
+            current_label = labels[i]
+
+    # Process the last block [cluster_start, n)
+    if current_label != -1:
+        num_points = n - cluster_start
+        if num_points < min_pts:
+            labels[cluster_start:n] = -1
+
+
+@jit(nopython=True, cache=True, fastmath=True)
 def stela_phase_one(tempos_de_chegada: np.ndarray,
                     indices_sensores: np.ndarray,
                     sensor_tt: np.ndarray,
-                    epsilon_t: np.float64 = EPSILON_T) -> np.ndarray:
+                    epsilon_t: np.float64 = EPSILON_T,
+                    min_pts: np.int32 = CLUSTER_MIN_PTS) -> np.ndarray:
     """
     Spatio-Temporal Event Likelihood Assignment (STELA) Algorithm - Clustering Phase.
 
@@ -106,14 +154,29 @@ def stela_phase_one(tempos_de_chegada: np.ndarray,
 
     (tempos_ordenados,
      indices_sensores_ordenados,
-     labels) = pivot_clustering(tempos=tempos_de_chegada,
-                                indices_sensores=indices_sensores,
-                                sensor_tt=sensor_tt,
-                                eps=epsilon_t)
+     labels,
+     ordered_indexes) = pivot_clustering(tempos=tempos_de_chegada,
+                                         indices_sensores=indices_sensores,
+                                         sensor_tt=sensor_tt,
+                                         eps=epsilon_t)
+
+    # mais uma ordenação, agora por label
+
+    label_ordered_indexes = np.argsort(labels)
+
+    tempos_ordenados = tempos_ordenados[label_ordered_indexes]
+
+    indices_sensores_ordenados = indices_sensores_ordenados[label_ordered_indexes]
+
+    labels = labels[label_ordered_indexes]
+
+    cluster_cleanup(labels=labels,
+                    min_pts=min_pts)
 
     return (tempos_ordenados,
             indices_sensores_ordenados,
-            labels)
+            labels,
+            label_ordered_indexes)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -195,6 +258,8 @@ if __name__ == "__main__":
 
     num_events = [1, 2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000, 5000, 10000, 100000, 1000000]
+    
+    time_multipliers = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     # num_events = [5, 10, 100]
 
@@ -208,46 +273,64 @@ if __name__ == "__main__":
     max_alt = 935.0
     min_time = 10000
 
-    for i in range(len(num_events)):
+    delta_time = 0.0
 
-        max_time = min_time + num_events[i] * 1e-3
+    for i in range(len(sensor_tt)):
+        for j in range(i, len(sensor_tt[i])):
+            if sensor_tt[i, j] > delta_time:
+                delta_time = sensor_tt[i, j]
 
-        event_positions, event_times = generate_events(num_events[i],
-                                                       min_lat,
-                                                       max_lat,
-                                                       min_lon,
-                                                       max_lon,
-                                                       min_alt,
-                                                       max_alt,
-                                                       min_time,
-                                                       max_time)
+    for multiplier in time_multipliers:
 
-        # gerando as detecções
-        (detections,
-         detection_times,
-         n_event_positions,
-         n_event_times,
-         distances,
-         sensor_indexes,
-         spatial_clusters) = generate_detections(event_positions,
-                                                 event_times,
-                                                 sensors)
+        current_delta_time = delta_time * multiplier
+        
+        for i in range(len(num_events)):
 
-        start_st = perf_counter()
+            max_time = min_time + num_events[i] * current_delta_time
 
-        (tempos_ordenados,
-         indices_sensores_ordenados,
-         clusters_espaciais) = stela_phase_one(detection_times,
-                                               sensor_indexes,
-                                               sensor_tt,
-                                               EPSILON_T)
+            event_positions, event_times = generate_events(num_events=num_events[i],
+                                                        min_lat=min_lat,
+                                                        max_lat=max_lat,
+                                                        min_lon=min_lon,
+                                                        max_lon=max_lon,
+                                                        min_alt=min_alt,
+                                                        max_alt=max_alt,
+                                                        min_time=min_time,
+                                                        max_time=max_time)
 
-        end_st = perf_counter()
-        print(
-            f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st:0.8f} Segundos")
-        len_clusterizados = len(
-            np.unique(clusters_espaciais[clusters_espaciais >= 0]))
-        len_reais = len(event_positions)
+            # gerando as detecções
+            (detections,
+            detection_times,
+            n_event_positions,
+            n_event_times,
+            distances,
+            sensor_indexes,
+            spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                    event_times=event_times,
+                                                    sensor_positions=sensors,
+                                                    simulate_complete_detections=True,
+                                                    min_pts=CLUSTER_MIN_PTS)
 
-        print(
-            f"Clusterizados: {len_clusterizados}, Reais: {len_reais} ({100 * len_clusterizados/len_reais:.4f} %)")
+            start_st = perf_counter()
+
+            (tempos_ordenados,
+            indices_sensores_ordenados,
+            clusters_espaciais,
+            ordered_indexes) = stela_phase_one(tempos_de_chegada=detection_times,
+                                                indices_sensores=sensor_indexes,
+                                                sensor_tt=sensor_tt,
+                                                epsilon_t=EPSILON_T,
+                                                min_pts=CLUSTER_MIN_PTS)
+
+            end_st = perf_counter()
+            print()
+            print(f"Tempo Entre Eventos: {current_delta_time:.10f} segundos")
+            print(
+                f"Eventos: {num_events[i]}, Tempo gasto: {end_st - start_st:0.8f} segundos")
+            len_clusterizados = len(
+                np.unique(clusters_espaciais[clusters_espaciais >= 0]))
+            len_reais = len(event_positions)
+
+            print(
+                f"Clusterizados: {len_clusterizados}, Reais: {len_reais} ({100 * len_clusterizados/len_reais:.4f} %)")
+        print("------------------------------------------------------", "\n")

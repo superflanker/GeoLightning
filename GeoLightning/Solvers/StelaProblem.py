@@ -149,12 +149,16 @@ class StelaProblem(Problem):
         -------
         None
         """
-        self.spatial_clusters = stela_phase_one(self.tempos_de_chegada,
-                                                self.sensor_indexes,
-                                                self.sensor_tt,
-                                                self.epsilon_t,
-                                                self.min_pts)
 
+        (self.tempos_de_chegada,
+         self.sensor_indexes,
+         self.spatial_clusters,
+         ordered_indexes) = stela_phase_one(self.tempos_de_chegada,
+                                                  self.sensor_indexes,
+                                                  self.sensor_tt,
+                                                  self.epsilon_t,
+                                                  self.min_pts)
+        
     def obj_func(self, solution):
         """
         Objective function for the STELA problem.
@@ -174,9 +178,9 @@ class StelaProblem(Problem):
             The objective value (likelihood). Returns the negative value if
             the problem is a maximization task.
         """
-        
+
         if len(self.spatial_clusters) > 0:
-            
+
             solucoes = np.array(solution.reshape(-1, 3))
 
             verossimilhanca = stela_phase_two(solucoes,

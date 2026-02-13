@@ -56,6 +56,13 @@ def test_clustering_stela(fake_test=False):
     max_alt = 935
     min_time = 10000
 
+    delta_time = 0.0
+
+    for i in range(len(sensor_tt)):
+        for j in range(i, len(sensor_tt[i])):
+            if sensor_tt[i, j] > delta_time:
+                delta_time = sensor_tt[i, j]
+
     paper_data = list()
 
     deltas_d = list()
@@ -66,7 +73,7 @@ def test_clustering_stela(fake_test=False):
 
     num_events = 1
 
-    max_times = [50]
+    max_times = [delta_time]
 
     runs = 1
 
@@ -79,7 +86,7 @@ def test_clustering_stela(fake_test=False):
 
         num_events = 1000
 
-        max_times = np.arange(10, 212, 2)
+        max_times = np.linspace(0.1, 10, 200) * delta_time
 
         runs = 100
 
@@ -89,37 +96,42 @@ def test_clustering_stela(fake_test=False):
 
         for _ in range(runs):
 
-            # o protagonista da história - os eventos
-
-            event_positions, event_times = generate_events(num_events,
-                                                           min_lat,
-                                                           max_lat,
-                                                           min_lon,
-                                                           max_lon,
-                                                           min_alt,
-                                                           max_alt,
-                                                           min_time,
-                                                           min_time + max_time)
+            # protagonista da história - eventos
+            event_positions, event_times = generate_events(num_events=num_events,
+                                                           min_lat=min_lat,
+                                                           max_lat=max_lat,
+                                                           min_lon=min_lon,
+                                                           max_lon=max_lon,
+                                                           min_alt=min_alt,
+                                                           max_alt=max_alt,
+                                                           min_time=min_time,
+                                                           max_time=max_time)
 
             # gerando as detecções
             (detections,
-             detection_times,
-             n_event_positions,
-             n_event_times,
-             distances,
-             sensor_indexes,
-             spatial_clusters) = generate_detections(event_positions,
-                                                     event_times,
-                                                     sensors)
+                detection_times,
+                n_event_positions,
+                n_event_times,
+                distances,
+                sensor_indexes,
+                spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                        event_times=event_times,
+                                                        sensor_positions=sensors,
+                                                        simulate_complete_detections=True,
+                                                        fixed_seed=False,
+                                                        min_pts=CLUSTER_MIN_PTS)
 
             # tudo pronto, rodando a clusterização
 
-            clusters_espaciais = stela_phase_one(detection_times,
-                                                 sensor_indexes,
-                                                 sensor_tt,
-                                                 EPSILON_T/1.5,
-                                                 CLUSTER_MIN_PTS)
-
+            (tempos_ordenados,
+             indices_sensores_ordenados,
+             clusters_espaciais,
+             ordered_indexes) = stela_phase_one(tempos_de_chegada=detection_times,
+                                                indices_sensores=sensor_indexes,
+                                                sensor_tt=sensor_tt,
+                                                epsilon_t=EPSILON_T,
+                                                min_pts=CLUSTER_MIN_PTS)
+            
             len_clusterizados = len(
                 np.unique(clusters_espaciais[clusters_espaciais >= 0]))
             len_reais = len(event_positions)
@@ -142,20 +154,20 @@ def test_clustering_stela(fake_test=False):
         y_savgol = savgol_filter(y,
                                  window_length=window_length,
                                  polyorder=polyorder)
-        
+
         # Plotando os resultados
-        
-        plt.plot(x, 
-                 y_savgol, 
-                 '-', 
+
+        plt.plot(x,
+                 y_savgol,
+                 '-',
                  color='black',
                  label='Observed Separation')
 
-        plt.plot(x, 
-                 100 * np.ones(len(x)), 
-                 linestyle='--', 
+        plt.plot(x,
+                 100 * np.ones(len(x)),
+                 linestyle='--',
                  color='gray',
-                 linewidth=1.0, 
+                 linewidth=1.0,
                  label=r'Reference ($100\%$)')
 
         plt.xlabel(r'Mean Time Between Events ($s/\\text{event}$)')
@@ -163,7 +175,7 @@ def test_clustering_stela(fake_test=False):
         plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
         plt.tight_layout()
         filename = os.path.join(basedir, "images/clustering_efficiency.png")
-        plt.savefig(filename, dpi=600) # é pro IEEE, certo?
+        plt.savefig(filename, dpi=600)  # é pro IEEE, certo?
 
 
 if __name__ == "__main__":

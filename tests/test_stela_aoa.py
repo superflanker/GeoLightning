@@ -22,37 +22,70 @@ from time import perf_counter
 def test_stela_aoa():
 
     # recuperando o grupo de sensores
+
     sensors = get_sensors()
-    sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
-    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
+
+    sensor_tt = get_sensor_matrix(sensors=sensors,
+                                  wave_speed=AVG_LIGHT_SPEED,
+                                  sistema_cartesiano=False)
+
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
+                                                              margem_metros=3000)
+
+    delta_time = 0.0
+
+    for i in range(len(sensor_tt)):
+        for j in range(i, len(sensor_tt[i])):
+            if sensor_tt[i, j] > delta_time:
+                delta_time = sensor_tt[i, j]
+
+    paper_data = list()
+
+    deltas_d = list()
+
+    deltas_t = list()
+
+    # dados default
+
+    num_events = 1
+
+    runs = 1
+
+    sigma_t = SIGMA_T
+
+    multiplier = 3
 
     # gerando os eventos
     min_alt = 935
     max_alt = 935
     min_time = 10000
-    max_time = min_time + 72 * 3600
-    num_events = 1
+    max_time = min_time + num_events * delta_time * multiplier
 
-    event_positions, event_times = generate_events(num_events,
-                                                   min_lat,
-                                                   max_lat,
-                                                   min_lon,
-                                                   max_lon,
-                                                   min_alt,
-                                                   max_alt,
-                                                   min_time,
-                                                   max_time)
+    # protagonista da história - eventos
+    event_positions, event_times = generate_events(num_events=num_events,
+                                                   min_lat=min_lat,
+                                                   max_lat=max_lat,
+                                                   min_lon=min_lon,
+                                                   max_lon=max_lon,
+                                                   min_alt=min_alt,
+                                                   max_alt=max_alt,
+                                                   min_time=min_time,
+                                                   max_time=max_time)
 
     # gerando as detecções
     (detections,
-     detection_times,
-     n_event_positions,
-     n_event_times,
-     distances,
-     sensor_indexes,
-     spatial_clusters) = generate_detections(event_positions,
-                                             event_times,
-                                             sensors)
+        detection_times,
+        n_event_positions,
+        n_event_times,
+        distances,
+        sensor_indexes,
+        spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                event_times=event_times,
+                                                sensor_positions=sensors,
+                                                simulate_complete_detections=True,
+                                                fixed_seed=False,
+                                                min_pts=CLUSTER_MIN_PTS)
+
 
     # limites
 
@@ -92,6 +125,7 @@ def test_stela_aoa():
                      miu=0.5,
                      moa_min=0.1,
                      moa_max=0.5)
+    
     agent = model.solve(problem_dict)
 
     end_st = perf_counter()

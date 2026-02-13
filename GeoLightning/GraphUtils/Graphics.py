@@ -157,7 +157,7 @@ def make_histogram_graph(hist: np.ndarray,
                      0,
                      rv_values_confidence_interval,
                      facecolor='#ababab',
-                     label=r"$90\%$ Interval")
+                     label=r"$90%$ Interval")
 
     plt.xlabel(xlabel)
 
@@ -256,7 +256,7 @@ def generate_nde_report(sensors: np.ndarray,
                      label="Sensores")
 
     de_area.boundary.plot(ax=ax, color="yellow",
-                          label="Limite de Detecção Efetiva $ (DE > 95\%)$")
+                          label="Limite de Detecção Efetiva $ (DE > 95%)$")
     cities_df.plot(ax=ax, 
                    color="#6a9cb0",
                    linewidth=0.5, 
@@ -267,7 +267,7 @@ def generate_nde_report(sensors: np.ndarray,
     norm = Normalize(vmin=0, vmax=100)
     sm = plt.cm.ScalarMappable(cmap="Blues", norm=norm)
     cbar = plt.colorbar(sm, cax=cax)
-    cbar.set_label("$DE$ $(\%)$")
+    cbar.set_label("$DE$ $(%)$")
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
     ax.legend(loc='best')

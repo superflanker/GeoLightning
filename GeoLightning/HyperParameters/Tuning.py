@@ -94,26 +94,33 @@ def tuneit(model: Optimizer,
     max_time = min_time + 210
     num_events = 1
 
-    event_positions, event_times = generate_events(num_events,
-                                                   min_lat,
-                                                   max_lat,
-                                                   min_lon,
-                                                   max_lon,
-                                                   min_alt,
-                                                   max_alt,
-                                                   min_time,
-                                                   max_time)
+
+    # protagonista da história - eventos
+    event_positions, event_times = generate_events(num_events=num_events,
+                                                   min_lat=min_lat,
+                                                   max_lat=max_lat,
+                                                   min_lon=min_lon,
+                                                   max_lon=max_lon,
+                                                   min_alt=min_alt,
+                                                   max_alt=max_alt,
+                                                   min_time=min_time,
+                                                   max_time=max_time,
+                                                   sigma_t=SIGMA_T)
 
     # gerando as detecções
     (detections,
-     detection_times,
-     n_event_positions,
-     n_event_times,
-     distances,
-     sensor_indexes,
-     spatial_clusters) = generate_detections(event_positions,
-                                             event_times,
-                                             sensors)
+        detection_times,
+        n_event_positions,
+        n_event_times,
+        distances,
+        sensor_indexes,
+        spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                event_times=event_times,
+                                                sensors=sensors,
+                                                jitter_std=SIGMA_T,
+                                                simulate_complete_detections=True,
+                                                min_pts=CLUSTER_MIN_PTS)
+
 
     # limites
 

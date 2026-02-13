@@ -296,7 +296,6 @@ def runner_ESO(event_positions: np.ndarray,
                          pop_size=max_population)
         agent = model.solve(problem_dict)
 
-        
 
         best_solution = agent.solution
         best_fitness = agent.target.fitness
