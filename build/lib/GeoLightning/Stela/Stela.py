@@ -170,13 +170,15 @@ def stela_phase_one(tempos_de_chegada: np.ndarray,
 
     labels = labels[label_ordered_indexes]
 
+    ordered_indexes = ordered_indexes[label_ordered_indexes]
+
     cluster_cleanup(labels=labels,
                     min_pts=min_pts)
 
     return (tempos_ordenados,
             indices_sensores_ordenados,
             labels,
-            label_ordered_indexes)
+            ordered_indexes)
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -258,7 +260,7 @@ if __name__ == "__main__":
 
     num_events = [1, 2, 5, 10, 15, 20, 25,
                   30, 100, 500, 800, 1000, 5000, 10000, 100000, 1000000]
-    
+
     time_multipliers = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     # num_events = [5, 10, 100]
@@ -283,40 +285,41 @@ if __name__ == "__main__":
     for multiplier in time_multipliers:
 
         current_delta_time = delta_time * multiplier
-        
+
         for i in range(len(num_events)):
 
             max_time = min_time + num_events[i] * current_delta_time
 
             event_positions, event_times = generate_events(num_events=num_events[i],
-                                                        min_lat=min_lat,
-                                                        max_lat=max_lat,
-                                                        min_lon=min_lon,
-                                                        max_lon=max_lon,
-                                                        min_alt=min_alt,
-                                                        max_alt=max_alt,
-                                                        min_time=min_time,
-                                                        max_time=max_time)
+                                                           min_lat=min_lat,
+                                                           max_lat=max_lat,
+                                                           min_lon=min_lon,
+                                                           max_lon=max_lon,
+                                                           min_alt=min_alt,
+                                                           max_alt=max_alt,
+                                                           min_time=min_time,
+                                                           max_time=max_time)
 
             # gerando as detecções
             (detections,
-            detection_times,
-            n_event_positions,
-            n_event_times,
-            distances,
-            sensor_indexes,
-            spatial_clusters) = generate_detections(event_positions=event_positions,
-                                                    event_times=event_times,
-                                                    sensor_positions=sensors,
-                                                    simulate_complete_detections=True,
-                                                    min_pts=CLUSTER_MIN_PTS)
+             detection_times,
+             n_event_positions,
+             n_event_times,
+             distances,
+             sensor_indexes,
+             spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                     event_times=event_times,
+                                                     sensor_positions=sensors,
+                                                     simulate_complete_detections=True,
+                                                     fixed_seed=False,
+                                                     min_pts=CLUSTER_MIN_PTS)
 
             start_st = perf_counter()
 
             (tempos_ordenados,
-            indices_sensores_ordenados,
-            clusters_espaciais,
-            ordered_indexes) = stela_phase_one(tempos_de_chegada=detection_times,
+             indices_sensores_ordenados,
+             clusters_espaciais,
+             ordered_indexes) = stela_phase_one(tempos_de_chegada=detection_times,
                                                 indices_sensores=sensor_indexes,
                                                 sensor_tt=sensor_tt,
                                                 epsilon_t=EPSILON_T,

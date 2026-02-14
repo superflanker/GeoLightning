@@ -197,7 +197,6 @@ def runner_GWO(event_positions: np.ndarray,
         associacoes_corretas : int  
             Number of clusters correctly associated with ground-truth events.
     """
-
     start_st = perf_counter()
 
     # Fase 1: clusterização
@@ -237,14 +236,24 @@ def runner_GWO(event_positions: np.ndarray,
 
     clusters_espaciais = problem.spatial_clusters
 
-    associacoes_corretas = (clusters_espaciais == spatial_clusters)
-    corretos = associacoes_corretas[associacoes_corretas == True]
-    print(
-        f"Média de Eventos Clusterizados Corretamente: {100 * len(corretos)/len(spatial_clusters):.04f} % ")
+    detections = problem.pontos_de_chegada
 
+    detection_times = problem.tempos_de_chegada
+
+    sensor_indexes = problem.sensor_indexes
+
+    len_reais = len(event_positions)
+
+    len_clusterizados = len(np.unique(clusters_espaciais))
+
+    associacoes_corretas = len_clusterizados / len_reais
+
+    print(
+        f"Média de Eventos Clusterizados Corretamente: {100 * len_clusterizados/len_reais:.04f} % ")
+    
     # Fase 2 - Refinamento da Solução
 
-    max_clusters = np.max(clusters_espaciais) + 1
+    max_clusters = np.max(clusters_espaciais)
 
     sol_centroides_espaciais = np.empty(
         (max_clusters, event_positions.shape[1]))
@@ -257,7 +266,11 @@ def runner_GWO(event_positions: np.ndarray,
 
     sol_reference = 0.0
 
-    for i in range(max_clusters):
+    # temos de resgatar os arrays de detecções e espaços novamente - pivotclustering e stela_phase_one
+    # reordenam estes arrays para resolver problemas de desempenho
+
+
+    for i in range(1, max_clusters + 1):
 
         current_detections = np.array(detections[clusters_espaciais == i])
 
@@ -294,6 +307,7 @@ def runner_GWO(event_positions: np.ndarray,
 
         model = StelaGWO(epoch=max_epochs,
                          pop_size=max_population)
+        
         agent = model.solve(problem_dict)
 
         best_solution = agent.solution
@@ -308,14 +322,14 @@ def runner_GWO(event_positions: np.ndarray,
         centroide_temporal = np.mean(tempos_de_origem)
 
         # não preciso ter medo pois é um cluster somente
-        sol_centroides_espaciais[i] = best_solution
+        sol_centroides_espaciais[i-1] = best_solution
         # não preciso ter medo pois é um cluster somente
-        sol_centroides_temporais[i] = centroide_temporal
-        sol_detectores[i] = detectores
+        sol_centroides_temporais[i-1] = centroide_temporal
+        sol_detectores[i-1] = detectores
 
         # valores para calcular o erro relativo em relação ao valor de referência
         sol_best_fitness += np.abs(best_fitness)
-        sol_reference -= maxima_log_verossimilhanca(sol_detectores[i], sigma_d)
+        sol_reference -= maxima_log_verossimilhanca(sol_detectores[i-1], sigma_d)
 
     # medições
 

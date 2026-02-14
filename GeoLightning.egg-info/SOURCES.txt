@@ -33,6 +33,8 @@ GeoLightning/Solvers/StelaPSO.py
 GeoLightning/Solvers/StelaProblem.py
 GeoLightning/Solvers/__init__.py
 GeoLightning/Solvers/Mealpy/ESO.py
+GeoLightning/Solvers/Mealpy/FHO.py
+GeoLightning/Solvers/Mealpy/LSA.py
 GeoLightning/Solvers/Mealpy/__init__.py
 GeoLightning/Stela/Bounds.py
 GeoLightning/Stela/Common.py
