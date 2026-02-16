@@ -356,7 +356,8 @@ def generate_events(num_events: np.int32,
                     min_alt: np.float64,
                     max_alt: np.float64,
                     min_time: np.float64,
-                    max_time: np.float64) -> tuple:
+                    max_time: np.float64,
+                    fixed_seed: bool = True) -> tuple:
     """
     Generates atmospheric events with spatial and temporal attributes,
     ensuring a minimum temporal spacing of 6 * sigma_t.
@@ -381,15 +382,17 @@ def generate_events(num_events: np.int32,
         Minimum timestamp.
     max_time : np.float64
         Maximum timestamp.
-
+    fixed_seed: bool
+        Flag indicating whether the generation should fix the seed for traceability or not
     Returns
     -------
     tuple of np.ndarray
         event_positions : (N, 3) array of (lat, lon, alt)
         event_times : (N,) array of timestamps
     """
-
-    np.random.seed(42)
+    if fixed_seed:
+        np.random.seed(42)
+    
     lats = np.random.uniform(min_lat, max_lat, num_events)
     lons = np.random.uniform(min_lon, max_lon, num_events)
     alts = np.random.uniform(min_alt, max_alt, num_events)

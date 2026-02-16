@@ -38,7 +38,7 @@ Dependencies
 
 import numpy as np
 from numba import jit
-from .Constants import AVG_EARTH_RADIUS, AVG_LIGHT_SPEED
+from .Constants import AVG_EARTH_RADIUS, AVG_LIGHT_SPEED, SIGMA_T, SIGMA_D
 
 #################################################################
 # Utilitários comuns
@@ -467,12 +467,13 @@ def computa_tempos_de_origem(solucoes: np.ndarray,
         if sistema_cartesiano:
             distancias[i] = distancia_cartesiana_entre_pontos(
                 solucoes[clusters_espaciais[i]],
-                  pontos_de_deteccao[i])
+                pontos_de_deteccao[i])
         else:
             distancias[i] = distancia_esferica_entre_pontos(
-                solucoes[clusters_espaciais[i]], 
+                solucoes[clusters_espaciais[i]],
                 pontos_de_deteccao[i])
 
     tempos_de_origem = tempos_de_chegada - distancias / AVG_LIGHT_SPEED
 
     return tempos_de_origem
+

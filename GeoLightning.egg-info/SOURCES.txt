@@ -39,6 +39,7 @@ GeoLightning/Solvers/Mealpy/__init__.py
 GeoLightning/Stela/Bounds.py
 GeoLightning/Stela/Common.py
 GeoLightning/Stela/DBSCAN.py
+GeoLightning/Stela/IRLS.py
 GeoLightning/Stela/LogLikelihood.py
 GeoLightning/Stela/PivotClustering.py
 GeoLightning/Stela/Stela.py

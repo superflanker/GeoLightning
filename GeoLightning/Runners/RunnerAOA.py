@@ -73,7 +73,8 @@ from GeoLightning.Solvers.StelaProblem import StelaProblem
 from GeoLightning.Solvers.StelaAOA import StelaAOA
 from GeoLightning.Stela.Stela import stela_phase_one, stela_phase_two
 from GeoLightning.Stela.Bounds import gera_limites_iniciais
-from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca
+from GeoLightning.Stela.LogLikelihood import maxima_log_verossimilhanca, funcao_log_verossimilhanca_ponderada
+from GeoLightning.Stela.IRLS import irls
 from GeoLightning.Simulator.Metrics import *
 from GeoLightning.Simulator.Simulator import *
 from GeoLightning.Utils.Constants import *
@@ -251,7 +252,7 @@ def runner_AOA(event_positions: np.ndarray,
 
     print(
         f"Média de Eventos Clusterizados Corretamente: {100 * len_clusterizados/len_reais:.04f} % ")
-    
+
     # Fase 2 - Refinamento da Solução
 
     max_clusters = np.max(clusters_espaciais)
@@ -261,15 +262,21 @@ def runner_AOA(event_positions: np.ndarray,
 
     sol_centroides_temporais = np.empty(max_clusters)
 
+    sol_centroides_espaciais_refinados = np.empty(
+        (max_clusters, event_positions.shape[1]))
+
+    sol_centroides_temporais_refinados = np.empty(max_clusters)
+
     sol_detectores = np.empty(max_clusters)
 
     sol_best_fitness = 0.0
+
+    sol_best_fitness_refinado = 0.0
 
     sol_reference = 0.0
 
     # temos de resgatar os arrays de detecções e espaços novamente - pivotclustering e stela_phase_one
     # reordenam estes arrays para resolver problemas de desempenho
-
 
     for i in range(1, max_clusters + 1):
 
@@ -312,7 +319,7 @@ def runner_AOA(event_positions: np.ndarray,
                          miu=0.5,
                          moa_min=0.1,
                          moa_max=0.8)
-        
+
         agent = model.solve(problem_dict)
 
         best_solution = agent.solution
@@ -334,16 +341,51 @@ def runner_AOA(event_positions: np.ndarray,
 
         # valores para calcular o erro relativo em relação ao valor de referência
         sol_best_fitness += np.abs(best_fitness)
-        sol_reference -= maxima_log_verossimilhanca(sol_detectores[i-1], sigma_d)
+        sol_reference -= maxima_log_verossimilhanca(
+            sol_detectores[i-1], sigma_d)
 
+        # refinamento da solução utilizando a solução fornecida pelo EA como solução inicial
+        (solucao_refinada,
+         centroide_temporal_refinado,
+         pesos_finais,
+         residuos_refinados) = irls(solucao_inicial=best_solution,
+                                    tempos_de_chegada=current_detection_times,
+                                    pontos_de_chegada=current_detections,
+                                    sigma_t=sigma_t,
+                                    max_iter=20,
+                                    pesos_alg="huber",
+                                    k=3.0,
+                                    lm_mu0=1e-3)
+
+        # não preciso ter medo pois é um cluster somente
+        sol_centroides_espaciais_refinados[i-1] = solucao_refinada
+        # não preciso ter medo pois é um cluster somente
+        sol_centroides_temporais_refinados[i-1] = centroide_temporal_refinado
+
+        sol_best_fitness_refinado += funcao_log_verossimilhanca_ponderada(deltas=np.abs(residuos_refinados),
+                                                                          pesos=pesos_finais,
+                                                                          sigma=sigma_d)
     # medições
 
     # tempos de origem à solução dada pela meta-heurística
 
-    delta_d = computa_distancia_batelada(sol_centroides_espaciais,
+    delta_t = np.abs(event_times - sol_centroides_temporais)
+
+    delta_t_refinado = np.abs(event_times - sol_centroides_temporais_refinados)
+
+    delta_d = AVG_LIGHT_SPEED * delta_t
+
+    delta_d_refinado = AVG_LIGHT_SPEED * delta_t_refinado
+
+    """delta_d = computa_distancia_batelada(sol_centroides_espaciais,
                                          event_positions)
 
+    delta_d_refinado = computa_distancia_batelada(sol_centroides_espaciais_refinados,
+                                                  event_positions)
+
     delta_t = event_times - sol_centroides_temporais
+
+    delta_t_refinado = event_times = sol_centroides_temporais_refinados"""
 
     end_st = perf_counter()
 
@@ -351,10 +393,15 @@ def runner_AOA(event_positions: np.ndarray,
 
     return (sol_centroides_espaciais,
             sol_centroides_temporais,
+            sol_centroides_espaciais_refinados,
+            sol_centroides_temporais_refinados,
             sol_detectores,
             sol_best_fitness,
+            sol_best_fitness_refinado,
             sol_reference,
             delta_d,
+            delta_d_refinado,
             delta_t,
+            delta_t_refinado,
             execution_time,
             associacoes_corretas)

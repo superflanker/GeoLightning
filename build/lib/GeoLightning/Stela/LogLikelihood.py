@@ -177,5 +177,7 @@ def funcao_log_verossimilhanca_ponderada(deltas: np.ndarray,
     """
     const = -np.log(sigma) - 0.5 * np.log(np.pi) - 0.5 * np.log(2)
     denom = 2 * (sigma ** 2)
-    log_likelihoods = np.sum(const - ((np.dot(pesos, deltas) ** 2) / denom))
+    log_likelihoods = 0.0
+    for i in range(len(deltas)):
+        log_likelihoods += const - ((pesos[i] * deltas[i]) ** 2) / denom
     return log_likelihoods
