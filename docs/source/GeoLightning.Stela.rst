@@ -28,10 +28,26 @@ GeoLightning.Stela.DBSCAN module
    :undoc-members:
    :show-inheritance:
 
+GeoLightning.Stela.IRLS module
+------------------------------
+
+.. automodule:: GeoLightning.Stela.IRLS
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 GeoLightning.Stela.LogLikelihood module
 ---------------------------------------
 
 .. automodule:: GeoLightning.Stela.LogLikelihood
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GeoLightning.Stela.PivotClustering module
+-----------------------------------------
+
+.. automodule:: GeoLightning.Stela.PivotClustering
    :members:
    :undoc-members:
    :show-inheritance:
