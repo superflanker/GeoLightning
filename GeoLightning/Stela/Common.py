@@ -254,7 +254,7 @@ def computa_pesos(residuos: np.ndarray,
 
     pesos_alg : str, optional
         Identifier of the weighting rule. Supported values are ``"rbf"``,
-        ``"huber"``, and ``"tukey"``. Default is ``"rbf"``.
+        ``"huber"``, ``"tukey"`` and ``uniform``. Default is ``"rbf"``.
 
     Returns
     -------
@@ -269,6 +269,9 @@ def computa_pesos(residuos: np.ndarray,
     - Callers must ensure ``sigma > 0`` and, for robust rules, ``k > 0``.
     """
     match pesos_alg:
+        case "uniform":
+            return np.ones(len(residuos), 
+                           dtype=np.float64)
         case "rbf":
             return afinidde_rbf(delta=residuos,
                                 sigma=sigma)

@@ -274,6 +274,9 @@ def runner_PSO(event_positions: np.ndarray,
 
     sol_reference = 0.0
 
+    crlb_espacial = list()
+
+    crlb_temporal = list()
 
     # temos de resgatar os arrays de detecções e espaços novamente - pivotclustering e stela_phase_one
     # reordenam estes arrays para resolver problemas de desempenho
@@ -364,6 +367,19 @@ def runner_PSO(event_positions: np.ndarray,
         sol_best_fitness_refinado += funcao_log_verossimilhanca_ponderada(deltas=np.abs(residuos_refinados),
                                                                           pesos=pesos_finais,
                                                                           sigma=sigma_d)
+        
+        real_event_position = event_positions[i-1] # a grande vantagem de se ordenar tudo pelo tempo
+
+        (fim, crlb, cov_ne) = computa_crlb_latlon_t(solucao_deg=real_event_position,
+                                                    pontos_de_chegada=current_detections,
+                                                    sigma_t=sigma_t,
+                                                    step_m=1.0,
+                                                    sistema_cartesiano=sistema_cartesiano)
+        
+        crlb_espacial.append(np.sqrt((cov_ne[0,0] + cov_ne[1,1])/ 2) / np.sqrt(detectores))
+
+        crlb_temporal.append(np.sqrt(crlb[2, 2]) / np.sqrt(detectores))
+
     # medições
 
     # tempos de origem à solução dada pela meta-heurística
@@ -375,6 +391,10 @@ def runner_PSO(event_positions: np.ndarray,
     delta_d = AVG_LIGHT_SPEED * delta_t
 
     delta_d_refinado = AVG_LIGHT_SPEED * delta_t_refinado
+
+    crlb_espacial = np.mean(np.array(crlb_espacial))
+
+    crlb_temporal = np.mean(np.array(crlb_temporal))
 
     """delta_d = computa_distancia_batelada(sol_centroides_espaciais,
                                          event_positions)
@@ -402,5 +422,7 @@ def runner_PSO(event_positions: np.ndarray,
             delta_d_refinado,
             delta_t,
             delta_t_refinado,
+            crlb_espacial,
+            crlb_temporal,
             execution_time,
             associacoes_corretas)

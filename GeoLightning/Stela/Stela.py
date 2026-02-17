@@ -258,8 +258,7 @@ if __name__ == "__main__":
                                                   generate_events)
     from time import perf_counter
 
-    num_events = [1, 2, 5, 10, 15, 20, 25,
-                  30, 100, 500, 800, 1000, 5000, 10000, 100000, 1000000]
+    num_events = [1000000]
 
     time_multipliers = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -269,6 +268,12 @@ if __name__ == "__main__":
     sensors = get_sensors()
     sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors, 3000)
+
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda, 
 
     # gerando os eventos
     min_alt = 935.0
@@ -291,6 +296,7 @@ if __name__ == "__main__":
             max_time = min_time + num_events[i] * current_delta_time
 
             event_positions, event_times = generate_events(num_events=num_events[i],
+                                                           vertices_hull=vertices_hull,
                                                            min_lat=min_lat,
                                                            max_lat=max_lat,
                                                            min_lon=min_lon,

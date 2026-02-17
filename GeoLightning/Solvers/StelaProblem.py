@@ -160,6 +160,9 @@ class StelaProblem(Problem):
                                                   self.min_pts)
         
         self.pontos_de_chegada = self.pontos_de_chegada[ordered_indexes]
+
+        self.ordered_indexes = ordered_indexes
+        
         
     def obj_func(self, solution):
         """

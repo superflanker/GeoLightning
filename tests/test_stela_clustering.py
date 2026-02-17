@@ -51,6 +51,12 @@ def test_clustering_stela(fake_test=False):
     sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda, 
+
     # gerando os eventos
     min_alt = 935
     max_alt = 935
@@ -63,17 +69,11 @@ def test_clustering_stela(fake_test=False):
             if sensor_tt[i, j] > delta_time:
                 delta_time = sensor_tt[i, j]
 
-    paper_data = list()
-
-    deltas_d = list()
-
-    deltas_t = list()
-
     # dados default
 
-    num_events = 1
+    num_events = 100
 
-    max_times = [delta_time]
+    time_multipliers = [10]
 
     runs = 1
 
@@ -84,13 +84,21 @@ def test_clustering_stela(fake_test=False):
     # define se estou rodando na mão o script
     if fake_test:
 
-        num_events = 1000
+        num_events = 10000
 
-        max_times = np.linspace(0.1, 10, 200) * delta_time
+        """time_multipliers = [0.1, 0.2, 0.3, 0.4, 0.5,
+                            1, 2, 3, 4, 5, 
+                            6, 7, 8, 9, 10, 
+                            11, 12, 13,  14, 15,
+                            16, 17, 18, 19, 20]"""
+        
+        time_multipliers = np.linspace(0, 2, 2000)
 
-        runs = 100
+        runs = 10
 
-    for max_time in max_times:
+    for time_multiplier in time_multipliers:
+
+        max_time = min_time + num_events * time_multiplier * delta_time 
 
         acc_eff = 0.0
 
@@ -98,6 +106,7 @@ def test_clustering_stela(fake_test=False):
 
             # protagonista da história - eventos
             event_positions, event_times = generate_events(num_events=num_events,
+                                                           vertices_hull=vertices_hull,
                                                            min_lat=min_lat,
                                                            max_lat=max_lat,
                                                            min_lon=min_lon,
@@ -105,7 +114,8 @@ def test_clustering_stela(fake_test=False):
                                                            min_alt=min_alt,
                                                            max_alt=max_alt,
                                                            min_time=min_time,
-                                                           max_time=max_time)
+                                                           max_time=max_time,
+                                                           fixed_seed=False)
 
             # gerando as detecções
             (detections,
@@ -139,9 +149,9 @@ def test_clustering_stela(fake_test=False):
 
         if fake_test:
             acc_eff /= runs
-            print(max_time, 100 * acc_eff)
+            print(time_multiplier * delta_time, 100 * acc_eff)
 
-            x.append(max_time/num_events)
+            x.append(time_multiplier * delta_time)
             y.append(100 * acc_eff)
 
     if fake_test:
@@ -170,8 +180,8 @@ def test_clustering_stela(fake_test=False):
                  linewidth=1.0,
                  label=r'Reference ($100\%$)')
 
-        plt.xlabel(r'Mean Time Between Events ($s/\\text{event}$)')
-        plt.ylabel(r'Separation Efficiency (\%)')
+        plt.xlabel(r'Mean Time Between Events ($s/\text{event}$)')
+        plt.ylabel(r'Separation Efficiency ($\%$)')
         plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
         plt.tight_layout()
         filename = os.path.join(basedir, "images/clustering_efficiency.png")

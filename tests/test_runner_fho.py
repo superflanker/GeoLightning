@@ -37,6 +37,11 @@ def test_runner_FHO(fake_test=False):
 
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
                                                               margem_metros=3000)
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda,
 
     delta_time = 0.0
 
@@ -92,6 +97,7 @@ def test_runner_FHO(fake_test=False):
 
         # protagonista da história - eventos
         event_positions, event_times = generate_events(num_events=num_events,
+                                                       vertices_hull=vertices_hull,
                                                        min_lat=min_lat,
                                                        max_lat=max_lat,
                                                        min_lon=min_lon,
@@ -129,6 +135,8 @@ def test_runner_FHO(fake_test=False):
             delta_d_refinado,
             delta_t,
             delta_t_refinado,
+            crlb_espacial,
+            crlb_temporal,
             execution_time,
             associacoes_corretas) = runner_FHO(event_positions,
                                                event_times,
@@ -154,14 +162,17 @@ def test_runner_FHO(fake_test=False):
         assert len(sol_centroides_espaciais) == len(event_times)
 
         if fake_test:
-        
+                    
             """
                 Cálculo de parâmetros para o artigo
             """
 
+            print(crlb_espacial)
+
+            print(crlb_temporal)
+
             # dados temporais
-            crlb_temporal = sigma_t ** 2 / 7.0
-            crlb_temporal_rmse = np.sqrt(crlb_temporal)
+            crlb_temporal_rmse = crlb_temporal
             crlb_temporal_medio = crlb_temporal
             rmse_temporal = rmse(delta_t)
             rmse_temporal_refinado = rmse(delta_t_refinado)
@@ -183,8 +194,7 @@ def test_runner_FHO(fake_test=False):
                 delta_t_refinado)
 
             # dados espaciais
-            crlb_espacial = ((AVG_LIGHT_SPEED * sigma_t) ** 2) / 7.0
-            crlb_espacial_rmse = np.sqrt(crlb_espacial)
+            crlb_espacial_rmse = crlb_espacial
             crlb_espacial_medio = crlb_espacial
             rmse_espacial = rmse(delta_d)
             rmse_espacial_refinado = rmse(delta_d_refinado)
@@ -206,7 +216,7 @@ def test_runner_FHO(fake_test=False):
             # porcentagem das associações corretas
 
             correct_association_index = np.mean(associacoes_corretas) * 100
-
+        
             # adicionando no paper
 
             paper_data.append([sigma_t/SIGMA_T,

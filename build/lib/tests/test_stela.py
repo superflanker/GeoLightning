@@ -30,6 +30,11 @@ def test_stela():
     sensors = get_sensors()
     sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda,
 
     for i in range(len(num_events)):
         # gerando os eventos
@@ -40,6 +45,7 @@ def test_stela():
 
         # protagonista da história - eventos
         event_positions, event_times = generate_events(num_events=num_events[i],
+                                                       vertices_hull=vertices_hull,
                                                        min_lat=min_lat,
                                                        max_lat=max_lat,
                                                        min_lon=min_lon,
@@ -97,6 +103,7 @@ def test_stela():
     max_time = min_time + 72 * 3600
     # protagonista da história - eventos
     event_positions, event_times = generate_events(num_events=10,
+                                                   vertices_hull=vertices_hull,
                                                    min_lat=min_lat,
                                                    max_lat=max_lat,
                                                    min_lon=min_lon,

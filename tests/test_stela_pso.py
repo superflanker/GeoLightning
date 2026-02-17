@@ -32,6 +32,11 @@ def test_stela_pso():
 
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
                                                               margem_metros=3000)
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda,
 
     delta_time = 0.0
 
@@ -64,6 +69,7 @@ def test_stela_pso():
 
     # protagonista da história - eventos
     event_positions, event_times = generate_events(num_events=num_events,
+                                                   vertices_hull=vertices_hull,
                                                    min_lat=min_lat,
                                                    max_lat=max_lat,
                                                    min_lon=min_lon,

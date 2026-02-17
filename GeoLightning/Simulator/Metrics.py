@@ -44,6 +44,7 @@ from typing import Tuple
 from GeoLightning.Utils.Constants import SIGMA_D, SIGMA_T, AVG_EARTH_RADIUS, AVG_LIGHT_SPEED
 from GeoLightning.Utils.Utils import computa_distancias
 
+
 @jit(nopython=True, cache=True, fastmath=True)
 def rmse(deltas: np.ndarray) -> np.float64:
     """
@@ -286,13 +287,13 @@ def _inv_3x3(A: np.ndarray, eps_det: np.float64 = 1e-18) -> Tuple[np.ndarray, np
 
 
 @jit(nopython=True, cache=True, fastmath=True)
-def fim_crlb_latlon_t0(solucao_deg: np.ndarray,
-                       pontos_de_chegada: np.ndarray,
-                       sigma_t: np.float64 = SIGMA_T,
-                       step_m: np.float64 = 1.0,
-                       sistema_cartesiano: bool = False) -> Tuple[np.ndarray,
-                                                                  np.ndarray,
-                                                                  np.ndarray]:
+def computa_crlb_latlon_t(solucao_deg: np.ndarray,
+                          pontos_de_chegada: np.ndarray,
+                          sigma_t: np.float64 = SIGMA_T,
+                          step_m: np.float64 = 1.0,
+                          sistema_cartesiano: bool = False) -> Tuple[np.ndarray,
+                                                                     np.ndarray,
+                                                                     np.ndarray]:
     """
     Compute the Fisher Information Matrix (FIM) and CRLB for (lat, lon, t0).
 
@@ -388,9 +389,12 @@ def fim_crlb_latlon_t0(solucao_deg: np.ndarray,
       (degrees, degrees, seconds). Use `cov_ne` for a metric interpretation in meters.
     """
     # Finite-difference step in degrees corresponding to step_m meters
-    step_deg = (step_m / AVG_EARTH_RADIUS) * (180.0 / np.pi)
-    dlat = step_deg
-    dlon = step_deg
+    dlat = (step_m / AVG_EARTH_RADIUS) * (180.0 / np.pi)
+    x_lat = solucao_deg.copy()
+    lat = solucao_deg[0]
+
+    dlon = (step_m/(AVG_EARTH_RADIUS * np.cos(np.deg2rad(lat)))) * \
+        (180.0 / np.pi)
 
     # Distances at the nominal solution
     d0 = computa_distancias(origem=solucao_deg,
@@ -398,7 +402,6 @@ def fim_crlb_latlon_t0(solucao_deg: np.ndarray,
                             sistema_cartesiano=sistema_cartesiano)
 
     # Distances under latitude perturbation
-    x_lat = solucao_deg.copy()
     x_lat[0] = x_lat[0] + dlat
     d_lat = computa_distancias(origem=x_lat,
                                destinos=pontos_de_chegada,
@@ -429,7 +432,7 @@ def fim_crlb_latlon_t0(solucao_deg: np.ndarray,
 
     # FIM = (1/sigma_t^2) * J^T J
     fim = np.zeros((3, 3), dtype=np.float64)
-    inv_sigma2 = 1.0 / (sigma_t * sigma_t)
+    inv_sigma2 = 1.0 / (sigma_t ** 2)
 
     for i in range(n):
         j0 = J[i, 0]
@@ -533,7 +536,7 @@ def crlb_ne_summary(cov_ne: np.ndarray) -> Tuple[np.float64,
     """
     var_n = cov_ne[0, 0]
     var_e = cov_ne[1, 1]
-    cov  = cov_ne[0, 1]
+    cov = cov_ne[0, 1]
 
     # Clamp marginal variances for numerical safety
     if var_n < 0.0:
@@ -569,4 +572,3 @@ def crlb_ne_summary(cov_ne: np.ndarray) -> Tuple[np.float64,
     angle_rad = 0.5 * np.arctan2(2.0 * cov, (var_n - var_e))
 
     return sigma_n, sigma_e, sigma_ne, sigma_major, sigma_minor, angle_rad
-

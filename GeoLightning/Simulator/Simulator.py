@@ -43,6 +43,7 @@ Dependencies
 
 import numpy as np
 from numba import jit
+from typing import Tuple
 from numba.typed import List as nList
 from GeoLightning.Utils.Constants import R_LAT, AVG_LIGHT_SPEED, SIGMA_T, CLUSTER_MIN_PTS
 from GeoLightning.Utils.Utils import computa_distancias, computa_distancia
@@ -347,8 +348,87 @@ def compute_network_detection_efficiency(sensors: np.ndarray,
     return lightning_grid, nde
 
 
+@jit(nopython=True)
+def is_inside_hull(point: np.ndarray,
+                   hull_vertices: np.ndarray) -> bool:
+    n = len(hull_vertices)
+    for i in range(n):
+        p1 = hull_vertices[i]
+        p2 = hull_vertices[(i + 1) % n]
+
+        val = (p2[1] - p1[1]) * (point[0] - p1[0]) - \
+              (p2[0] - p1[0]) * (point[1] - p1[1])
+
+        if val > 0:
+            return False
+    return True
+
+
+@jit(nopython=True)
+def generate_latlon_inside_hull(num_events: np.int32,
+                                hull_vertices: np.ndarray,
+                                min_lat: np.float64,
+                                max_lat: np.float64,
+                                min_lon: np.float64,
+                                max_lon: np.float64,
+                                min_alt: np.float64,
+                                max_alt: np.float64) -> Tuple[np.ndarray,
+                                                              np.ndarray,
+                                                              np.ndarray]:
+    """
+    Generates atmospheric events with spatial and temporal attributes inside a convex hull.
+
+    Parameters
+    ----------
+    num_events : np.int32
+        Number of events to generate.
+    vertices_hull : np.ndarray
+        vertices of the convex hull region for some network
+    min_lat : np.float64
+        Minimum latitude.
+    max_lat : np.float64
+        Maximum latitude.
+    min_lon : np.float64
+        Minimum longitude.
+    max_lon : np.float64
+        Maximum longitude.
+    min_alt : np.float64
+        Minimum altitude.
+    max_alt : np.float64
+        Maximum altitude.
+    min_time : np.float64
+
+    Returns
+    -------
+    lats: np.ndarray
+        randomized latitudes inside convex hull
+    lons: np.ndarray
+        randomized longitudes inside convex hull
+    alts:
+        randomized altitudes 
+    """
+
+    lats = np.empty(num_events, dtype=np.float64)
+    lons = np.empty(num_events, dtype=np.float64)
+    alts = np.empty(num_events, dtype=np.float64)
+    count = 0
+    while count < num_events:
+        lat_c = np.random.uniform(min_lat, max_lat)
+        lon_c = np.random.uniform(min_lon, max_lon)
+        alt_c = np.random.uniform(min_alt, max_alt)
+        p_c = np.array([lat_c, lon_c])
+
+        if is_inside_hull(p_c, hull_vertices):
+            lats[count] = lat_c
+            lons[count] = lon_c
+            alts[count] = alt_c
+            count += 1
+    return lats, lons, alts
+
+
 @jit(nopython=True, cache=True, fastmath=True)
 def generate_events(num_events: np.int32,
+                    vertices_hull: np.ndarray,
                     min_lat: np.float64,
                     max_lat: np.float64,
                     min_lon: np.float64,
@@ -357,15 +437,17 @@ def generate_events(num_events: np.int32,
                     max_alt: np.float64,
                     min_time: np.float64,
                     max_time: np.float64,
-                    fixed_seed: bool = True) -> tuple:
+                    fixed_seed: bool = True) -> Tuple[np.ndarray,
+                                                      np.ndarray]:
     """
-    Generates atmospheric events with spatial and temporal attributes,
-    ensuring a minimum temporal spacing of 6 * sigma_t.
+    Generates atmospheric events with spatial and temporal attributes.
 
     Parameters
     ----------
     num_events : np.int32
         Number of events to generate.
+    vertices_hull : np.ndarray
+        vertices of the convex hull region for some network
     min_lat : np.float64
         Minimum latitude.
     max_lat : np.float64
@@ -392,10 +474,17 @@ def generate_events(num_events: np.int32,
     """
     if fixed_seed:
         np.random.seed(42)
-    
-    lats = np.random.uniform(min_lat, max_lat, num_events)
-    lons = np.random.uniform(min_lon, max_lon, num_events)
-    alts = np.random.uniform(min_alt, max_alt, num_events)
+
+    (lats,
+     lons,
+     alts) = generate_latlon_inside_hull(num_events=num_events,
+                                         hull_vertices=vertices_hull,
+                                         min_lat=min_lat,
+                                         max_lat=max_lat,
+                                         min_lon=min_lon,
+                                         max_lon=max_lon,
+                                         min_alt=min_alt,
+                                         max_alt=max_alt)
 
     event_times = np.linspace(min_time, max_time, num_events)
 
@@ -411,7 +500,13 @@ def generate_detections(event_positions: np.ndarray,
                         simulate_complete_detections: bool = True,
                         fixed_seed: bool = True,
                         min_pts: np.int32 = CLUSTER_MIN_PTS,
-                        jitter_std: np.float64 = SIGMA_T) -> tuple:
+                        jitter_std: np.float64 = SIGMA_T) -> Tuple[np.ndarray,
+                                                                   np.ndarray,
+                                                                   np.ndarray,
+                                                                   np.ndarray,
+                                                                   np.ndarray,
+                                                                   np.ndarray,
+                                                                   np.ndarray]:
     """
     Simulates detections from a sensor network based on lightning events.
 
@@ -465,10 +560,10 @@ def generate_detections(event_positions: np.ndarray,
     out_sensor_indexes = np.empty(max_size, dtype=np.int64)
     write_idx = 0
     cluster_id = 0
-    
+
     if fixed_seed:
         np.random.seed(42)
-    
+
     for i in range(num_events):
         event_pos = event_positions[i]
         event_t = event_times[i]
@@ -520,8 +615,15 @@ if __name__ == "__main__":
 
     # recuperando o grupo de sensores
     sensors = get_sensors()
+
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
                                                               margem_metros=3000)
+
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2]  # Apenas os sensores da borda,
 
     # gerando os eventos
     min_alt = 0
@@ -533,6 +635,7 @@ if __name__ == "__main__":
     print(min_lat, max_lat, min_lon, max_lon, min_alt, max_alt)
 
     event_positions, event_times = generate_events(num_events=num_events,
+                                                   vertices_hull=vertices_hull,
                                                    min_lat=min_lat,
                                                    max_lat=max_lat,
                                                    min_lon=min_lon,
@@ -549,11 +652,11 @@ if __name__ == "__main__":
      n_event_times,
      distances,
      spatial_clusters) = generate_detections(event_positions=event_positions,
-                                                event_times=event_times,
-                                                sensors=sensors,
-                                                jitter_std=SIGMA_T,
-                                                simulate_complete_detections=True,
-                                                min_pts=CLUSTER_MIN_PTS)
+                                             event_times=event_times,
+                                             sensors=sensors,
+                                             jitter_std=SIGMA_T,
+                                             simulate_complete_detections=True,
+                                             min_pts=CLUSTER_MIN_PTS)
 
     print(detections)
     print(n_event_positions)

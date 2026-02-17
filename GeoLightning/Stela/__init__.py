@@ -17,10 +17,10 @@ Submodules
 ----------
 - Bounds.py: spatio-tempral bounds computation.
 - Common.py: common utilities for the module.
-- Dimensions.py: Remapping of Candidate Solutions.
-- Entropy.py: Shannon Entropy computation.
-- LightDBSCAN.py: DBSCAN Algorithm using a true spatio-temporal metric
+- DBSCAN.py: DBSCAN Algorithm using a true spatio-temporal metric (deprecated)
+- IRLS.py: robust position refinement through IRLS Algorithm + LM update
 - LogLikelihood.py: Log likelihood computation.
+- PivotClustering.py: TDOA Based Phisically Informed 1D Pivoting Clustering Algorithm for event separation.
 - Stela.py: Core spatio-temporal likelihood computation.
 
 Notes

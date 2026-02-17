@@ -4,9 +4,9 @@ from typing import Tuple
 from GeoLightning.Utils.Constants import SIGMA_T, AVG_EARTH_RADIUS, AVG_LIGHT_SPEED
 from GeoLightning.Utils.Utils import computa_distancias
 from GeoLightning.Stela.Common import \
-residuos_espaciais, \
-computa_pesos, \
-solver_2x2_simples
+    residuos_espaciais, \
+    computa_pesos, \
+    solver_2x2_simples
 
 
 @jit(nopython=True, cache=True, fastmath=True)
@@ -18,10 +18,11 @@ def irls(solucao_inicial: np.ndarray,
          pesos_alg: str = "rbf",
          sistema_cartesiano: bool = False,
          k: np.float64 = 3.0,  # huber, tukey somente
-         lm_mu0: np.float64 = 1e-3) -> Tuple[np.ndarray,
-                                             np.float64,
-                                             np.ndarray,
-                                             np.ndarray]:
+         lm_mu0: np.float64 = 1e-3,
+         use_central_diff: bool = True) -> Tuple[np.ndarray,
+                                                 np.float64,
+                                                 np.ndarray,
+                                                 np.ndarray]:
     """
     Refine a TOA multilateration solution using IRLS with a weighted LM step.
 
@@ -125,16 +126,19 @@ def irls(solucao_inicial: np.ndarray,
         Solves the 2x2 symmetric normal-equation system used by the LM update.
     """
 
+    # Spatial scale corresponding to sigma_t
     sigma_r = AVG_LIGHT_SPEED * sigma_t
+
+    step_m = 0.1
 
     x = solucao_inicial.copy()
     pesos = np.ones(len(tempos_de_chegada), dtype=np.float64)
     mu = lm_mu0
 
-    step_deg = (1.0 / AVG_EARTH_RADIUS) * (180.0 / np.pi)
-    dlat = step_deg
-    dlon = step_deg
+    # Convert "step_m" to degrees latitude (~ arc-length on sphere)
+    step_deg_lat = (step_m / AVG_EARTH_RADIUS) * (180.0 / np.pi)
 
+    # Initial residuals and t0 (weights initially uniform)
     r, t0 = residuos_espaciais(solucao_inicial=x,
                                tempos_de_chegada=tempos_de_chegada,
                                pontos_de_chegada=pontos_de_chegada,
@@ -143,34 +147,94 @@ def irls(solucao_inicial: np.ndarray,
 
     for _ in range(max_iter):
 
+        # Update weights from current residuals (or keep them constant if "none")
         pesos = computa_pesos(residuos=r,
                               sigma=sigma_r,
                               k=k,
                               pesos_alg=pesos_alg)
 
+        # Recompute residuals with the updated weights (t0 depends on weights)
         r, t0 = residuos_espaciais(solucao_inicial=x,
                                    tempos_de_chegada=tempos_de_chegada,
                                    pontos_de_chegada=pontos_de_chegada,
                                    pesos=pesos,
                                    sistema_cartesiano=sistema_cartesiano)
 
-        x_lat = x.copy()
-        x_lon = x.copy()
-        x_lat[0] = x_lat[0] + dlat
-        x_lon[1] = x_lon[1] + dlon
+        # Finite-difference steps (degrees)
+        dlat = step_deg_lat
 
-        r_lat, _ = residuos_espaciais(solucao_inicial=x_lat,
-                                      tempos_de_chegada=tempos_de_chegada,
-                                      pontos_de_chegada=pontos_de_chegada,
-                                      pesos=pesos,
-                                      sistema_cartesiano=sistema_cartesiano)
+        # Longitude step must be scaled by cos(latitude) to represent ~step_m meters eastward
+        lat_rad = x[0] * (np.pi / 180.0)
+        cphi = np.cos(lat_rad)
+        cphi_abs = np.abs(cphi)
+        if cphi_abs < 1e-6:
+            cphi_abs = 1e-6
+        dlon = step_deg_lat / cphi_abs
 
-        r_lon, _ = residuos_espaciais(solucao_inicial=x_lon,
-                                      tempos_de_chegada=tempos_de_chegada,
-                                      pontos_de_chegada=pontos_de_chegada,
-                                      pesos=pesos,
-                                      sistema_cartesiano=sistema_cartesiano)
+        # Jacobian samples
+        if use_central_diff:
+            # LAT: x +/- dlat
+            x_lat_p = x.copy()
+            x_lat_m = x.copy()
+            x_lat_p[0] = x_lat_p[0] + dlat
+            x_lat_m[0] = x_lat_m[0] - dlat
 
+            r_lat_p, _ = residuos_espaciais(solucao_inicial=x_lat_p,
+                                            tempos_de_chegada=tempos_de_chegada,
+                                            pontos_de_chegada=pontos_de_chegada,
+                                            pesos=pesos,
+                                            sistema_cartesiano=sistema_cartesiano)
+
+            r_lat_m, _ = residuos_espaciais(solucao_inicial=x_lat_m,
+                                            tempos_de_chegada=tempos_de_chegada,
+                                            pontos_de_chegada=pontos_de_chegada,
+                                            pesos=pesos,
+                                            sistema_cartesiano=sistema_cartesiano)
+
+            # LON: x +/- dlon
+            x_lon_p = x.copy()
+            x_lon_m = x.copy()
+            x_lon_p[1] = x_lon_p[1] + dlon
+            x_lon_m[1] = x_lon_m[1] - dlon
+
+            r_lon_p, _ = residuos_espaciais(solucao_inicial=x_lon_p,
+                                            tempos_de_chegada=tempos_de_chegada,
+                                            pontos_de_chegada=pontos_de_chegada,
+                                            pesos=pesos,
+                                            sistema_cartesiano=sistema_cartesiano)
+
+            r_lon_m, _ = residuos_espaciais(solucao_inicial=x_lon_m,
+                                            tempos_de_chegada=tempos_de_chegada,
+                                            pontos_de_chegada=pontos_de_chegada,
+                                            pesos=pesos,
+                                            sistema_cartesiano=sistema_cartesiano)
+
+            inv2dlat = 1.0 / (2.0 * dlat)
+            inv2dlon = 1.0 / (2.0 * dlon)
+
+        else:
+            # Forward differences
+            x_lat = x.copy()
+            x_lon = x.copy()
+            x_lat[0] = x_lat[0] + dlat
+            x_lon[1] = x_lon[1] + dlon
+
+            r_lat, _ = residuos_espaciais(solucao_inicial=x_lat,
+                                          tempos_de_chegada=tempos_de_chegada,
+                                          pontos_de_chegada=pontos_de_chegada,
+                                          pesos=pesos,
+                                          sistema_cartesiano=sistema_cartesiano)
+
+            r_lon, _ = residuos_espaciais(solucao_inicial=x_lon,
+                                          tempos_de_chegada=tempos_de_chegada,
+                                          pontos_de_chegada=pontos_de_chegada,
+                                          pesos=pesos,
+                                          sistema_cartesiano=sistema_cartesiano)
+
+            invdlat = 1.0 / dlat
+            invdlon = 1.0 / dlon
+
+        # Assemble weighted normal equations (2x2) for [dphi, dlmb]
         a11 = 0.0
         a12 = 0.0
         a22 = 0.0
@@ -178,8 +242,14 @@ def irls(solucao_inicial: np.ndarray,
         b2 = 0.0
 
         for i in range(len(tempos_de_chegada)):
-            j1 = (r_lat[i] - r[i]) / dlat
-            j2 = (r_lon[i] - r[i]) / dlon
+
+            if use_central_diff:
+                j1 = (r_lat_p[i] - r_lat_m[i]) * inv2dlat
+                j2 = (r_lon_p[i] - r_lon_m[i]) * inv2dlon
+            else:
+                j1 = (r_lat[i] - r[i]) * invdlat
+                j2 = (r_lon[i] - r[i]) * invdlon
+
             wi = pesos[i]
 
             a11 += wi * j1 * j1
@@ -190,7 +260,6 @@ def irls(solucao_inicial: np.ndarray,
             b2 += wi * j2 * (-r[i])
 
         # LM damping
-
         a11_mu = a11 + mu
         a22_mu = a22 + mu
 
@@ -211,10 +280,9 @@ def irls(solucao_inicial: np.ndarray,
                                            pesos=pesos,
                                            sistema_cartesiano=sistema_cartesiano)
 
-        # Accept/reject with simple LM rule
+        # Accept/reject with weighted SSE
         cost = 0.0
         cost_new = 0.0
-
         for i in range(len(tempos_de_chegada)):
             cost += pesos[i] * r[i] * r[i]
             cost_new += pesos[i] * r_new[i] * r_new[i]
@@ -223,14 +291,16 @@ def irls(solucao_inicial: np.ndarray,
             x = x_new
             r = r_new
             t0 = t0_new
-            mu = mu * 0.3  # decrease damping
+
+            mu = mu * 0.3
             if mu < 1e-12:
                 mu = 1e-12
-            # stopping rule (small step in degrees)
+
+            # stopping rule (very small step in degrees)
             if np.abs(dphi) < 1e-10 and np.abs(dlmb) < 1e-10:
                 break
         else:
-            mu = mu * 10.0  # increase damping
+            mu = mu * 10.0
 
     return (x,
             t0,

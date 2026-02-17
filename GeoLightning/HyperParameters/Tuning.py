@@ -87,6 +87,12 @@ def tuneit(model: Optimizer,
     sensors_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensors)
 
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda,
+
     # gerando os eventos
     min_alt = 935
     max_alt = 935
@@ -97,6 +103,7 @@ def tuneit(model: Optimizer,
 
     # protagonista da história - eventos
     event_positions, event_times = generate_events(num_events=num_events,
+                                                   vertices_hull=vertices_hull,
                                                    min_lat=min_lat,
                                                    max_lat=max_lat,
                                                    min_lon=min_lon,

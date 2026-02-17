@@ -20,8 +20,14 @@ def test_simulations():
     # recuperando o grupo de sensores
     sensors = get_sensors()
     sensor_tt = get_sensor_matrix(sensors, AVG_LIGHT_SPEED, False)
-    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors, 
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
                                                               margem_metros=3000)
+
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2]  # Apenas os sensores da borda,
 
     # gerando os eventos
     min_alt = 0
@@ -31,14 +37,15 @@ def test_simulations():
     num_events = 100
 
     event_positions, event_times = generate_events(num_events=num_events,
-                                                    min_lat=min_lat,
-                                                    max_lat=max_lat,
-                                                    min_lon=min_lon,
-                                                    max_lon=max_lon,
-                                                    min_alt=min_alt,
-                                                    max_alt=max_alt,
-                                                    min_time=min_time,
-                                                    max_time=max_time)
+                                                   vertices_hull=vertices_hull,
+                                                   min_lat=min_lat,
+                                                   max_lat=max_lat,
+                                                   min_lon=min_lon,
+                                                   max_lon=max_lon,
+                                                   min_alt=min_alt,
+                                                   max_alt=max_alt,
+                                                   min_time=min_time,
+                                                   max_time=max_time)
 
     # gerando as detecções
     (detections,
