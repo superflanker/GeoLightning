@@ -500,13 +500,14 @@ def generate_detections(event_positions: np.ndarray,
                         simulate_complete_detections: bool = True,
                         fixed_seed: bool = True,
                         min_pts: np.int32 = CLUSTER_MIN_PTS,
-                        jitter_std: np.float64 = SIGMA_T) -> Tuple[np.ndarray,
-                                                                   np.ndarray,
-                                                                   np.ndarray,
-                                                                   np.ndarray,
-                                                                   np.ndarray,
-                                                                   np.ndarray,
-                                                                   np.ndarray]:
+                        jitter_std: np.float64 = SIGMA_T,
+                        seed: np.int32 = 42) -> Tuple[np.ndarray,
+                                                      np.ndarray,
+                                                      np.ndarray,
+                                                      np.ndarray,
+                                                      np.ndarray,
+                                                      np.ndarray,
+                                                      np.ndarray]:
     """
     Simulates detections from a sensor network based on lightning events.
 
@@ -562,7 +563,7 @@ def generate_detections(event_positions: np.ndarray,
     cluster_id = 0
 
     if fixed_seed:
-        np.random.seed(42)
+        np.random.seed(seed)
 
     for i in range(num_events):
         event_pos = event_positions[i]

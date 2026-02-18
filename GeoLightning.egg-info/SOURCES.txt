@@ -11,6 +11,7 @@ GeoLightning/GraphUtils/Graphics.py
 GeoLightning/GraphUtils/__init__.py
 GeoLightning/HyperParameters/Tuning.py
 GeoLightning/HyperParameters/__init__.py
+GeoLightning/Runners/Runner.py
 GeoLightning/Runners/RunnerAOA.py
 GeoLightning/Runners/RunnerESO.py
 GeoLightning/Runners/RunnerFHO.py

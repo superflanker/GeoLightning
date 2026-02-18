@@ -5,6 +5,9 @@ Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
 """
 import numpy as np
 import os
+from concurrent.futures import ProcessPoolExecutor
+import logging
+import multiprocessing as mp
 from GeoLightning.Simulator.Simulator import (get_sensors,
                                               get_sensor_matrix,
                                               get_lightning_limits,
@@ -17,7 +20,7 @@ from GeoLightning.Simulator.Metrics import (rmse,
                                             calcula_prmse,
                                             erro_relativo_funcao_ajuste)
 from GeoLightning.Utils.Constants import *
-from GeoLightning.Runners.RunnerAOA import runner_AOA
+from GeoLightning.Runners.RunnerAOA import runner_AOA_process
 
 
 def test_runner_AOA(fake_test=False):
@@ -37,13 +40,12 @@ def test_runner_AOA(fake_test=False):
 
     min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
                                                               margem_metros=3000)
-    
+
     from scipy.spatial import ConvexHull
 
     # sensores: array [[lat, lon], ...]
     hull = ConvexHull(sensors[:, :2])
-    vertices_hull = sensors[hull.vertices, :2] # Apenas os sensores da borda,
-
+    vertices_hull = sensors[hull.vertices, :2]  # Apenas os sensores da borda,
     delta_time = 0.0
 
     for i in range(len(sensor_tt)):
@@ -55,8 +57,8 @@ def test_runner_AOA(fake_test=False):
 
     deltas_d = list()
 
-    deltas_t = list()    
-    
+    deltas_t = list()
+
     deltas_d_refinado = list()
 
     deltas_t_refinado = list()
@@ -75,8 +77,6 @@ def test_runner_AOA(fake_test=False):
 
     runs = 1
 
-    sigma_t = SIGMA_T
-
     multiplier = 3
 
     # define se estou rodando na mão o script
@@ -86,18 +86,21 @@ def test_runner_AOA(fake_test=False):
 
         runs = 100
 
+    processes = 4
+
     # gerando os eventos
     min_alt = 935
     max_alt = 935
     min_time = 10000
     max_time = min_time + num_events * delta_time * multiplier
 
+    max_epochs = 1000
+
+    max_population = 50
+
+    events = list()
 
     for r in range(runs):
-
-        print(f"AOA - Rodada {r}")
-
-        # tudo pronto, rodando o runner
 
         # protagonista da história - eventos
         event_positions, event_times = generate_events(num_events=num_events,
@@ -110,7 +113,8 @@ def test_runner_AOA(fake_test=False):
                                                        max_alt=max_alt,
                                                        min_time=min_time,
                                                        max_time=max_time,
-                                                       fixed_seed=False)
+                                                       fixed_seed=True if r == 0 else False)
+
         # gerando as detecções
         (detections,
             detection_times,
@@ -124,177 +128,205 @@ def test_runner_AOA(fake_test=False):
                                                     simulate_complete_detections=True,
                                                     fixed_seed=False,
                                                     min_pts=CLUSTER_MIN_PTS)
-        
-        (sol_centroides_espaciais,
-            sol_centroides_temporais,
-            sol_centroides_espaciais_refinados,
-            sol_centroides_temporais_refinados,
-            sol_detectores,
-            sol_best_fitness,
-            sol_best_fitness_refinado,
-            sol_reference,
-            delta_d,
-            delta_d_refinado,
-            delta_t,
-            delta_t_refinado,
-            crlb_espacial,
-            crlb_temporal,
-            execution_time,
-            associacoes_corretas) = runner_AOA(event_positions,
-                                               event_times,
-                                               spatial_clusters,
-                                               sensor_tt,
-                                               sensor_indexes,
-                                               detections,
-                                               detection_times,
-                                               sensors,
-                                               min_alt,
-                                               max_alt,
-                                               1000,
-                                               50,
-                                               CLUSTER_MIN_PTS,
-                                               sigma_t,
-                                               AVG_LIGHT_SPEED * sigma_t,
-                                               EPSILON_T,
-                                               AVG_LIGHT_SPEED,
-                                               False)
 
-        assert len(sol_centroides_temporais) == len(event_positions)
+        events.append({"event_positions": event_positions,
+                       "event_times": event_times,
+                       "spatial_clusters": spatial_clusters,
+                       "sensor_tt": sensor_tt,
+                       "sensor_indexes": sensor_indexes,
+                       "detections": detections,
+                       "detection_times": detection_times,
+                       "sensors": sensors,
+                       "min_alt": min_alt,
+                       "max_alt": max_alt,
+                       "max_epochs": max_epochs,
+                       "max_population": max_population,
+                       "min_pts": CLUSTER_MIN_PTS,
+                       "sigma_t": SIGMA_T,
+                       "sigma_d": SIGMA_D,
+                       "epsilon_t": EPSILON_T,
+                       "c": AVG_LIGHT_SPEED,
+                       "sistema_cartesiano": False})
 
-        assert len(sol_centroides_espaciais) == len(event_times)
+        # tudo pronto, rodando o runner
 
-        if fake_test:
+    num_groups = int(runs/processes)
 
-            """
-                Cálculo de parâmetros para o artigo
-            """
+    if num_groups * processes < runs:
+        num_groups += 1
 
-            print(crlb_espacial)
+    event_indexes = np.array([x for x in range(runs)])
 
-            print(crlb_temporal)
+    for k in [x * processes for x in range(0, num_groups)]:
 
-            # dados temporais
-            crlb_temporal_rmse = crlb_temporal
-            crlb_temporal_medio = crlb_temporal
-            rmse_temporal = rmse(delta_t)
-            rmse_temporal_refinado = rmse(delta_t_refinado)
+        print(f"AOA - Rodada {k}")
 
-            prmse_temporal = calcula_prmse(
-                rmse_temporal, crlb_temporal_rmse)
-            prmse_temporal_refinado = calcula_prmse(rmse_temporal_refinado,
-                                                    crlb_temporal_rmse)
+        param_indexes = event_indexes[k:min(k+processes, len(event_indexes))]
 
-            mae_temporal = mae(delta_t)
-            mae_temporal_refinado = mae(delta_t_refinado)
+        params = [events[i] for i in param_indexes]
 
-            mle_temporal = np.abs(mean_location_error(delta_t))
-            mle_temporal_refinado = np.abs(
-                mean_location_error(delta_t_refinado))
+        with ProcessPoolExecutor() as executor:
+            temp_resultados = list(executor.map(runner_AOA_process, params))
+            for result_node in temp_resultados:
 
-            amse_temporal = average_mean_squared_error(delta_t)
-            amse_temporal_refinado = average_mean_squared_error(
-                delta_t_refinado)
+                (sol_centroides_espaciais,
+                    sol_centroides_temporais,
+                    sol_centroides_espaciais_refinados,
+                    sol_centroides_temporais_refinados,
+                    sol_detectores,
+                    sol_best_fitness,
+                    sol_best_fitness_refinado,
+                    sol_reference,
+                    delta_d,
+                    delta_d_refinado,
+                    delta_t,
+                    delta_t_refinado,
+                    crlb_espacial,
+                    crlb_temporal,
+                    execution_time,
+                    associacoes_corretas) = result_node
 
-            # dados espaciais
-            crlb_espacial_rmse = crlb_espacial
-            crlb_espacial_medio = crlb_espacial
-            rmse_espacial = rmse(delta_d)
-            rmse_espacial_refinado = rmse(delta_d_refinado)
-            prmse_espacial = calcula_prmse(
-                rmse_espacial, crlb_espacial_rmse)
-            prmse_espacial_refinado = calcula_prmse(rmse_espacial,
-                                                    rmse_espacial_refinado)
-            mae_espacial = mae(delta_d)
-            mae_espacial_refinado = mae(delta_d_refinado)
+                assert len(sol_centroides_temporais) == len(event_positions)
 
-            mle_espacial = np.abs(mean_location_error(delta_d))
-            mle_espacial_refinado = np.abs(
-                mean_location_error(delta_d_refinado))
+                assert len(sol_centroides_espaciais) == len(event_times)
 
-            amse_espacial = average_mean_squared_error(delta_d)
-            amse_espacial_refinado = average_mean_squared_error(
-                delta_d_refinado)
+                if fake_test:
 
-            # porcentagem das associações corretas
+                    """
+                        Cálculo de parâmetros para o artigo
+                    """
 
-            correct_association_index = np.mean(associacoes_corretas) * 100
-        
-            # adicionando no paper
+                    print(crlb_espacial)
 
-            paper_data.append([sigma_t/SIGMA_T,
-                               crlb_espacial_rmse,
-                               rmse_espacial,
-                               rmse_espacial_refinado,
-                               prmse_espacial,
-                               prmse_espacial_refinado,
-                               mle_espacial,
-                               mle_espacial_refinado,
-                               mae_espacial,
-                               mae_espacial_refinado,
-                               amse_espacial,
-                               amse_espacial_refinado,
-                               crlb_temporal_rmse,
-                               rmse_temporal,
-                               rmse_temporal_refinado,
-                               mle_temporal,
-                               mle_temporal_refinado,
-                               mae_temporal,
-                               mae_temporal_refinado,
-                               amse_temporal,
-                               amse_temporal_refinado,
-                               correct_association_index,
-                               sol_best_fitness,
-                               np.abs(sol_best_fitness_refinado),
-                               sol_reference,
-                               execution_time])
+                    print(crlb_temporal)
 
-            # armazenando os deltas encontrados
+                    # dados temporais
+                    crlb_temporal_rmse = crlb_temporal
+                    crlb_temporal_medio = crlb_temporal
+                    rmse_temporal = rmse(delta_t)
+                    rmse_temporal_refinado = rmse(delta_t_refinado)
 
-            deltas_d.append(delta_d)
+                    prmse_temporal = calcula_prmse(
+                        rmse_temporal, crlb_temporal_rmse)
+                    prmse_temporal_refinado = calcula_prmse(rmse_temporal_refinado,
+                                                            crlb_temporal_rmse)
 
-            deltas_t.append(delta_t)
+                    mae_temporal = mae(delta_t)
+                    mae_temporal_refinado = mae(delta_t_refinado)
 
-            deltas_d_refinado.append(delta_d_refinado)
+                    mle_temporal = np.abs(mean_location_error(delta_t))
+                    mle_temporal_refinado = np.abs(
+                        mean_location_error(delta_t_refinado))
 
-            deltas_t_refinado.append(delta_t_refinado)
+                    amse_temporal = average_mean_squared_error(delta_t)
+                    amse_temporal_refinado = average_mean_squared_error(
+                        delta_t_refinado)
 
-            centroides_espaciais_ea.append(sol_centroides_espaciais)
+                    # dados espaciais
+                    crlb_espacial_rmse = crlb_espacial
+                    crlb_espacial_medio = crlb_espacial
+                    rmse_espacial = rmse(delta_d)
+                    rmse_espacial_refinado = rmse(delta_d_refinado)
+                    prmse_espacial = calcula_prmse(
+                        rmse_espacial, crlb_espacial_rmse)
+                    prmse_espacial_refinado = calcula_prmse(rmse_espacial,
+                                                            rmse_espacial_refinado)
+                    mae_espacial = mae(delta_d)
+                    mae_espacial_refinado = mae(delta_d_refinado)
 
-            centroides_espaciais_irls.append(sol_centroides_espaciais_refinados)
+                    mle_espacial = np.abs(mean_location_error(delta_d))
+                    mle_espacial_refinado = np.abs(
+                        mean_location_error(delta_d_refinado))
 
-            centroides_temporais_ea.append(sol_centroides_temporais)
+                    amse_espacial = average_mean_squared_error(delta_d)
+                    amse_espacial_refinado = average_mean_squared_error(
+                        delta_d_refinado)
 
-            centroides_temporais_irls.append(sol_centroides_temporais_refinados)
+                    # porcentagem das associações corretas
 
-            print(f"Erro espacial => Solução EA: {mle_espacial}, Solução Refinada: {mle_espacial_refinado}")
+                    correct_association_index = np.mean(
+                        associacoes_corretas) * 100
 
-            print(f"Erro temporal => Solução EA: {mle_temporal}, Solução Refinada: {mle_temporal_refinado}")
+                    # adicionando no paper
 
-            print("AOA", [crlb_espacial_rmse,
-                          rmse_espacial,
-                          rmse_espacial_refinado,
-                          prmse_espacial,
-                          prmse_espacial_refinado,
-                          mle_espacial,
-                          mle_espacial_refinado,
-                          mae_espacial,
-                          mae_espacial_refinado,
-                          amse_espacial,
-                          amse_espacial_refinado,
-                          crlb_temporal_rmse,
-                          rmse_temporal,
-                          rmse_temporal_refinado,
-                          mle_temporal,
-                          mle_temporal_refinado,
-                          mae_temporal,
-                          mae_temporal_refinado,
-                          amse_temporal,
-                          amse_temporal_refinado,
-                          correct_association_index,
-                          sol_best_fitness,
-                          np.abs(sol_best_fitness_refinado),
-                          sol_reference,
-                          execution_time])
+                    paper_data.append([1.0,
+                                       crlb_espacial_rmse,
+                                       rmse_espacial,
+                                       rmse_espacial_refinado,
+                                       prmse_espacial,
+                                       prmse_espacial_refinado,
+                                       mle_espacial,
+                                       mle_espacial_refinado,
+                                       mae_espacial,
+                                       mae_espacial_refinado,
+                                       amse_espacial,
+                                       amse_espacial_refinado,
+                                       crlb_temporal_rmse,
+                                       rmse_temporal,
+                                       rmse_temporal_refinado,
+                                       mle_temporal,
+                                       mle_temporal_refinado,
+                                       mae_temporal,
+                                       mae_temporal_refinado,
+                                       amse_temporal,
+                                       amse_temporal_refinado,
+                                       correct_association_index,
+                                       sol_best_fitness,
+                                       np.abs(sol_best_fitness_refinado),
+                                       sol_reference,
+                                       execution_time])
+
+                    # armazenando os deltas encontrados
+
+                    deltas_d.append(delta_d)
+
+                    deltas_t.append(delta_t)
+
+                    deltas_d_refinado.append(delta_d_refinado)
+
+                    deltas_t_refinado.append(delta_t_refinado)
+
+                    centroides_espaciais_ea.append(sol_centroides_espaciais)
+
+                    centroides_espaciais_irls.append(
+                        sol_centroides_espaciais_refinados)
+
+                    centroides_temporais_ea.append(sol_centroides_temporais)
+
+                    centroides_temporais_irls.append(
+                        sol_centroides_temporais_refinados)
+
+                    print(
+                        f"Erro espacial => Solução EA: {mle_espacial}, Solução Refinada: {mle_espacial_refinado}")
+
+                    print(
+                        f"Erro temporal => Solução EA: {mle_temporal}, Solução Refinada: {mle_temporal_refinado}")
+
+                    print("AOA", [crlb_espacial_rmse,
+                                  rmse_espacial,
+                                  rmse_espacial_refinado,
+                                  prmse_espacial,
+                                  prmse_espacial_refinado,
+                                  mle_espacial,
+                                  mle_espacial_refinado,
+                                  mae_espacial,
+                                  mae_espacial_refinado,
+                                  amse_espacial,
+                                  amse_espacial_refinado,
+                                  crlb_temporal_rmse,
+                                  rmse_temporal,
+                                  rmse_temporal_refinado,
+                                  mle_temporal,
+                                  mle_temporal_refinado,
+                                  mae_temporal,
+                                  mae_temporal_refinado,
+                                  amse_temporal,
+                                  amse_temporal_refinado,
+                                  correct_association_index,
+                                  sol_best_fitness,
+                                  np.abs(sol_best_fitness_refinado),
+                                  sol_reference,
+                                  execution_time])
 
     # salvando o arquivo
     if fake_test:
@@ -325,15 +357,17 @@ def test_runner_AOA(fake_test=False):
         output_file = os.path.join(basedir, "AOA_deltas_distancia.npy")
         np.save(output_file, deltas_d)
         print(f"\n>> Diferenças de Distância salvas em: {output_file}")
-        
+
         output_file = os.path.join(basedir, "AOA_deltas_tempos.npy")
         np.save(output_file, deltas_t)
         print(f"\n>> Diferenças de Tempo salvas em: {output_file}")
 
-        output_file = os.path.join(basedir, "AOA_deltas_distancia_refinado.npy")
+        output_file = os.path.join(
+            basedir, "AOA_deltas_distancia_refinado.npy")
         np.save(output_file, deltas_d)
-        print(f"\n>> Diferenças de Distância Refinadas salvas em: {output_file}")
-        
+        print(
+            f"\n>> Diferenças de Distância Refinadas salvas em: {output_file}")
+
         output_file = os.path.join(basedir, "AOA_deltas_tempos_refinado.npy")
         np.save(output_file, deltas_t)
         print(f"\n>> Diferenças de Tempo Refinados salvas em: {output_file}")
@@ -341,16 +375,18 @@ def test_runner_AOA(fake_test=False):
         output_file = os.path.join(basedir, "AOA_centroides_espaciais_ea.npy")
         np.save(output_file, centroides_espaciais_ea)
         print(f"\n>> Centroides espaciais EA salvos em: {output_file}")
-        
-        output_file = os.path.join(basedir, "AOA_centroides_espaciais_irls.npy")
+
+        output_file = os.path.join(
+            basedir, "AOA_centroides_espaciais_irls.npy")
         np.save(output_file, centroides_espaciais_irls)
         print(f"\n>> Centroides espaciais IRLS salvos em: {output_file}")
 
         output_file = os.path.join(basedir, "AOA_centroides_temporais_ea.npy")
         np.save(output_file, centroides_temporais_ea)
         print(f"\n>> Centroides temporais EA salvos em: {output_file}")
-        
-        output_file = os.path.join(basedir, "AOA_centroides_temporais_irls.npy")
+
+        output_file = os.path.join(
+            basedir, "AOA_centroides_temporais_irls.npy")
         np.save(output_file, centroides_temporais_irls)
         print(f"\n>> Centroides temporais IRLS salvos em: {output_file}")
 

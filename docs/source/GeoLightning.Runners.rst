@@ -4,6 +4,14 @@ GeoLightning.Runners package
 Submodules
 ----------
 
+GeoLightning.Runners.Runner module
+----------------------------------
+
+.. automodule:: GeoLightning.Runners.Runner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 GeoLightning.Runners.RunnerAOA module
 -------------------------------------
 
