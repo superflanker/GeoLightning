@@ -30,11 +30,11 @@ Detection tolerances
 
 .. py:data:: EPSILON_T
 
-float: Maximum admissible temporal tolerance (1000 × SIGMA_T).
+float: Maximum admissible temporal tolerance (6 × SIGMA_T).
 
 .. py:data:: EPSILON_D
 
-float: Maximum admissible spatial tolerance (1000 × SIGMA_D).
+float: Maximum admissible spatial tolerance (6 × SIGMA_D).
 
 .. py:data:: LIMIT_D
 
