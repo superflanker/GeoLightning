@@ -16,6 +16,7 @@ Submodules
 ----------
 - Bearing.py: Bearing Positioning utility.
 - Constants.py: Geophysical constants and thresholds.
+- ConvexHull.py: Numba-Friendly Convex Hull Determination (to be explored in the final version) 
 - Utils.py: Coordinate transformations, distance and time calculations.
 
 Notes

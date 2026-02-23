@@ -59,12 +59,14 @@ from geopy.point import Point as GeoPoint
 from pyproj import CRS
 
 
+
 def make_histogram_graph(hist: np.ndarray,
                          bin_edges: np.ndarray,
-                         quantile_0: np.float64,
                          quantile_90: np.float64,
                          xlabel: str,
                          ylabel: str,
+                         xlimit: np.float64,
+                         b_size: np.float64,
                          filename: str):
     """
     Generates and saves a stylized histogram plot with smoothed interpolation 
@@ -96,6 +98,9 @@ def make_histogram_graph(hist: np.ndarray,
     ylabel: str
         name of y axis
 
+    xlimit: np.float64
+        where the x axis should stop in the graph
+
     filename : str
         Path to save the resulting figure. Saved with 600 DPI resolution.
 
@@ -125,25 +130,32 @@ def make_histogram_graph(hist: np.ndarray,
         'legend.borderaxespad': 0.4,
     })
 
-    #: gráficos
+     #: gráficos
     plt.close('all')
+
+    plt.style.use(['science', 'ieee'])
 
     #: histograma
 
+    #: func_interp = UnivariateSpline(bin_edges, hist)
+    wbin_edges = list()
+    for j in range(np.size(bin_edges) - 1):
+        wbin_edges.append(bin_edges[j] + (bin_edges[j + 1] - bin_edges[j]) / 2)
+    bin_edges = wbin_edges
     func_interp = interp1d(bin_edges, hist, 'cubic')
 
-    rv_x_confidence_interval = np.arange(quantile_0,
-                                         quantile_90, 0.001)
-    rv_x = np.arange(min(bin_edges), max(bin_edges), 0.001)
+    rv_x_confidence_interval = np.linspace(min(bin_edges),
+                                         quantile_90, len(bin_edges) * 100)
+    rv_x = np.linspace(min(bin_edges), max(bin_edges), len(bin_edges) * 100)
     rv_values = func_interp(rv_x)
     rv_values_confidence_interval = func_interp(rv_x_confidence_interval)
 
-    plt.bar(bin_edges,
+    plt.bar(wbin_edges,
             hist,
-            color='#8a8a8a',
+            color="#c3c7c4",
             edgecolor="#000000",
             linewidth=0,
-            width=0.05,
+            width=b_size,
             align='center',
             label="Histogram")
 
@@ -156,16 +168,22 @@ def make_histogram_graph(hist: np.ndarray,
     plt.fill_between(rv_x_confidence_interval,
                      0,
                      rv_values_confidence_interval,
-                     facecolor='#ababab',
-                     label=r"$90%$ Interval")
+                     facecolor="#909190",
+                     label="90\% interval",
+                     alpha=0.8)
 
     plt.xlabel(xlabel)
 
     plt.ylabel(ylabel)
 
+    plt.xlim(0, xlimit)
+
+    #: plt.title(title)
+
     plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
 
-    plt.savefig(filename, dpi=600)
+    plt.savefig(filename , dpi=600)
+
 
 
 def generate_nde_report(sensors: np.ndarray,

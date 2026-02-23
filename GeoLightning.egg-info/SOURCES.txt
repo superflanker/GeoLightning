@@ -47,6 +47,7 @@ GeoLightning/Stela/Stela.py
 GeoLightning/Stela/__init__.py
 GeoLightning/Utils/Bearing.py
 GeoLightning/Utils/Constants.py
+GeoLightning/Utils/ConvexHull.py
 GeoLightning/Utils/Utils.py
 GeoLightning/Utils/__init__.py
 tests/__init__.py
@@ -55,10 +56,14 @@ tests/test_loglikelihood.py
 tests/test_metrics.py
 tests/test_runner_aoa.py
 tests/test_runner_eso.py
+tests/test_runner_eso_calibration.py
+tests/test_runner_eso_final.py
 tests/test_runner_fho.py
 tests/test_runner_ga.py
 tests/test_runner_gwo.py
 tests/test_runner_lsa.py
+tests/test_runner_lsa_calibration.py
+tests/test_runner_lsa_final.py
 tests/test_runner_pso.py
 tests/test_stela.py
 tests/test_stela_aoa.py

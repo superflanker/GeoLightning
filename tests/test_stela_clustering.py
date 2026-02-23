@@ -93,8 +93,15 @@ def test_clustering_stela(fake_test=False):
                             16, 17, 18, 19, 20]"""
         
         time_multipliers = np.linspace(0, 2, 2000)
-
+        
         runs = 10
+
+        print(runs * num_events * len(time_multipliers))
+
+        print(np.max(time_multipliers) * delta_time )
+
+
+    exit()
 
     for time_multiplier in time_multipliers:
 

@@ -20,6 +20,14 @@ GeoLightning.Utils.Constants module
    :undoc-members:
    :show-inheritance:
 
+GeoLightning.Utils.ConvexHull module
+------------------------------------
+
+.. automodule:: GeoLightning.Utils.ConvexHull
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 GeoLightning.Utils.Utils module
 -------------------------------
 

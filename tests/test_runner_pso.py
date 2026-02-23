@@ -73,9 +73,9 @@ def test_runner_PSO(fake_test=False):
 
     # dados default
 
-    num_events = 1
+    num_events = 10
 
-    runs = 1
+    runs = 4
 
     multiplier = 3
 
@@ -89,8 +89,8 @@ def test_runner_PSO(fake_test=False):
     processes = 4
 
     # gerando os eventos
-    min_alt = 935
-    max_alt = 935
+    min_alt = 0
+    max_alt = 0
     min_time = 10000
     max_time = min_time + num_events * delta_time * multiplier
 

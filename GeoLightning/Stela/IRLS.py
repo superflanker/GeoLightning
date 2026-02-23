@@ -15,7 +15,7 @@ def irls(solucao_inicial: np.ndarray,
          pontos_de_chegada: np.ndarray,
          sigma_t: np.float64 = SIGMA_T,
          max_iter: np.int32 = 15,
-         pesos_alg: str = "rbf",
+         pesos_alg: str = "huber",
          sistema_cartesiano: bool = False,
          k: np.float64 = 3.0,  # huber, tukey somente
          lm_mu0: np.float64 = 1e-3,
@@ -75,7 +75,7 @@ def irls(solucao_inicial: np.ndarray,
     pesos_alg : str, optional
         Weighting rule identifier used by the IRLS outer loop. Supported values are
         ``"rbf"``, ``"huber"``, and ``"tukey"``. Unknown values fall back to ``"rbf"``.
-        Default is ``"rbf"``.
+        Default is ``"huber"``.
 
     sistema_cartesiano : bool, optional
         If True, Cartesian distances are used; otherwise spherical distances are used.
@@ -234,7 +234,6 @@ def irls(solucao_inicial: np.ndarray,
             invdlat = 1.0 / dlat
             invdlon = 1.0 / dlon
 
-        # Assemble weighted normal equations (2x2) for [dphi, dlmb]
         a11 = 0.0
         a12 = 0.0
         a22 = 0.0
@@ -280,7 +279,6 @@ def irls(solucao_inicial: np.ndarray,
                                            pesos=pesos,
                                            sistema_cartesiano=sistema_cartesiano)
 
-        # Accept/reject with weighted SSE
         cost = 0.0
         cost_new = 0.0
         for i in range(len(tempos_de_chegada)):
@@ -296,7 +294,6 @@ def irls(solucao_inicial: np.ndarray,
             if mu < 1e-12:
                 mu = 1e-12
 
-            # stopping rule (very small step in degrees)
             if np.abs(dphi) < 1e-10 and np.abs(dlmb) < 1e-10:
                 break
         else:

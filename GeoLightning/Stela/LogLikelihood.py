@@ -39,9 +39,36 @@ Dependencies
 
 from numba import jit
 import numpy as np
+import math
 from GeoLightning.Utils.Constants import AVG_LIGHT_SPEED, SIGMA_D, SIGMA_T, AVG_EARTH_RADIUS
 from GeoLightning.Utils.Utils import coordenadas_esfericas_para_cartesianas_batelada
 
+@jit(nopython=True, cache=True, fastmath=True)
+def factorial(n: np.int32) -> np.int32:
+    if n < 0:
+        raise ValueError("Factorial not defined for negative values")
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+@jit(nopython=True, cache=True, fastmath=True)
+def binomial_pmf_numba(k: np.int32, 
+                       n: np.int32, 
+                       p: np.float64) -> np.float64:
+    """
+    Calcula a PMF da distribuição binomial usando Numba.
+    k: Número de sucessos (pode ser um array ou escalar)
+    n: Número de tentativas
+    p: Probabilidade de sucesso
+    """
+    if k < 0 or k > n:
+        return 0.0
+    
+    comb = factorial(n) / (factorial(k) * factorial(n - k))
+    
+    prob = comb * (p**k) * ((1-p)**(n-k))
+    return prob
 
 @jit(nopython=True, cache=True, fastmath=True)
 def numba_clip(value: np.float64,
@@ -111,8 +138,10 @@ def maxima_log_verossimilhanca(N: np.int32,
     float
         Total maximum log-likelihood value for the observed deviations.
     """
+
     const = -np.log(sigma) - 0.5 * np.log(np.pi) - 0.5 * np.log(2)
-    return N * const
+
+    return N * 0.95 * const
 
 
 @jit(nopython=True, cache=True, fastmath=True)

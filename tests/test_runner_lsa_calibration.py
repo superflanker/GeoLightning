@@ -1,0 +1,376 @@
+"""
+EELT 7019 - Applied Artificial Intelligence
+Meta-heuristics Tests
+Author: Augusto Mathias Adams <augusto.adams@ufpr.br>
+"""
+import numpy as np
+import os
+from concurrent.futures import ProcessPoolExecutor
+import logging
+import multiprocessing as mp
+from GeoLightning.Simulator.Simulator import (get_sensors,
+                                              get_sensor_matrix,
+                                              get_lightning_limits,
+                                              generate_detections,
+                                              generate_events)
+from GeoLightning.Simulator.Metrics import (rmse,
+                                            mae,
+                                            average_mean_squared_error,
+                                            mean_location_error,
+                                            calcula_prmse,
+                                            erro_relativo_funcao_ajuste)
+from GeoLightning.Utils.Constants import *
+from GeoLightning.Runners.RunnerLSA import runner_LSA_process
+
+
+def test_runner_LSA_calibration(fake_test=False):
+
+    # diretório onde salvar os dados
+
+    basedir = os.path.abspath(os.path.join(
+        os.path.dirname(__file__), '../data/'))
+
+    # recuperando o grupo de sensores
+
+    sensors = get_sensors()
+
+    sensor_tt = get_sensor_matrix(sensors=sensors,
+                                  wave_speed=AVG_LIGHT_SPEED,
+                                  sistema_cartesiano=False)
+
+    min_lat, max_lat, min_lon, max_lon = get_lightning_limits(sensores_latlon=sensors,
+                                                              margem_metros=3000)
+
+    from scipy.spatial import ConvexHull
+
+    # sensores: array [[lat, lon], ...]
+    hull = ConvexHull(sensors[:, :2])
+    vertices_hull = sensors[hull.vertices, :2]  # Apenas os sensores da borda,
+    delta_time = 0.0
+
+    for i in range(len(sensor_tt)):
+        for j in range(i, len(sensor_tt[i])):
+            if sensor_tt[i, j] > delta_time:
+                delta_time = sensor_tt[i, j]
+
+    paper_data = list()
+
+    deltas_d = list()
+
+    deltas_t = list()
+
+    deltas_d_refinado = list()
+
+    deltas_t_refinado = list()
+
+    centroides_espaciais_ea = list()
+
+    centroides_espaciais_irls = list()
+
+    centroides_temporais_ea = list()
+
+    centroides_temporais_irls = list()
+
+    # dados default
+
+    num_events = 1
+
+    runs = 1
+
+    multiplier = 3
+
+    max_epochs_arr = [5]
+
+    max_population_arr = [5]
+
+    # define se estou rodando na mão o script
+    if fake_test:
+
+        num_events = 100
+
+        runs = 100
+
+        max_epochs_arr = [x for x in range(5, 31)]
+
+        max_population_arr = [x for x in range(5, 31)]
+
+    processes = 4
+
+    # gerando os eventos
+    min_alt = 0
+    max_alt = 0
+    min_time = 10000
+    max_time = min_time + num_events * delta_time * multiplier
+
+    events = list()
+
+    for r in range(runs):
+
+        # protagonista da história - eventos
+        event_positions, event_times = generate_events(num_events=num_events,
+                                                       vertices_hull=vertices_hull,
+                                                       min_lat=min_lat,
+                                                       max_lat=max_lat,
+                                                       min_lon=min_lon,
+                                                       max_lon=max_lon,
+                                                       min_alt=min_alt,
+                                                       max_alt=max_alt,
+                                                       min_time=min_time,
+                                                       max_time=max_time,
+                                                       fixed_seed=True if r == 0 else False)
+
+        # gerando as detecções
+        (detections,
+            detection_times,
+            n_event_positions,
+            n_event_times,
+            distances,
+            sensor_indexes,
+            spatial_clusters) = generate_detections(event_positions=event_positions,
+                                                    event_times=event_times,
+                                                    sensor_positions=sensors,
+                                                    simulate_complete_detections=True,
+                                                    fixed_seed=False,
+                                                    min_pts=CLUSTER_MIN_PTS)
+
+        events.append({"event_positions": event_positions,
+                       "event_times": event_times,
+                       "spatial_clusters": spatial_clusters,
+                       "sensor_tt": sensor_tt,
+                       "sensor_indexes": sensor_indexes,
+                       "detections": detections,
+                       "detection_times": detection_times,
+                       "sensors": sensors,
+                       "min_alt": min_alt,
+                       "max_alt": max_alt,
+                       "min_pts": CLUSTER_MIN_PTS,
+                       "sigma_t": SIGMA_T,
+                       "sigma_d": SIGMA_D,
+                       "epsilon_t": EPSILON_T,
+                       "c": AVG_LIGHT_SPEED,
+                       "sistema_cartesiano": False})
+
+        # tudo pronto, rodando o runner
+
+    num_groups = int(runs/processes)
+
+    if num_groups * processes < runs:
+        num_groups += 1
+
+    event_indexes = np.array([x for x in range(runs)])
+
+    for max_epochs in max_epochs_arr:
+
+        for max_population in max_population_arr:
+
+            temp_paper_data = list()
+
+            for k in [x * processes for x in range(0, num_groups)]:
+
+                print(f"LSA - Rodada {k}")
+
+                param_indexes = event_indexes[k:min(
+                    k+processes, len(event_indexes))]
+
+                params = [events[i] for i in param_indexes]
+
+                for r in range(len(params)):
+                    params[r]["max_epochs"] = max_epochs
+                    params[r]["max_population"] = max_population
+
+                with ProcessPoolExecutor() as executor:
+                    temp_resultados = list(
+                        executor.map(runner_LSA_process, params))
+                    for result_node in temp_resultados:
+
+                        (sol_centroides_espaciais,
+                            sol_centroides_temporais,
+                            sol_centroides_espaciais_refinados,
+                            sol_centroides_temporais_refinados,
+                            sol_detectores,
+                            sol_best_fitness,
+                            sol_best_fitness_refinado,
+                            sol_reference,
+                            delta_d,
+                            delta_d_refinado,
+                            delta_t,
+                            delta_t_refinado,
+                            crlb_espacial,
+                            crlb_temporal,
+                            execution_time,
+                            associacoes_corretas) = result_node
+
+                        assert len(sol_centroides_temporais) == len(
+                            event_positions)
+
+                        assert len(sol_centroides_espaciais) == len(
+                            event_times)
+
+                        if fake_test:
+
+                            """
+                                Cálculo de parâmetros para o artigo
+                            """
+
+                            print(crlb_espacial)
+
+                            print(crlb_temporal)
+
+                            # dados temporais
+                            crlb_temporal_rmse = crlb_temporal
+                            crlb_temporal_medio = crlb_temporal
+                            rmse_temporal = rmse(delta_t)
+                            rmse_temporal_refinado = rmse(delta_t_refinado)
+
+                            prmse_temporal = calcula_prmse(
+                                rmse_temporal, crlb_temporal_rmse)
+                            prmse_temporal_refinado = calcula_prmse(rmse_temporal_refinado,
+                                                                    crlb_temporal_rmse)
+
+                            mae_temporal = mae(delta_t)
+                            mae_temporal_refinado = mae(delta_t_refinado)
+
+                            mle_temporal = np.abs(mean_location_error(delta_t))
+                            mle_temporal_refinado = np.abs(
+                                mean_location_error(delta_t_refinado))
+
+                            amse_temporal = average_mean_squared_error(delta_t)
+                            amse_temporal_refinado = average_mean_squared_error(
+                                delta_t_refinado)
+
+                            # dados espaciais
+                            crlb_espacial_rmse = crlb_espacial
+                            crlb_espacial_medio = crlb_espacial
+                            rmse_espacial = rmse(delta_d)
+                            rmse_espacial_refinado = rmse(delta_d_refinado)
+                            prmse_espacial = calcula_prmse(
+                                rmse_espacial, crlb_espacial_rmse)
+                            prmse_espacial_refinado = calcula_prmse(rmse_espacial,
+                                                                    rmse_espacial_refinado)
+                            mae_espacial = mae(delta_d)
+                            mae_espacial_refinado = mae(delta_d_refinado)
+
+                            mle_espacial = np.abs(mean_location_error(delta_d))
+                            mle_espacial_refinado = np.abs(
+                                mean_location_error(delta_d_refinado))
+
+                            amse_espacial = average_mean_squared_error(delta_d)
+                            amse_espacial_refinado = average_mean_squared_error(
+                                delta_d_refinado)
+
+                            # porcentagem das associações corretas
+
+                            correct_association_index = np.mean(
+                                associacoes_corretas) * 100
+
+                            # adicionando no paper
+
+                            temp_paper_data.append([max_epochs,
+                                                    max_population,
+                                                    1.0,
+                                                    crlb_espacial_rmse,
+                                                    rmse_espacial,
+                                                    rmse_espacial_refinado,
+                                                    prmse_espacial,
+                                                    prmse_espacial_refinado,
+                                                    mle_espacial,
+                                                    mle_espacial_refinado,
+                                                    mae_espacial,
+                                                    mae_espacial_refinado,
+                                                    amse_espacial,
+                                                    amse_espacial_refinado,
+                                                    crlb_temporal_rmse,
+                                                    rmse_temporal,
+                                                    rmse_temporal_refinado,
+                                                    mle_temporal,
+                                                    mle_temporal_refinado,
+                                                    mae_temporal,
+                                                    mae_temporal_refinado,
+                                                    amse_temporal,
+                                                    amse_temporal_refinado,
+                                                    correct_association_index,
+                                                    sol_best_fitness,
+                                                    np.abs(
+                                                        sol_best_fitness_refinado),
+                                                    sol_reference,
+                                                    execution_time])
+
+                            # armazenando os deltas encontrados
+
+                            deltas_d.append(delta_d)
+
+                            deltas_t.append(delta_t)
+
+                            deltas_d_refinado.append(delta_d_refinado)
+
+                            deltas_t_refinado.append(delta_t_refinado)
+
+                            centroides_espaciais_ea.append(
+                                sol_centroides_espaciais)
+
+                            centroides_espaciais_irls.append(
+                                sol_centroides_espaciais_refinados)
+
+                            centroides_temporais_ea.append(
+                                sol_centroides_temporais)
+
+                            centroides_temporais_irls.append(
+                                sol_centroides_temporais_refinados)
+
+                            print(
+                                f"Erro espacial => Solução EA: {mle_espacial}, Solução Refinada: {mle_espacial_refinado}")
+
+                            print(
+                                f"Erro temporal => Solução EA: {mle_temporal}, Solução Refinada: {mle_temporal_refinado}")
+
+                            print("LSA", [max_epochs,
+                                          max_population,
+                                          crlb_espacial_rmse,
+                                          rmse_espacial,
+                                          rmse_espacial_refinado,
+                                          prmse_espacial,
+                                          prmse_espacial_refinado,
+                                          mle_espacial,
+                                          mle_espacial_refinado,
+                                          mae_espacial,
+                                          mae_espacial_refinado,
+                                          amse_espacial,
+                                          amse_espacial_refinado,
+                                          crlb_temporal_rmse,
+                                          rmse_temporal,
+                                          rmse_temporal_refinado,
+                                          mle_temporal,
+                                          mle_temporal_refinado,
+                                          mae_temporal,
+                                          mae_temporal_refinado,
+                                          amse_temporal,
+                                          amse_temporal_refinado,
+                                          correct_association_index,
+                                          sol_best_fitness,
+                                          np.abs(sol_best_fitness_refinado),
+                                          sol_reference,
+                                          execution_time])
+            if fake_test:
+                    
+                temp_paper_data = np.array(temp_paper_data)
+                new_paper_data = np.zeros(temp_paper_data.shape[1])
+                for i in range(len(temp_paper_data)):
+                    new_paper_data += temp_paper_data[i]
+
+                new_paper_data /= len(temp_paper_data)
+                paper_data.append(new_paper_data)
+
+    # salvando o arquivo
+    if fake_test:
+        paper_data = np.array(paper_data)
+        """
+        Salvando o arquivo para o paper
+        """
+        paper_data = np.array(paper_data)
+        output_file = os.path.join(basedir, "LSA_calibration.npy")
+        np.save(output_file, paper_data)
+        print(f"\n>> Resultados salvos em: {output_file}")
+
+
+if __name__ == "__main__":
+    test_runner_LSA_calibration(True)

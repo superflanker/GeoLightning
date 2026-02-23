@@ -189,27 +189,27 @@ def runner_FHO(event_positions: np.ndarray,
         associacoes_corretas : int  
             Number of clusters correctly associated with ground-truth events.
     """
-    
+
     solver = StelaFHO(epoch=max_epochs,
-                        pop_size=max_population)
-    
+                      pop_size=max_population)
+
     return runner(solver=solver,
-                event_positions=event_positions,
-                event_times=event_times,
-                spatial_clusters=spatial_clusters,
-                sensor_tt=sensor_tt,
-                sensor_indexes=sensor_indexes,
-                detections=detections,
-                detection_times=detection_times,
-                sensors=sensors,
-                min_alt=min_alt,
-                max_alt=max_alt,
-                min_pts=min_pts,
-                sigma_t=sigma_t,
-                sigma_d=sigma_d,
-                epsilon_t=epsilon_t,
-                c=c,
-                sistema_cartesiano=sistema_cartesiano)
+                  event_positions=event_positions,
+                  event_times=event_times,
+                  spatial_clusters=spatial_clusters,
+                  sensor_tt=sensor_tt,
+                  sensor_indexes=sensor_indexes,
+                  detections=detections,
+                  detection_times=detection_times,
+                  sensors=sensors,
+                  min_alt=min_alt,
+                  max_alt=max_alt,
+                  min_pts=min_pts,
+                  sigma_t=sigma_t,
+                  sigma_d=sigma_d,
+                  epsilon_t=epsilon_t,
+                  c=c,
+                  sistema_cartesiano=sistema_cartesiano)
 
 
 def runner_FHO_process(params):

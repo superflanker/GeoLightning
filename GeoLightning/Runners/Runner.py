@@ -342,7 +342,7 @@ def runner(solver: object,
         # valores para calcular o erro relativo em relação ao valor de referência
         sol_best_fitness += np.abs(best_fitness)
         sol_reference -= maxima_log_verossimilhanca(
-            sol_detectores[i-1], sigma_d)
+            len(sensor_tt), sigma_d)
 
         # refinamento da solução utilizando a solução fornecida pelo EA como solução inicial
         (solucao_refinada,
@@ -369,7 +369,7 @@ def runner(solver: object,
         # a grande vantagem de se ordenar tudo pelo tempo
         real_event_position = event_positions[i-1]
 
-        (fim, crlb, cov_ne) = computa_crlb_latlon_t(solucao_deg=real_event_position,
+        """(fim, crlb, cov_ne) = computa_crlb_latlon_t(solucao_deg=real_event_position,
                                                     pontos_de_chegada=current_detections,
                                                     sigma_t=sigma_t,
                                                     step_m=1.0,
@@ -378,7 +378,12 @@ def runner(solver: object,
         crlb_espacial.append(
             np.sqrt((cov_ne[0, 0] + cov_ne[1, 1])) / np.sqrt(detectores))
 
-        crlb_temporal.append(np.sqrt(crlb[2, 2]) / np.sqrt(detectores))
+        crlb_temporal.append(np.sqrt(crlb[2, 2]) / np.sqrt(detectores))"""
+
+        crlb_espacial.append(SIGMA_D/np.sqrt(len(sensor_tt)))
+
+        crlb_temporal.append(SIGMA_T/np.sqrt(len(sensor_tt)))
+
 
     # medições
 
