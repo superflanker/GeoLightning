@@ -133,7 +133,7 @@ def make_histogram_graph(hist: np.ndarray,
      #: gráficos
     plt.close('all')
 
-    plt.style.use(['science', 'ieee'])
+    # plt.style.use(['science', 'ieee'])
 
     #: histograma
 
@@ -152,7 +152,7 @@ def make_histogram_graph(hist: np.ndarray,
 
     plt.bar(wbin_edges,
             hist,
-            color="#c3c7c4",
+            color="#4e8ef5",
             edgecolor="#000000",
             linewidth=0,
             width=b_size,
@@ -168,9 +168,9 @@ def make_histogram_graph(hist: np.ndarray,
     plt.fill_between(rv_x_confidence_interval,
                      0,
                      rv_values_confidence_interval,
-                     facecolor="#909190",
+                     facecolor="#b6d1fd",
                      label="90\% interval",
-                     alpha=0.8)
+                     alpha=0.5)
 
     plt.xlabel(xlabel)
 

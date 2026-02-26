@@ -24,7 +24,7 @@ from scipy.signal import savgol_filter
 
 plt.style.use(['science'])
 
-plt.rcParams.update({
+"""plt.rcParams.update({
     'font.size': 8,
     'axes.labelsize': 8,
     'axes.titlesize': 8,
@@ -36,7 +36,7 @@ plt.rcParams.update({
     'legend.frameon': False,
     'legend.handlelength': 2.0,
     'legend.borderaxespad': 0.4,
-})
+})"""
 
 
 def test_clustering_stela(fake_test=False):
@@ -99,9 +99,6 @@ def test_clustering_stela(fake_test=False):
         print(runs * num_events * len(time_multipliers))
 
         print(np.max(time_multipliers) * delta_time )
-
-
-    exit()
 
     for time_multiplier in time_multipliers:
 
@@ -183,7 +180,7 @@ def test_clustering_stela(fake_test=False):
         plt.plot(x,
                  100 * np.ones(len(x)),
                  linestyle='--',
-                 color='gray',
+                 color='blue',
                  linewidth=1.0,
                  label=r'Reference ($100\%$)')
 

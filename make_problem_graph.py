@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import scienceplots
 import numpy as np
 # configuração do matplotlib
-plt.style.use(['science'])
+# plt.style.use(['science'])
 # Coordenadas dos sensores em disposição hexagonal com 1 no centro
 radius = 80  # raio do hexágono (km)
 angles = np.linspace(0, 2 * np.pi, 6, endpoint=False)
@@ -20,8 +20,8 @@ sensor_positions = np.array(sensor_positions)
 event_positions = np.random.uniform(-50, 50, size=(2, 2))
 
 # Define cores
-sensor_color = 'black'
-event_color = 'gray'
+sensor_color = 'blue'
+event_color = 'green'
 circle_color = 'black'
 
 # Cria a figura

@@ -306,7 +306,7 @@ Z_mle = griddata((x, y), z_mle, (X, Y), method='cubic')
 
 fig1 = plt.figure(figsize=(12, 7))
 ax1 = fig1.add_subplot(111, projection='3d')
-surf1 = ax1.plot_surface(X, Y, Z_mle, cmap=meu_cinza,
+surf1 = ax1.plot_surface(X, Y, Z_mle, cmap="coolwarm",
                          alpha=0.6, antialiased=True)
 
 ax1.plot(
@@ -351,7 +351,7 @@ plt.savefig("data/images/grafico_calibracao_MLE_LSA.png",
 
 fig2 = plt.figure(figsize=(12, 7))
 ax2 = fig2.add_subplot(111, projection='3d')
-surf2 = ax2.plot_surface(X, Y, Z_time, cmap=meu_cinza,
+surf2 = ax2.plot_surface(X, Y, Z_time, cmap="coolwarm",
                          alpha=0.6, antialiased=True)
 
 # cbar2 = fig2.colorbar(surf2, ax=ax2, shrink=0.5, aspect=10, pad=0.1)
@@ -459,7 +459,7 @@ Z_mle = griddata((x, y), z_mle, (X, Y), method='cubic')
 
 fig1 = plt.figure(figsize=(12, 7))
 ax1 = fig1.add_subplot(111, projection='3d')
-surf1 = ax1.plot_surface(X, Y, Z_mle, cmap=meu_cinza,
+surf1 = ax1.plot_surface(X, Y, Z_mle, cmap="coolwarm",
                          alpha=0.6, antialiased=True)
 
 # cbar1 = fig1.colorbar(surf1, ax=ax1, shrink=0.5, aspect=10, pad=0.1)
@@ -511,7 +511,7 @@ Z_time = griddata((x, y), z_time, (X, Y), method='cubic')
 
 fig2 = plt.figure(figsize=(12, 7))
 ax2 = fig2.add_subplot(111, projection='3d')
-surf2 = ax2.plot_surface(X, Y, Z_time, cmap=meu_cinza,
+surf2 = ax2.plot_surface(X, Y, Z_time, cmap="coolwarm",
                          alpha=0.6, antialiased=True)
 
 # cbar2 = fig2.colorbar(surf2, ax=ax2, shrink=0.5, aspect=10, pad=0.1)
