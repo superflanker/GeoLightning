@@ -22,7 +22,7 @@ geographiclib==2.0
 GeoLightning==0.1.0
 geopandas==1.1.2
 geoplot==0.5.1
-geopy==2.4.1
+geopy==2.5.0
 h11==0.16.0
 html5lib==1.1
 idna==3.15
